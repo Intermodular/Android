@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Intermodular</string>
+    <string name="title_activity_main_administration">MainAdministrationActivity</string>
+    <string name="title_activity_test">Test</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_access_to_tables">AccessToTables</string>
+    <string name="title_activity_employee_manager">EmployeeManager</string>
+    <string name="title_activity_zone_administration">ZoneAdministration</string>
+    <string name="title_activity_product_type_administration">ProductTypeAdministration</string>
+    <string name="title_activity_create_order">CreateOrder</string>
+</resources>

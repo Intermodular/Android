@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="sainero.dani.intermodular">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Intermodular">
+        <activity
+            android:name=".Views.CreateOrder"
+            android:exported="false"
+            android:label="@string/title_activity_create_order"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.ProductTypeAdministration"
+            android:exported="false"
+            android:label="@string/title_activity_product_type_administration"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.ZoneAdministration"
+            android:exported="false"
+            android:label="@string/title_activity_zone_administration"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.EmployeeManager"
+            android:exported="false"
+            android:label="@string/title_activity_employee_manager"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.AccessToTables"
+            android:exported="false"
+            android:label="@string/title_activity_access_to_tables"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.Login"
+            android:exported="false"
+            android:label="@string/title_activity_login"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Test"
+            android:exported="false"
+            android:label="@string/title_activity_test"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".MainAdministrationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main_administration"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Intermodular.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
