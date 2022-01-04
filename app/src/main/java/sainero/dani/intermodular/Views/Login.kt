@@ -64,6 +64,8 @@ class Login : ComponentActivity() {
     }
 }
 
+//Hola caracola
+
 @Composable
 fun LoginMain(navController: NavController) {
     var textUser by rememberSaveable { mutableStateOf("") }
