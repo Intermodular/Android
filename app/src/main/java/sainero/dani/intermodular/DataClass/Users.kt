@@ -1,6 +1,7 @@
 package sainero.dani.intermodular.DataClass
 
 data class Users(
+    val _id: String,
     val dni: String,
     val nombre: String,
     val apellido: String,

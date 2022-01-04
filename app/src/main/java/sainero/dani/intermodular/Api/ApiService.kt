@@ -3,6 +3,7 @@ package sainero.dani.intermodular.Api
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.POST
 import sainero.dani.intermodular.DataClass.*
 
 interface ApiService {

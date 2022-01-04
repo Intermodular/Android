@@ -64,6 +64,8 @@ class Login : ComponentActivity() {
     }
 }
 
+//Hola caracola
+
 @Composable
 fun LoginMain(navController: NavController) {
     var textUser by rememberSaveable { mutableStateOf("") }
@@ -71,7 +73,7 @@ fun LoginMain(navController: NavController) {
     var hidden by remember { mutableStateOf(true) }
     val showDialog = remember { mutableStateOf(false) }
     //Test
-    val u = Users("49760881J","Daniel","Sainero","25-12-2001","Pepe", "1234","prueba@gmail.com","admin")
+    val u = Users("2","49760881J","Daniel","Sainero","25-12-2001","Pepe", "1234","prueba@gmail.com","admin")
 
     val vm = MainViewModel()
     LaunchedEffect(Unit, block = {vm.getUserList()})

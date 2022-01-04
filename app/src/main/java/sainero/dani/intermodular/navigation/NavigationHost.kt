@@ -11,6 +11,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.Views.*
+import sainero.dani.intermodular.Views.Administration.*
+import sainero.dani.intermodular.Views.Cobrador.*
 
 @ExperimentalFoundationApi
 @Composable

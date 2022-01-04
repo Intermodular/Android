@@ -12,27 +12,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Intermodular">
         <activity
-            android:name=".Views.CreateOrder"
+            android:name=".Views.Cobrador.CreateOrder"
             android:exported="false"
             android:label="@string/title_activity_create_order"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".Views.ProductTypeAdministration"
+            android:name=".Views.Administration.ProductTypeAdministration"
             android:exported="false"
             android:label="@string/title_activity_product_type_administration"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".Views.ZoneAdministration"
+            android:name=".Views.Administration.ZoneAdministration"
             android:exported="false"
             android:label="@string/title_activity_zone_administration"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".Views.EmployeeManager"
+            android:name=".Views.Administration.EmployeeManager"
             android:exported="false"
             android:label="@string/title_activity_employee_manager"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".Views.AccessToTables"
+            android:name=".Views.Cobrador.AccessToTables"
             android:exported="false"
             android:label="@string/title_activity_access_to_tables"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
@@ -41,13 +41,9 @@
             android:exported="false"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
+
         <activity
-            android:name=".Test"
-            android:exported="false"
-            android:label="@string/title_activity_test"
-            android:theme="@style/Theme.Intermodular.NoActionBar" />
-        <activity
-            android:name=".MainAdministrationActivity"
+            android:name=".Views.Administration.MainAdministrationActivity"
             android:exported="false"
             android:label="@string/title_activity_main_administration"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
