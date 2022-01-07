@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
@@ -24,9 +23,7 @@ import sainero.dani.intermodular.navigation.NavigationHost
 import android.widget.Space
 import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -106,7 +103,11 @@ fun LoginMain(navController: NavController) {
             modifier = Modifier
                 .height(300.dp)
                 .width(500.dp)
-                .padding(20.dp),
+                .padding(20.dp)
+                    //Tests
+                .clickable {
+                    navController.navigate(Destinations.ProductManager.route)
+                }
         )
         Column(
             verticalArrangement = Arrangement.SpaceAround,

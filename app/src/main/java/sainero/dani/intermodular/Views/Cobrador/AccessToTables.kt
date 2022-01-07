@@ -15,12 +15,11 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,7 +30,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.solver.state.State
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.NavController
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
@@ -54,6 +55,12 @@ class AccessToTables : ComponentActivity() {
 fun MainAccessToTables(navController: NavController) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     var allTables: MutableList<Mesas> = mutableListOf()
+    val expanded = remember { mutableStateOf(false) }
+    val result = remember { mutableStateOf("") }
+
+
+    val scope = rememberCoroutineScope()
+
     for(i in 1..150)
         allTables.add(Mesas("mesa" + i ,4,"terraza"))
 
@@ -70,55 +77,70 @@ fun MainAccessToTables(navController: NavController) {
             topBar = {
                 TopAppBar(
                     title = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            Button(
-                                onClick = {
-                                    navController.navigate(Destinations.Login.route)
-
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    contentColor = Color.White
+                        Text(text = "Menú de mesas", color = Color.White)
+                    },
+                    backgroundColor = Color.Blue,
+                    elevation = AppBarDefaults.TopAppBarElevation,
+                    actions = {
+                        Box (Modifier.wrapContentSize()){
+                            IconButton(onClick = {
+                                expanded.value = true
+                                result.value = "More icon clicked"
+                            }) {
+                                Icon(
+                                    Icons.Filled.MoreVert,
+                                    contentDescription = "Localized description"
                                 )
-                            ) {
-                                Text(text = "Administrar", fontSize = 10.sp)
                             }
 
+                            DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        expanded.value = false
+                                        navController.navigate(Destinations.AccessToTables.route)
+                                    }) {
+                                    Text(text = "Gestionar Reservas")
+                                }
+                                Divider()
+                                DropdownMenuItem(
+                                    onClick = {
+                                        expanded.value = false
+                                        navController.navigate(Destinations.MainAdministrationActivity.route)
+                                    }) {
+                                    Text(text = "Entrar como Administrador")
+                                }
+                                Divider()
+                                DropdownMenuItem(
+                                    onClick = {
+                                        expanded.value = false
+                                        val navBuilder: NavOptionsBuilder
 
-                            Button(
-                                onClick = {
-                                    navController.navigate(Destinations.Login.route)
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    contentColor = Color.White,
-                                    backgroundColor = Color.Blue
-                                )
-                            ) {
 
-                                Text(text = "Gestionar Reservas", fontSize = 10.sp)
-                            }
+                                        navController.navigate(Destinations.Login.route){
+                                            popUpTo(0)
+                                        }
 
-
-                            Button(
-                                onClick = {
-                                    navController.navigate(Destinations.Login.route)
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    contentColor = Color.White,
-                                    backgroundColor = Color.Blue
-                                )
-                            ) {
-
-                                Text(text = "Cerrar sesión", fontSize = 10.sp)
+                                    }) {
+                                    Text(text = "Cerrar sesión")
+                                }
                             }
                         }
                     },
-                    backgroundColor = Color.Blue,
+                    navigationIcon = {
+                        // show drawer icon
+                        IconButton(
+                            onClick = {
+                                scope.launch { scaffoldState.drawerState.open() }
+                            }
+                        ) {
+                            Icon(Icons.Filled.Menu, contentDescription = "")
+                        }
+                    },
+
                 )
 
-             },
+            },
+
            /* floatingActionButtonPosition = FabPosition.End,
             floatingActionButton = { FloatingActionButton(onClick = {}){
                 Text("X")

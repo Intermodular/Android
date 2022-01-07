@@ -8,4 +8,8 @@
     <string name="title_activity_zone_administration">ZoneAdministration</string>
     <string name="title_activity_product_type_administration">ProductTypeAdministration</string>
     <string name="title_activity_create_order">CreateOrder</string>
+    <string name="title_activity_edit_employee">EditEmployee</string>
+    <string name="title_activity_create_eployee">CreateEployee</string>
+    <string name="title_activity_product_manager">ProductManager</string>
+    <string name="title_activity_edit_product">EditProduct</string>
 </resources>

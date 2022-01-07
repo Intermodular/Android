@@ -12,12 +12,32 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Intermodular">
         <activity
+            android:name=".Views.Administration.Products.EditProduct"
+            android:exported="false"
+            android:label="@string/title_activity_edit_product"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.Administration.Products.ProductManager"
+            android:exported="false"
+            android:label="@string/title_activity_product_manager"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.Administration.Employee.CreateEployee"
+            android:exported="false"
+            android:label="@string/title_activity_create_eployee"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.Administration.Employee.EditEmployee"
+            android:exported="false"
+            android:label="@string/title_activity_edit_employee"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
             android:name=".Views.Cobrador.CreateOrder"
             android:exported="false"
             android:label="@string/title_activity_create_order"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".Views.Administration.ProductTypeAdministration"
+            android:name=".Views.Administration.Products.ProductTypeAdministration"
             android:exported="false"
             android:label="@string/title_activity_product_type_administration"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
@@ -27,7 +47,7 @@
             android:label="@string/title_activity_zone_administration"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".Views.Administration.EmployeeManager"
+            android:name=".Views.Administration.Employee.EmployeeManager"
             android:exported="false"
             android:label="@string/title_activity_employee_manager"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
@@ -41,7 +61,6 @@
             android:exported="false"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
-
         <activity
             android:name=".Views.Administration.MainAdministrationActivity"
             android:exported="false"

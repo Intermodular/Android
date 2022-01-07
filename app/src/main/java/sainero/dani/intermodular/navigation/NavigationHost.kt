@@ -4,6 +4,7 @@ package sainero.dani.intermodular.navigation
 import android.telecom.Call
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,6 +13,8 @@ import androidx.navigation.navArgument
 import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.Views.*
 import sainero.dani.intermodular.Views.Administration.*
+import sainero.dani.intermodular.Views.Administration.Employee.*
+import sainero.dani.intermodular.Views.Administration.Products.*
 import sainero.dani.intermodular.Views.Cobrador.*
 
 @ExperimentalFoundationApi
@@ -33,7 +36,7 @@ fun NavigationHost(){
             MainAccessToTables(navController = navController)
         }
         
-        composable(route = Destinations.Employeeanager.route) {
+        composable(route = Destinations.EmployeeManager.route) {
             MainEmployeeManager(navController = navController)
         }
         
@@ -55,5 +58,30 @@ fun NavigationHost(){
             MainCreateOrder(navController = navController,id)
         }
 
+        composable(
+            route = "${Destinations.EditEmployee.route}/{employeeId}",
+            arguments = listOf(navArgument("employeeId") {type = NavType.StringType})
+        ) {
+            val id = it.arguments?.getString("employeeId")
+            requireNotNull(id)
+            MainEditEmployee(navController = navController, id)
+        }
+        
+        composable(route = Destinations.CreateEmployee.route) {
+            MainCreateEmployee(navController = navController)
+        }
+        
+        composable(route = Destinations.ProductManager.route) {
+            MainProductManager(navController = navController)
+        }
+
+        composable(
+            route = "${Destinations.EditProduct.route}/{productId}",
+            arguments = listOf(navArgument("productId") {type = NavType.StringType})
+        ) {
+            val id = it.arguments?.getString("productId")
+            requireNotNull(id)
+            MainEditProduct(navController = navController,id)
+        }
     }
 }

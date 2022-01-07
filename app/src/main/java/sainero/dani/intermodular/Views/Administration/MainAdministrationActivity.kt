@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.rememberNavController
 import sainero.dani.intermodular.navigation.Destinations
 import sainero.dani.intermodular.navigation.NavigationHost
@@ -80,7 +81,12 @@ fun MainAdministrationActivityView(navController: NavController) {
                             DropdownMenuItem(
                                 onClick = {
                                     expanded.value = false
-                                    navController.navigate(Destinations.Login.route)
+                                    val navBuilder: NavOptionsBuilder
+
+
+                                    navController.navigate(Destinations.Login.route){
+                                        popUpTo(0)
+                                    }
 
                                 }) {
                                 Text(text = "Cerrar sesión")
@@ -113,7 +119,7 @@ fun MainAdministrationActivityView(navController: NavController) {
 
                 Button(
                     onClick = {
-                        navController.navigate(Destinations.Employeeanager.route)
+                        navController.navigate(Destinations.EmployeeManager.route)
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.White,
@@ -159,7 +165,7 @@ fun MainAdministrationActivityView(navController: NavController) {
 
                 Button(
                     onClick = {
-                        navController.navigate(Destinations.ProductTypeAdministration.route)
+                        navController.navigate(Destinations.ProductManager.route)
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.White,
