@@ -1,35 +1,36 @@
 package sainero.dani.intermodular.Views.Administration.Employee
 
 import android.os.Bundle
+import android.os.IInterface
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.launch
-import sainero.dani.intermodular.Controladores.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
-import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
-import sainero.dani.intermodular.Views.Administration.ui.theme.IntermodularTheme
-import kotlin.concurrent.thread
+import sainero.dani.intermodular.Views.Administration.Employee.ui.theme.IntermodularTheme
 
 
 @ExperimentalFoundationApi
-class EditEmployee : ComponentActivity() {
+class NewEmployee : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -41,30 +42,9 @@ class EditEmployee : ComponentActivity() {
 }
 
 @Composable
-fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
+fun MainNewEmployee() {
 
-    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false)}
-    val result = remember { mutableStateOf("") }
-
-
-    viewModelUsers.getUserById(id)
-/*
-    //Test
-
-    var selectedUser: Users = Users(2,"","","","","","","","admin","")
-    var allUsers: MutableList<Users> = mutableListOf()
-    for(i in 1..20)  allUsers.add(Users(i,"49760882Z" ,"empleado" + i,"x","x","x","x","x","admin",""))
-
-    //Esto es una busqueda en la BD
-   for(i in allUsers)
-       if(i._id.equals(id))
-           selectedUser = i
-*/
-    
-    var selectedUser = viewModelUsers.user
-
-    var (textDniUser, onValueChangeDniUser) = rememberSaveable { mutableStateOf(selectedUser.dni) }
+    var (textDniUser, onValueChangeDniUser) = rememberSaveable { mutableStateOf("") }
     var (textNameUser, onValueChangeNameUser) = rememberSaveable { mutableStateOf("") }
     var (textSurnameUser, onValueChangeSurnameUser) = rememberSaveable { mutableStateOf("") }
     var (textFnacUser, onValueChangeFnacUser) = rememberSaveable { mutableStateOf("") }
@@ -73,66 +53,29 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     var (textPasswordUser, onValueChangePasswordUser) = rememberSaveable { mutableStateOf("") }
     var (textRolUser, onValueChangeRolUser) = rememberSaveable { mutableStateOf("") }
 
-    //
+    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
+    val expanded = remember { mutableStateOf(false) }
+    val showToast = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+
 
     Scaffold(
-
         scaffoldState = scaffoldState,
-
-        //Preguntar como cojones hacemos el menú
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Edición de empleado",color = Color.White)
+                    Text(text = "Nuevo empleado",color = Color.White)
                 },
                 backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
-
-
-                    ///////////////
-                    IconButton(
-                        onClick = {
-                            //Eliminar empleado
-                            GlobalVariables.navController.navigate(Destinations.EmployeeManager.route)
-                        }
-                    ) {
+                    IconButton(onClick = { /*Eliminar elementod e la Base de datos y ir atras*/ }) {
                         Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Eliminar usaurio",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "Delete Icon",
+                            tint = Color.White
                         )
-                    }
-
-                    /////////////////
-                    Box (Modifier.wrapContentSize()){
-                        IconButton(onClick = {
-                            expanded.value = true
-                            result.value = "More icon clicked"
-                        }) {
-                            Icon(
-                                Icons.Filled.MoreVert,
-                                contentDescription = "More icon"
-                            )
-                        }
-
-                        DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    expanded.value = false
-                                    GlobalVariables.navController.navigate(Destinations.EmployeeManager.route)
-
-                                }) {
-                                Text(text = "Eliminar empleado")
-                            }
-                            Divider()
-                            DropdownMenuItem(
-                                onClick = {
-                                    expanded.value = false
-                                }) {
-                                Text(text = "Gestionar nominas")
-                            }
-                        }
                     }
 
                 }
@@ -146,7 +89,6 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                     .padding(start = 10.dp)
                     .fillMaxWidth()
             ) {
-
                 createRowList(text = "DNI", value = textDniUser, onValueChange = onValueChangeDniUser)
                 createRowList(text = "Name", value = textNameUser, onValueChange = onValueChangeNameUser)
                 createRowList(text = "Surname", value = textSurnameUser, onValueChange = onValueChangeSurnameUser)
@@ -156,6 +98,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                 createRowList(text = "Contraseña", value = textPasswordUser, onValueChange = onValueChangePasswordUser)
                 createRowList(text = "Rol", value = textRolUser, onValueChange = onValueChangeRolUser)
 
+
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -163,14 +106,9 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                 ) {
                     Button(
                         onClick = {
-                            textDniUser = selectedUser.dni
-                            textNameUser = selectedUser.nombre
-                            textSurnameUser = selectedUser.apellido
-                            textFnacUser = selectedUser.fnac
-                            textEmailUser = selectedUser.email
-                            textUserUser = selectedUser.user
-                            textPasswordUser = selectedUser.passwrd
-                            textRolUser = selectedUser.rol
+                            textDniUser = ""
+
+
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -198,8 +136,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
                     Button(
                         onClick = {
-                            selectedUser = Users(id,textDniUser, textNameUser, textSurnameUser, textFnacUser, "", textUserUser, textPasswordUser, textRolUser,textEmailUser)
-                            //actualizar en la BD con este objeto
+                        //Guardar los cambios en la BD
 
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -226,8 +163,12 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
                 }
             }
-        })
 
+        }
+    )
+    if(showToast.value) {
+        ToastDemo("")
+    }
 }
 
 
@@ -254,9 +195,14 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview8() {
+fun DefaultPreview13() {
     IntermodularTheme {
-        //MainEditEmployee(1)
+        MainNewEmployee()
     }
 }
 
+
+@Composable
+fun ToastDemo(message: String) {
+    Toast.makeText(LocalContext.current,message,Toast.LENGTH_SHORT).show()
+}

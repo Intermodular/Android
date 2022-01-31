@@ -1,4 +1,4 @@
-package sainero.dani.intermodular.navigation
+package sainero.dani.intermodular.Navigation
 
 sealed class Destinations (
     val route: String
@@ -8,11 +8,14 @@ sealed class Destinations (
     object  Login: Destinations("Login")
     object  AccessToTables: Destinations("Cobrador.AccessToTables")
     object  EmployeeManager: Destinations("Administration.Employee.EmployeeManager")
-    object  ProductTypeAdministration: Destinations("Administration.Products.ProductTypeAdministration")
-    object  ZoneAdministration: Destinations("Administration.ZoneAdministration")
+    object  ProductTypeManager: Destinations("Administration.Products.Types.ProductTypeManager")
+    object  ZoneManager: Destinations("Administration.ZoneManager")
     object  CreateOrder: Destinations("Cobrador.CreateOrder")
     object  EditEmployee: Destinations("Administration.Employee.EditEmployee")
-    object  CreateEmployee: Destinations("Administration.Employee.CreateEmployee")
     object  ProductManager: Destinations("Administration.Products.ProductManager")
     object  EditProduct:  Destinations("Administration.Products.EditProduct")
+    object  NewProduct: Destinations("Administration.Products.NewProduct")
+    object  NewEmployee: Destinations("Administration.Employee.NewEmployee")
+    object  Ingredient: Destinations("Administration.Products.Ingredients.Ingredients")
+    object  EditZone: Destinations("Administration.Zone.EditZone")
 }

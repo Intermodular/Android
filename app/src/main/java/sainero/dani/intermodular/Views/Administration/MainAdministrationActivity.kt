@@ -8,7 +8,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
@@ -24,16 +23,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.rememberNavController
-import sainero.dani.intermodular.navigation.Destinations
-import sainero.dani.intermodular.navigation.NavigationHost
-import sainero.dani.intermodular.ui.theme.IntermodularTheme
+import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.Navigation.NavigationHost
+import sainero.dani.intermodular.Utils.GlobalVariables
+
 @ExperimentalFoundationApi
 
 class MainAdministrationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-           NavigationHost()
+
         }
     }
 }
@@ -41,12 +41,13 @@ class MainAdministrationActivity : ComponentActivity() {
 
 
 @Composable
-fun MainAdministrationActivityView(navController: NavController) {
+fun MainAdministrationActivityView() {
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
 
+    val navController = GlobalVariables.navController
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -73,7 +74,7 @@ fun MainAdministrationActivityView(navController: NavController) {
                             DropdownMenuItem(
                                 onClick = {
                                     expanded.value = false
-                                    navController.navigate(Destinations.AccessToTables.route)
+                                    navController?.navigate(Destinations.AccessToTables.route)
                                 }) {
                                     Text(text = "Entrar como cobrador")
                                 }
@@ -119,7 +120,7 @@ fun MainAdministrationActivityView(navController: NavController) {
 
                 Button(
                     onClick = {
-                        navController.navigate(Destinations.EmployeeManager.route)
+                        navController?.navigate(Destinations.EmployeeManager.route)
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.White,
@@ -142,7 +143,7 @@ fun MainAdministrationActivityView(navController: NavController) {
 
                 Button(
                     onClick = {
-                        navController.navigate(Destinations.ZoneAdministration.route)
+                        navController?.navigate(Destinations.ZoneManager.route)
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.White,
@@ -165,7 +166,7 @@ fun MainAdministrationActivityView(navController: NavController) {
 
                 Button(
                     onClick = {
-                        navController.navigate(Destinations.ProductManager.route)
+                        navController?.navigate(Destinations.ProductManager.route)
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.White,
@@ -193,5 +194,5 @@ fun MainAdministrationActivityView(navController: NavController) {
 @Composable
 fun DefaultPreview2() {
     val navController = rememberNavController()
-    MainAdministrationActivityView(navController)
+    MainAdministrationActivityView()
 }

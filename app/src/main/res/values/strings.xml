@@ -12,4 +12,11 @@
     <string name="title_activity_create_eployee">CreateEployee</string>
     <string name="title_activity_product_manager">ProductManager</string>
     <string name="title_activity_edit_product">EditProduct</string>
+    <string name="title_activity_new_product">NewProduct</string>
+    <string name="title_activity_new_employee">NewEmployee</string>
+    <string name="icn_search_back_content_description">\"test\"</string>
+    <string name="icn_search_clear_content_description">\"test\"</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_edit_zone">EditZone</string>
+    <string name="title_activity_new_zone">NewZone</string>
 </resources>

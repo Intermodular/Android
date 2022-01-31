@@ -2,8 +2,11 @@ package sainero.dani.intermodular.Views
 
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent.KEYCODE_ENTER
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
@@ -18,76 +21,70 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import sainero.dani.intermodular.navigation.Destinations
-import sainero.dani.intermodular.navigation.NavigationHost
-import android.widget.Space
-import android.widget.Toast
-import androidx.activity.compose.setContent
+import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.Navigation.NavigationHost
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.findNavController
+import kotlinx.coroutines.*
+import okhttp3.Dispatcher
 import sainero.dani.intermodular.Api.MainViewModel
+import sainero.dani.intermodular.Controladores.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.R
-import sainero.dani.intermodular.navigation.NavigationHost
-import sainero.dani.intermodular.ui.theme.IntermodularTheme
-import androidx.navigation.NavHost as NavHost
+import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.test
+
 @ExperimentalFoundationApi
 
 class Login : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            NavigationHost()
+
+
         }
     }
 }
 
-//Hola caracola
+
 
 @Composable
-fun LoginMain(navController: NavController) {
+fun LoginMain(viewModelUsers: ViewModelUsers) {
+
+    //API
+    val coroutineScope = rememberCoroutineScope()
+    var allUsers: List<Users>? by remember { mutableStateOf(null) }
+
+    //Text
     var textUser by rememberSaveable { mutableStateOf("") }
     var textPassword by rememberSaveable { mutableStateOf("") }
+
+    //Utils
     var hidden by remember { mutableStateOf(true) }
     val showDialog = remember { mutableStateOf(false) }
-    //Test
-    val u = Users("2","49760881J","Daniel","Sainero","25-12-2001","Pepe", "1234","prueba@gmail.com","admin")
-
-    val vm = MainViewModel()
-    LaunchedEffect(Unit, block = {vm.getUserList()})
-    vm.getUserList()
-    var textTest = vm.usersList.size.toString()
+    val focusRequester = remember { FocusRequester() }
+    val context = LocalContext.current
 
 
 
-   /*
-    MainViewModel().getUserList()
-    val allUsers = MainViewModel().userListResponse
-    var textTest = ""
-
-    for(i in allUsers) {
-        textTest += i.dni + ""
-    }
-    */
 
     Column(
         modifier = Modifier
@@ -106,7 +103,9 @@ fun LoginMain(navController: NavController) {
                 .padding(20.dp)
                     //Tests
                 .clickable {
-                    navController.navigate(Destinations.ProductManager.route)
+                    //Toast.makeText(context, test.toString(), Toast.LENGTH_SHORT).show()
+
+                    navController.navigate(Destinations.MainAdministrationActivity.route)
                 }
         )
         Column(
@@ -115,16 +114,26 @@ fun LoginMain(navController: NavController) {
         ) {
 
             Spacer(modifier = Modifier.padding(10.dp))
+
             OutlinedTextField(
                 value = textUser,
                 onValueChange = {
                     textUser = it
                 },
                 placeholder = { Text("Pepe") },
-                label = { Text(text = textTest) },
+                singleLine = true,
+                label = { Text(text = "User") },
+              //  keyboardActions = KeyboardActions(),
                 modifier = Modifier
                     .padding(start = 50.dp, end = 50.dp)
                     .fillMaxWidth()
+                    .onKeyEvent {
+                        if(it.nativeKeyEvent.keyCode.equals(KEYCODE_ENTER)) {
+                            focusRequester.requestFocus()
+                            true
+                        }
+                        false
+                    }
             )
 
 
@@ -148,23 +157,51 @@ fun LoginMain(navController: NavController) {
                         Icon(painter = vector, contentDescription = description)
                     }
                 },
+                singleLine = true,
                 label = { Text("Password") },
                 modifier = Modifier
                     .padding(start = 50.dp, end = 50.dp)
                     .fillMaxWidth()
+                    .focusRequester(focusRequester)
+                    .onKeyEvent {
+                        if(it.nativeKeyEvent.keyCode.equals(KEYCODE_ENTER)) {
+                            //Ejecutar botón¿?
+
+                        }
+                        false
+                    }
             )
 
             Spacer(modifier = Modifier.padding(10.dp))
             Button(
                 onClick = {
-                    if(u.user.equals(textUser) && u.passwrd.equals(textPassword))
-                        if(u.rol.equals("admin"))
-                            showDialog.value  = true
-                        else
-                            navController.navigate(Destinations.AccessToTables.route)
-                    else {
-                        //Toast.makeText(context,"El usuario o contraseña son incorrectos",Toast.LENGTH_SHORT).show()
+                    GlobalScope.launch(Dispatchers.Main) {
+                        val result = withContext(Dispatchers.IO){
+                            viewModelUsers.getUserList()
+                        }
+
+                        Toast.makeText(context, "${viewModelUsers.userListResponse.size}",Toast.LENGTH_SHORT).show()
+
                     }
+
+
+                    //Thread.sleep(5000)
+
+
+
+
+
+/*
+                    mainViewModel.userListResponse.forEach{
+
+                        if (it.user.equals(textUser) && it.passwrd.equals(textPassword))
+                            if (it.rol.equals("admin"))
+                                showDialog.value = true
+                            else
+                                navController.navigate(Destinations.AccessToTables.route)
+                        else
+                            Toast.makeText(context, "El usuario o la contraseña son incorrectos",Toast.LENGTH_SHORT).show()
+                    }*/
                 },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.White,
@@ -195,27 +232,29 @@ fun LoginMain(navController: NavController) {
 
         //Llamar al Dialogo
         if (showDialog.value) {
-            adminAlertDestination(navController)
+            adminAlertDestination()
         }
 
     }
 }
-
+/*
 
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     val navController = rememberNavController()
-    LoginMain(navController)
+    LoginMain()
 
-}
+}*/
 
 
 
 @Composable
-fun adminAlertDestination(navController: NavController) {
+fun adminAlertDestination() {
     MaterialTheme {
+        val globalVariables = GlobalVariables()
+
         Column {
             AlertDialog(
                 onDismissRequest = {
@@ -229,7 +268,7 @@ fun adminAlertDestination(navController: NavController) {
                 confirmButton = {
                     Button(
                         onClick = {
-                            navController.navigate(Destinations.MainAdministrationActivity.route)
+                            GlobalVariables.navController.navigate(Destinations.MainAdministrationActivity.route)
                         }) {
                         Text("Administración")
                     }
@@ -237,7 +276,7 @@ fun adminAlertDestination(navController: NavController) {
                 dismissButton = {
                     Button(
                         onClick = {
-                            navController.navigate(Destinations.AccessToTables.route)
+                            GlobalVariables.navController.navigate(Destinations.AccessToTables.route)
                         }) {
                         Text("Cobrador")
                     }

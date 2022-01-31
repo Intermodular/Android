@@ -1,4 +1,4 @@
-package sainero.dani.intermodular.Views.Administration.Products
+package sainero.dani.intermodular.Views.Administration.Zone
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,41 +6,35 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.launch
 import sainero.dani.intermodular.DataClass.Productos
-import sainero.dani.intermodular.DataClass.Users
+import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
-import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
-import sainero.dani.intermodular.Views.Administration.Products.ui.theme.IntermodularTheme
-
 
 @ExperimentalFoundationApi
-class ProductManager : ComponentActivity() {
+
+class ZoneAdministration : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -51,16 +45,15 @@ class ProductManager : ComponentActivity() {
     }
 }
 
-@ExperimentalFoundationApi
 @Composable
-fun MainProductManager(mainViewModelSearchBar: MainViewModelSearchBar) {
+fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
-    var allProducts: MutableList<Productos> = mutableListOf()
     val scope = rememberCoroutineScope()
 
-    for(i in 1..50) allProducts.add(Productos(i.toString(),"Product ${i}","Comida", mutableListOf<String>("ingrediente1", "ingrediente2"),1.5f,mutableListOf<String>("Vegano", "Gluten"),"rutaImg",1))
-    var allproductsFilter: MutableList<Productos> = mutableListOf()
+    //Consulta BD
+    var allZones: MutableList<Zonas> = mutableListOf()
+    for(i in 1..50) allZones.add(Zonas(i,"zona ${i}","Z${i}",i))
 
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState
     val searchTextState by mainViewModelSearchBar.searchTextState
@@ -72,44 +65,43 @@ fun MainProductManager(mainViewModelSearchBar: MainViewModelSearchBar) {
         scaffoldState = scaffoldState,
         topBar = {
 
-                MainAppBar(
-                    searchWidgetState = searchWidgetState,
-                    searchTextState = searchTextState,
-                    onTextChange = {
-                        mainViewModelSearchBar.updateSearchTextState(newValue = it)
-                    },
-                    onCloseClicked = {
-                        mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
-                    },
-                    onSearchClicked = {
-                        aplicateFilter.value = false
-                        filter = it
-                        aplicateFilter.value = true
-                    },
-                    onSearchTriggered = {
-                        mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
-                    }
+            MainAppBar(
+                searchWidgetState = searchWidgetState,
+                searchTextState = searchTextState,
+                onTextChange = {
+                    mainViewModelSearchBar.updateSearchTextState(newValue = it)
+                    aplicateFilter.value = false
+                    filter = it
+                    aplicateFilter.value = true
+                },
+                onCloseClicked = {
+                    mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
+                },
+                onSearchClicked = {
+                    aplicateFilter.value = false
+                    filter = it
+                    aplicateFilter.value = true
+                },
+                onSearchTriggered = {
+                    mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
+                }
 
-                )
+            )
 
         },
         content = {
-            /*
-            for(i in allProducts) if(i._id.toInt() >= 10 && i._id.toInt() <= 20) allproductsFilter.add(i)
-            creteProductList(allproductsFilter)
-           */
+
             aplicateFilter.value = true
             if (aplicateFilter.value) {
 
                 filterContentByName(
-                    allProducts = allProducts,
+                    allZones = allZones,
                     filterName = filter
                 )
 
 
             }
         },
-        //Preguntar sobre si quieren agregar un producto así
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -120,6 +112,36 @@ fun MainProductManager(mainViewModelSearchBar: MainViewModelSearchBar) {
             }
         }
     )
+}
+
+@Composable
+private fun filterContentByName(allZones: List<Zonas>, filterName: String) {
+    LazyColumn(
+        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
+    ) {
+
+        for (i in allZones) {
+            if (i.nombre.contains(filterName)) {
+
+                item {
+
+                    Row (
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                            .clickable {
+                                GlobalVariables.navController.navigate("${Destinations.EditZone.route}/${i._id}")
+                            }) {
+
+                        Text(text = i.nombre)
+                        Spacer(modifier = Modifier.padding(10.dp))
+                        Text(text = i.abreviación)
+
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -147,59 +169,6 @@ private fun MainAppBar(
     }
 }
 
-@Composable
-@ExperimentalFoundationApi
-private fun creteProductList(listProducts: MutableList<Productos>) {
-    LazyColumn(
-        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
-    ){
-        for( i in listProducts) {
-            item {
-                Row (
-                    Modifier
-                        .padding(10.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            GlobalVariables.navController.navigate("${Destinations.EditProduct.route}/${i._id}")
-                        }) {
-                    Text(text = i.nombre)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun filterContentByName(allProducts: List<Productos>, filterName: String) {
-    LazyColumn(
-        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
-    ) {
-
-        for (i in allProducts) {
-            if (i.nombre.contains(filterName)) {
-
-                item {
-
-                    Row (
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .clickable {
-                                navController.navigate("${Destinations.EditProduct.route}/${i._id}")
-                            }) {
-
-                        Text(text = i.nombre)
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.tipo)
-
-                    }
-                }
-            }
-        }
-    }
-}
-
-
 
 @Composable
 private fun DefaultAppBar(onSearchClicked: () -> Unit) {
@@ -207,7 +176,7 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
 
     TopAppBar(
         title = {
-            Text(text = "Lista de Productos",color = Color.White)
+            Text(text = "Lista de Zona",color = Color.White)
         },
         actions = {
             IconButton(
@@ -236,11 +205,9 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                     DropdownMenuItem(
                         onClick = {
                             expanded.value = false
-                            navController.navigate("${Destinations.ProductTypeManager.route}")
-
                         }
                     ) {
-                        Text(text = "Gestionar tipos")
+                        Text(text = "Gestionar Mesas")
                     }
                 }
             }
@@ -329,20 +296,11 @@ private fun SearchAppBar(
     }
 }
 
-
-
-
-
-
-
-
-
-
-@ExperimentalFoundationApi
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview10() {
+fun DefaultPreview5() {
     IntermodularTheme {
-      //  MainProductManager()
+
+        //MainZoneManager(mainViewModelSearchBar = "")
     }
 }

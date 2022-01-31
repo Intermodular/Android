@@ -1,62 +1,106 @@
 package sainero.dani.intermodular.Views.Administration.Employee
 
-import android.graphics.fonts.FontStyle
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import sainero.dani.intermodular.DataClass.Mesas
+import sainero.dani.intermodular.Api.MainViewModel
+import sainero.dani.intermodular.Controladores.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
-import sainero.dani.intermodular.navigation.Destinations
-import sainero.dani.intermodular.navigation.NavigationHost
+import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.Navigation.NavigationHost
+import sainero.dani.intermodular.R
+import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.userListResponse
+import sainero.dani.intermodular.Utils.MainViewModelSearchBar
+import sainero.dani.intermodular.Utils.SearchWidgetState
+import sainero.dani.intermodular.Views.adminAlertDestination
+import java.time.format.TextStyle
+
 @ExperimentalFoundationApi
 class EmployeeManager : ComponentActivity() {
+    private val mainViewModel by  viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
         setContent {
-            var  textNameUser by rememberSaveable { mutableStateOf("") }
             IntermodularTheme {
-               NavigationHost()
+
             }
         }
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
-fun MainEmployeeManager(navController: NavController) {
+fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewModelUsers: ViewModelUsers) {
+
+    viewModelUsers.getUserList()
+
+
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    var selectedUser: Users = Users("0","","","","","","","","admin")
+    var selectedUser: Users = Users(0,"","","","","","","","admin","")
+    var visible by remember { mutableStateOf(true) }
+    val density = LocalDensity.current
+    val context = LocalContext.current
 
     val expanded = remember { mutableStateOf(false)}
     val result = remember { mutableStateOf("") }
+    val textState = remember { mutableStateOf(TextFieldValue("")) }
+    var showClearButton by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
+    val searchWidgetState by mainViewModelSearchBar.searchWidgetState
+    val searchTextState by mainViewModelSearchBar.searchTextState
+
+    val aplicateFilter = remember { mutableStateOf(false) }
+    var filter: String = ""
+
+    var allUsers: List<Users> = viewModelUsers.userListResponse
 
 
-    //Eliminar
-    var allUsers: MutableList<Users> = mutableListOf()
-    for(i in 1..20)  allUsers.add(Users(i.toString(),"49760882Z" ,"empleado" + i,"x","x","x","x","x","admin"))
-    ///
 
     Column(
         modifier = Modifier
@@ -68,159 +112,259 @@ fun MainEmployeeManager(navController: NavController) {
 
             scaffoldState = scaffoldState,
 
-            //Preguntar como cojones hacemos el menú
+
             topBar = {
-                TopAppBar(
-                    title = {
-                            Text(text = "Lista de Empleados",color = Color.White)
+
+                MainAppBar(
+                    searchWidgetState = searchWidgetState,
+                    searchTextState = searchTextState,
+                    onTextChange = {
+                        mainViewModelSearchBar.updateSearchTextState(newValue = it)
+                        aplicateFilter.value = false
+                        filter = it
+                        aplicateFilter.value = true
                     },
-                    backgroundColor = Color.Blue,
-                    elevation = AppBarDefaults.TopAppBarElevation,
-                    actions = {
-                        Box (Modifier.wrapContentSize()){
-                            IconButton(onClick = {
-                                expanded.value = true
-                                result.value = "More icon clicked"
-                            }) {
-                                Icon(
-                                    Icons.Filled.MoreVert,
-                                    contentDescription = "Localized description"
-                                )
-                            }
-
-                            DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        expanded.value = false
-
-                                    }) {
-                                    Text(text = "Gestionar todas las nóminas")
-                                }
-                                Divider()
-                                DropdownMenuItem(
-                                    onClick = {
-                                        expanded.value = false
-                                    }) {
-                                    Text(text = "Gestionar nomina del empleado seleccionado")
-                                }
-                            }
-                        }
+                    onCloseClicked = {
+                        mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
+                    },
+                    onSearchClicked = {
+                        aplicateFilter.value = false
+                        filter = it
+                        aplicateFilter.value = true
+                    },
+                    onSearchTriggered = {
+                        mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
                     }
 
-//Test
                 )
 
+
             },
-            drawerContent = {
-               Text(text = "Filtros")
-               Text(text = "Filtros")
-               Text(text = "Filtros")
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(Destinations.NewEmployee.route)
+                    }
+                ) {
+                    Text("+")
+                }
             },
             content = {
 
 
-                LazyColumn(
-                    contentPadding = PaddingValues()
-                ) {
-                    for (i in allUsers) {
-                        item {
-                            Row (
-                                Modifier
-                                    .padding(10.dp)
-                                    .clickable {
-                                        selectedUser = i
-                                    }) {
-
-                                Text(text = i.nombre)
-                                Spacer(modifier = Modifier.padding(10.dp))
-                                Text(text = i.dni)
-                                Spacer(modifier = Modifier.padding(10.dp))
-                                Text(text = i.rol)
-                            }
-                        }
-                    }
-                    item {
+                aplicateFilter.value = true
+                if (aplicateFilter.value) {
+                    ToastDemo(filter)
+                    filterContentByName(allUsers = allUsers, filterName = filter)
 
 
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                        ) {
-                            Button(
-                                onClick = {
-                                    navController.navigate("${Destinations.EditEmployee.route}/${selectedUser._id}")
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
-                                    contentColor = Color.Blue
-                                ),
-                                contentPadding = PaddingValues(
-                                    start = 10.dp,
-                                    top = 6.dp,
-                                    end = 10.dp,
-                                    bottom = 6.dp
-                                ),
-                                //Preguntar porque no funciona correctamente esta opción
-                                enabled = selectedUser._id !== "0",
-                                modifier = Modifier
-                                    .padding(start = 10.dp, end = 20.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = "Editar Usuario",
-                                    modifier = Modifier.size(ButtonDefaults.IconSize)
-                                )
-                                Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                                Text(text = "Editar Empleado", fontSize = 15.sp)
-                            }
-
-
-                            Button(
-                                onClick = {
-                                    navController.navigate(Destinations.CreateEmployee.route)
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
-                                    contentColor = Color.Blue
-                                ),
-                                contentPadding = PaddingValues(
-                                    start = 10.dp,
-                                    top = 6.dp,
-                                    end = 10.dp,
-                                    bottom = 6.dp
-                                ),
-                                modifier = Modifier
-                                    .padding(start = 10.dp, end = 20.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = "Nuevo Usuario",
-                                    modifier = Modifier.size(ButtonDefaults.IconSize)
-                                )
-                                Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                                Text(text = "Nuevo Empleado", fontSize = 15.sp)
-                            }
-                        }
-                        Spacer(modifier = Modifier.padding(10.dp))
-
-                    }
                 }
+            }
 
-            },
-
-             /* bottomBar = { BottomAppBar(backgroundColor = Color.Blue) { Text("BottomAppBar") } }*/
         )
 
+    }
+}
+
+@Composable
+private fun filterContentByName(allUsers: List<Users>,filterName: String) {
+    LazyColumn(
+        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
+    ) {
+
+        for (i in allUsers) {
+            if (i.nombre.contains(filterName)) {
+
+                item {
+
+                    Row (
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                            .clickable {
+                                navController.navigate("${Destinations.EditEmployee.route}/${i._id}")
+                            }) {
+
+                        Text(text = i.nombre)
+                        Spacer(modifier = Modifier.padding(10.dp))
+                        Text(text = i.dni)
+                        Spacer(modifier = Modifier.padding(10.dp))
+                        Text(text = i.rol)
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+
+
+@Composable
+fun MainAppBar(
+    searchWidgetState: SearchWidgetState,
+    searchTextState: String,
+    onTextChange: (String) -> Unit,
+    onCloseClicked: () -> Unit,
+    onSearchClicked: (String) -> Unit,
+    onSearchTriggered: () -> Unit
+) {
+    when (searchWidgetState) {
+        SearchWidgetState.CLOSED -> {
+            DefaultAppBar(onSearchClicked = onSearchTriggered)
+        }
+        SearchWidgetState.OPENED -> {
+            SearchAppBar(
+                text = searchTextState,
+                onTextChange = onTextChange,
+                onCloseClicked = onCloseClicked,
+                onSearchClicked = onSearchClicked
+            )
+        }
+    }
+}
+
+
+
+@Composable
+fun DefaultAppBar(onSearchClicked: () -> Unit) {
+    val expanded = remember { mutableStateOf(false)}
+
+    TopAppBar(
+        title = {
+            Text(text = "Lista de Empleados",color = Color.White)
+        },
+        actions = {
+            IconButton(
+                onClick = { onSearchClicked() }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = "Search Icon",
+                    tint = Color.White
+                )
+            }
+            Box (Modifier.wrapContentSize()){
+                IconButton(onClick = {
+                    expanded.value = true
+
+                }) {
+                    Icon(
+                        Icons.Filled.MoreVert,
+                        contentDescription = "Localized description",
+                        tint = Color.Red
+                    )
+                }
+
+                DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
+                    DropdownMenuItem(
+                        onClick = {
+                            expanded.value = false
+
+                        }) {
+                        Text(text = "Gestionar todas las nóminas")
+                    }
+                    Divider()
+                    DropdownMenuItem(
+                        onClick = {
+                            expanded.value = false
+                        }) {
+                        Text(text = "Gestionar nomina del empleado seleccionado")
+                    }
+                }
+            }
+
+        },
+        backgroundColor = Color.Blue
+    )
+}
+
+
+@Composable
+fun SearchAppBar(
+    text: String,
+    onTextChange: (String) -> Unit,
+    onCloseClicked: () -> Unit,
+    onSearchClicked: (String) -> Unit,
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        elevation = AppBarDefaults.TopAppBarElevation,
+        color = Color.Blue//MaterialTheme.colors.primary
+    ) {
+        TextField(modifier = Modifier
+            .fillMaxWidth(),
+            value = text,
+            onValueChange = {
+                onTextChange(it)
+            },
+            placeholder = {
+                Text(
+                    modifier = Modifier
+                        .alpha(ContentAlpha.medium),
+                    text = "Search by name...",
+                    color = Color.White
+                )
+            },
+            textStyle = androidx.compose.ui.text.TextStyle(
+                fontSize = MaterialTheme.typography.subtitle1.fontSize,
+                color = Color.White
+
+            ),
+            singleLine = true,
+            leadingIcon = {
+                IconButton(
+                    modifier = Modifier
+                        .alpha(ContentAlpha.medium),
+                    onClick = {}
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search Icon",
+                        tint = Color.White
+                    )
+                }
+            },
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        if (text.isNotEmpty()) {
+                            onTextChange("")
+                        } else {
+                            onCloseClicked()
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close Icon",
+                        tint = Color.White
+                    )
+                }
+            },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onSearchClicked(text)
+                }
+            ),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.Transparent,
+                cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
+            ))
     }
 }
 
 
 
 
+@ExperimentalComposeUiApi
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview4() {
-    val navController = rememberNavController()
-    MainEmployeeManager(navController)
+   // MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar)
 }
