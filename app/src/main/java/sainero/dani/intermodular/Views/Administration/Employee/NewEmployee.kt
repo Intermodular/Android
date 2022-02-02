@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.Views.Administration.Employee.ui.theme.IntermodularTheme
 
 
@@ -42,10 +43,11 @@ class NewEmployee : ComponentActivity() {
 }
 
 @Composable
-fun MainNewEmployee() {
+fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
 
     var (textDniUser, onValueChangeDniUser) = rememberSaveable { mutableStateOf("") }
     var (textNameUser, onValueChangeNameUser) = rememberSaveable { mutableStateOf("") }
+    var (textTelUser, onValueChangeTelUser) = rememberSaveable { mutableStateOf("") }
     var (textSurnameUser, onValueChangeSurnameUser) = rememberSaveable { mutableStateOf("") }
     var (textFnacUser, onValueChangeFnacUser) = rememberSaveable { mutableStateOf("") }
     var (textEmailUser, onValueChangeEmailUser) = rememberSaveable { mutableStateOf("") }
@@ -58,6 +60,7 @@ fun MainNewEmployee() {
     val showToast = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    val newEmployee: Users = Users(0,textNameUser,textSurnameUser,textDniUser,textTelUser,textFnacUser,textUserUser,textPasswordUser,textRolUser,textEmailUser)
 
 
     Scaffold(
@@ -70,13 +73,7 @@ fun MainNewEmployee() {
                 backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
-                    IconButton(onClick = { /*Eliminar elementod e la Base de datos y ir atras*/ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "Delete Icon",
-                            tint = Color.White
-                        )
-                    }
+
 
                 }
             )
@@ -106,8 +103,16 @@ fun MainNewEmployee() {
                 ) {
                     Button(
                         onClick = {
-                            textDniUser = ""
 
+                            textNameUser = ""
+                            textSurnameUser = ""
+                            textDniUser = ""
+                            textTelUser = ""
+                            textFnacUser = ""
+                            textUserUser = ""
+                            textPasswordUser
+                            textRolUser = ""
+                            textEmailUser = ""
 
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -136,8 +141,8 @@ fun MainNewEmployee() {
 
                     Button(
                         onClick = {
-                        //Guardar los cambios en la BD
 
+                            viewModelUsers.uploadUser(newEmployee)
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -197,7 +202,7 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
 @Composable
 fun DefaultPreview13() {
     IntermodularTheme {
-        MainNewEmployee()
+      //  MainNewEmployee()
     }
 }
 

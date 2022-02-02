@@ -1,18 +1,15 @@
 package sainero.dani.intermodular.Navigation
 
 
-import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import sainero.dani.intermodular.Api.MainViewModel
-import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Views.*
 import sainero.dani.intermodular.Views.Administration.Employee.MainEditEmployee
 import sainero.dani.intermodular.Views.Administration.Employee.MainEmployeeManager
@@ -23,8 +20,7 @@ import sainero.dani.intermodular.Views.Administration.Products.MainNewProduct
 import sainero.dani.intermodular.Views.Administration.Products.MainProductManager
 import sainero.dani.intermodular.Views.Cobrador.MainAccessToTables
 import sainero.dani.intermodular.Views.Cobrador.MainCreateOrder
-import androidx.activity.viewModels
-import sainero.dani.intermodular.Controladores.ViewModelUsers
+import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainIngredient
@@ -57,6 +53,7 @@ fun NavigationHost(mainViewModelSearchBar: MainViewModelSearchBar, mainViewModel
         }
         
         composable(route = Destinations.EmployeeManager.route) {
+            viewModelUsers.getUserList()
             MainEmployeeManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelUsers = viewModelUsers)
         }
         
@@ -84,6 +81,7 @@ fun NavigationHost(mainViewModelSearchBar: MainViewModelSearchBar, mainViewModel
         ) {
             val id = it.arguments?.getInt("employeeId")
             requireNotNull(id)
+            viewModelUsers.getUserList()
             MainEditEmployee(id,viewModelUsers)
         }
 
@@ -102,7 +100,7 @@ fun NavigationHost(mainViewModelSearchBar: MainViewModelSearchBar, mainViewModel
         }
 
         composable(route = Destinations.NewEmployee.route) {
-            MainNewEmployee()
+            MainNewEmployee(viewModelUsers)
         }
 
         composable(route = Destinations.NewProduct.route) {

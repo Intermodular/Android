@@ -14,12 +14,14 @@ interface ApiService {
     @GET("empleado/id/{id}")
     suspend fun getUserById(
         @Path("id") id: Int
-    ): Users
+    ): List<Users>
+
     @POST("empleado")
-    suspend fun uploadUser(): Users
+    suspend fun uploadUser(users: Users)
 
     @PUT("empleado")
     suspend fun editUser(): Users
+
     @DELETE("empleado/id/{id}")
     suspend fun deleteUser(
         @Path("id") id:Int

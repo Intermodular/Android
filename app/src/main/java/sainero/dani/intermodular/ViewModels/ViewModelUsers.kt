@@ -1,8 +1,7 @@
-package sainero.dani.intermodular.Controladores
+package sainero.dani.intermodular.ViewModels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,15 +29,15 @@ class ViewModelUsers: ViewModel() {
         }
     }
 
-     var user: Users by mutableStateOf(Users(0,"error","","","","","","","",""))
+     var user: List <Users> by mutableStateOf(listOf())
 
     fun getUserById(id:Int) {
         viewModelScope.launch {
             val apiService = ApiService.getInstance()
 
             try {
-                user = apiService.getUserById(id)
-                //user = userById
+                val userById = apiService.getUserById(id)
+                user = userById
 
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
@@ -48,12 +47,12 @@ class ViewModelUsers: ViewModel() {
 
     //Métodos post
     var newUser: Users by mutableStateOf(Users(0,"error","","","","","","","",""))
-    fun uploadUser() {
+    fun uploadUser(user:Users) {
         viewModelScope.launch {
             val apiService = ApiService.getInstance()
 
             try {
-                newUser = apiService.uploadUser()
+                 apiService.uploadUser(user)
 
 
             } catch (e: Exception) {

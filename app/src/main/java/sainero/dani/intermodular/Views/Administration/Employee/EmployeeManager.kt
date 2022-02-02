@@ -1,15 +1,9 @@
 package sainero.dani.intermodular.Views.Administration.Employee
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,42 +15,27 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import sainero.dani.intermodular.Api.MainViewModel
-import sainero.dani.intermodular.Controladores.ViewModelUsers
+import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Navigation.NavigationHost
-import sainero.dani.intermodular.R
-import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.Utils.GlobalVariables.Companion.userListResponse
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
-import sainero.dani.intermodular.Views.adminAlertDestination
-import java.time.format.TextStyle
 
 @ExperimentalFoundationApi
 class EmployeeManager : ComponentActivity() {
@@ -76,9 +55,6 @@ class EmployeeManager : ComponentActivity() {
 @ExperimentalComposeUiApi
 @Composable
 fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewModelUsers: ViewModelUsers) {
-
-    viewModelUsers.getUserList()
-
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     var selectedUser: Users = Users(0,"","","","","","","","admin","")
@@ -153,12 +129,8 @@ fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewMode
 
 
                 aplicateFilter.value = true
-                if (aplicateFilter.value) {
-                    ToastDemo(filter)
-                    filterContentByName(allUsers = allUsers, filterName = filter)
+                if (aplicateFilter.value)  filterContentByName(allUsers = allUsers, filterName = filter)
 
-
-                }
             }
 
         )
@@ -173,7 +145,7 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
     ) {
 
         for (i in allUsers) {
-            if (i.nombre.contains(filterName)) {
+            if (i.name.contains(filterName)) {
 
                 item {
 
@@ -185,7 +157,7 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
                                 navController.navigate("${Destinations.EditEmployee.route}/${i._id}")
                             }) {
 
-                        Text(text = i.nombre)
+                        Text(text = i.name)
                         Spacer(modifier = Modifier.padding(10.dp))
                         Text(text = i.dni)
                         Spacer(modifier = Modifier.padding(10.dp))

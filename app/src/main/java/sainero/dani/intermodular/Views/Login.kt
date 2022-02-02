@@ -1,12 +1,10 @@
 package sainero.dani.intermodular.Views
 
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent.KEYCODE_ENTER
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
@@ -18,14 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Navigation.NavigationHost
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
@@ -33,23 +27,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.*
-import okhttp3.Dispatcher
-import sainero.dani.intermodular.Api.MainViewModel
-import sainero.dani.intermodular.Controladores.ViewModelUsers
+import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.Utils.GlobalVariables.Companion.test
 
 @ExperimentalFoundationApi
 
@@ -175,33 +163,18 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
             Spacer(modifier = Modifier.padding(10.dp))
             Button(
                 onClick = {
-                    GlobalScope.launch(Dispatchers.Main) {
-                        val result = withContext(Dispatchers.IO){
-                            viewModelUsers.getUserList()
-                        }
+                       // Toast.makeText(context, viewModelUsers.userListResponse[0].toString(),Toast.LENGTH_SHORT).show()
 
-                        Toast.makeText(context, "${viewModelUsers.userListResponse.size}",Toast.LENGTH_SHORT).show()
+                        viewModelUsers.userListResponse.forEach{
 
-                    }
-
-
-                    //Thread.sleep(5000)
-
-
-
-
-
-/*
-                    mainViewModel.userListResponse.forEach{
-
-                        if (it.user.equals(textUser) && it.passwrd.equals(textPassword))
+                        if (it.user.equals(textUser) && it.password.equals(textPassword))
                             if (it.rol.equals("admin"))
                                 showDialog.value = true
                             else
                                 navController.navigate(Destinations.AccessToTables.route)
-                        else
-                            Toast.makeText(context, "El usuario o la contraseña son incorrectos",Toast.LENGTH_SHORT).show()
-                    }*/
+                    }
+
+                    Toast.makeText(context, "El usuario o la contraseña son incorrectos",Toast.LENGTH_SHORT).show()
                 },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.White,
@@ -251,7 +224,7 @@ fun DefaultPreview() {
 
 
 @Composable
-fun adminAlertDestination() {
+private fun adminAlertDestination() {
     MaterialTheme {
         val globalVariables = GlobalVariables()
 

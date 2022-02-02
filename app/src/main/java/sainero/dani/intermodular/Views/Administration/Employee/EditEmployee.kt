@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -16,16 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.launch
-import sainero.dani.intermodular.Controladores.ViewModelUsers
+import kotlinx.coroutines.selects.select
+import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Views.Administration.ui.theme.IntermodularTheme
-import kotlin.concurrent.thread
 
 
 @ExperimentalFoundationApi
@@ -46,40 +44,31 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false)}
     val result = remember { mutableStateOf("") }
+    var deleteUser = remember { mutableStateOf(false)}
 
-
-    viewModelUsers.getUserById(id)
-/*
-    //Test
-
-    var selectedUser: Users = Users(2,"","","","","","","","admin","")
-    var allUsers: MutableList<Users> = mutableListOf()
-    for(i in 1..20)  allUsers.add(Users(i,"49760882Z" ,"empleado" + i,"x","x","x","x","x","admin",""))
-
-    //Esto es una busqueda en la BD
-   for(i in allUsers)
-       if(i._id.equals(id))
-           selectedUser = i
-*/
-    
-    var selectedUser = viewModelUsers.user
+    //Posible consulta en la Base de datos ¿?
+    var selectedUser: Users = Users(0,"error","","","","","","","","")
+    viewModelUsers.userListResponse.forEach{
+        if (it._id.equals(id))  selectedUser = it
+    }
 
     var (textDniUser, onValueChangeDniUser) = rememberSaveable { mutableStateOf(selectedUser.dni) }
-    var (textNameUser, onValueChangeNameUser) = rememberSaveable { mutableStateOf("") }
-    var (textSurnameUser, onValueChangeSurnameUser) = rememberSaveable { mutableStateOf("") }
-    var (textFnacUser, onValueChangeFnacUser) = rememberSaveable { mutableStateOf("") }
-    var (textEmailUser, onValueChangeEmailUser) = rememberSaveable { mutableStateOf("") }
-    var (textUserUser, onValueChangeUserUser) = rememberSaveable { mutableStateOf("") }
-    var (textPasswordUser, onValueChangePasswordUser) = rememberSaveable { mutableStateOf("") }
-    var (textRolUser, onValueChangeRolUser) = rememberSaveable { mutableStateOf("") }
+    var (textNameUser, onValueChangeNameUser) = rememberSaveable { mutableStateOf(selectedUser.name) }
+    var (textSurnameUser, onValueChangeSurnameUser) = rememberSaveable { mutableStateOf(selectedUser.surname) }
+    var (textFnacUser, onValueChangeFnacUser) = rememberSaveable { mutableStateOf(selectedUser.fnac) }
+    var (textEmailUser, onValueChangeEmailUser) = rememberSaveable { mutableStateOf(selectedUser.email) }
+    var (textUserUser, onValueChangeUserUser) = rememberSaveable { mutableStateOf(selectedUser.user) }
+    var (textPasswordUser, onValueChangePasswordUser) = rememberSaveable { mutableStateOf(selectedUser.password) }
+    var (textRolUser, onValueChangeRolUser) = rememberSaveable { mutableStateOf(selectedUser.rol) }
 
-    //
-
+    //Funciones extras a realizar
+    if (deleteUser.value) {
+        confirmDeleteUser(viewModelUsers = viewModelUsers,id = id)
+    }
     Scaffold(
 
         scaffoldState = scaffoldState,
 
-        //Preguntar como cojones hacemos el menú
         topBar = {
             TopAppBar(
                 title = {
@@ -90,21 +79,21 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                 actions = {
 
 
-                    ///////////////
+
                     IconButton(
                         onClick = {
-                            //Eliminar empleado
-                            GlobalVariables.navController.navigate(Destinations.EmployeeManager.route)
+                            deleteUser.value = true
+
                         }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Eliminar usaurio",
+                            contentDescription = "Eliminar empleado",
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
                     }
 
-                    /////////////////
+
                     Box (Modifier.wrapContentSize()){
                         IconButton(onClick = {
                             expanded.value = true
@@ -117,15 +106,6 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                         }
 
                         DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    expanded.value = false
-                                    GlobalVariables.navController.navigate(Destinations.EmployeeManager.route)
-
-                                }) {
-                                Text(text = "Eliminar empleado")
-                            }
-                            Divider()
                             DropdownMenuItem(
                                 onClick = {
                                     expanded.value = false
@@ -164,12 +144,12 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                     Button(
                         onClick = {
                             textDniUser = selectedUser.dni
-                            textNameUser = selectedUser.nombre
-                            textSurnameUser = selectedUser.apellido
+                            textNameUser = selectedUser.name
+                            textSurnameUser = selectedUser.surname
                             textFnacUser = selectedUser.fnac
                             textEmailUser = selectedUser.email
                             textUserUser = selectedUser.user
-                            textPasswordUser = selectedUser.passwrd
+                            textPasswordUser = selectedUser.password
                             textRolUser = selectedUser.rol
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -198,7 +178,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
                     Button(
                         onClick = {
-                            selectedUser = Users(id,textDniUser, textNameUser, textSurnameUser, textFnacUser, "", textUserUser, textPasswordUser, textRolUser,textEmailUser)
+                            //selectedUser = Users(id,textDniUser, textNameUser, textSurnameUser, textFnacUser, "", textUserUser, textPasswordUser, textRolUser,textEmailUser)
                             //actualizar en la BD con este objeto
 
                         },
@@ -251,6 +231,56 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
         )
     }
 }
+
+
+
+@Composable
+private fun confirmDeleteUser(viewModelUsers: ViewModelUsers,id: Int) {
+    MaterialTheme {
+
+        Column {
+            AlertDialog(
+                onDismissRequest = {
+                },
+                title = {
+                    Text(text = "¿Seguro que desea eliminar al empleado seleccionado?")
+                },
+                text = {
+                    Text("No podrás volver a recuperarlo")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModelUsers.deleteUser(id)
+                            navController.navigate(Destinations.EmployeeManager.route)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Blue,
+                            contentColor = Color.White
+                        ),
+                    ) {
+                        Text("Aceptar")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            navController.navigate("${Destinations.EditEmployee.route}/${id}")
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Blue,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable
