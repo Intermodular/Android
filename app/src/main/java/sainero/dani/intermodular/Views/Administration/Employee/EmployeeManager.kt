@@ -57,7 +57,7 @@ class EmployeeManager : ComponentActivity() {
 fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewModelUsers: ViewModelUsers) {
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    var selectedUser: Users = Users(0,"","","","","","","","admin","")
+    var selectedUser: Users = Users(0,"","","","","","","","admin","",newUser = false)
     var visible by remember { mutableStateOf(true) }
     val density = LocalDensity.current
     val context = LocalContext.current

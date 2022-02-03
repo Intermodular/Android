@@ -29,6 +29,7 @@ import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
+import sainero.dani.intermodular.ViewModels.ViewModelTipos
 
 @ExperimentalFoundationApi
 
@@ -45,15 +46,16 @@ class ProductTypeAdministration : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar) {
+fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelTipos: ViewModelTipos) {
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
+
     //Consulta BD
-    var allTypes: MutableList<Tipos> = mutableListOf()
-    for(i in 1..50) allTypes.add(Tipos(i,"Tipo ${i}",Extras(1,"Extra", mutableListOf(""))))
+    var allTypes = viewModelTipos.typeListResponse
+
 
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState
     val searchTextState by mainViewModelSearchBar.searchTextState
@@ -93,13 +95,10 @@ fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar) {
 
             aplicateFilter.value = true
             if (aplicateFilter.value) {
-
                 filterContentByName(
                     allTypes = allTypes,
                     filterName = filter
                 )
-
-
             }
         },
         floatingActionButton = {
@@ -187,29 +186,6 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                     contentDescription = "Search Icon",
                     tint = Color.White
                 )
-            }
-            Box (Modifier.wrapContentSize()){
-                IconButton(onClick = {
-                    expanded.value = true
-                }) {
-                    Icon(
-                        Icons.Filled.MoreVert,
-                        contentDescription = "Localized description"
-                    )
-                }
-
-                DropdownMenu(
-                    expanded = expanded.value,
-                    onDismissRequest = { expanded.value = false }
-                ) {
-                    DropdownMenuItem(
-                        onClick = {
-                            expanded.value = false
-                        }
-                    ) {
-                        Text(text = "Gestionar Mesas")
-                    }
-                }
             }
         },
         backgroundColor = Color.Blue
@@ -301,7 +277,6 @@ private fun SearchAppBar(
 @Composable
 fun DefaultPreview6() {
     IntermodularTheme {
-
         //MainProductTypeManager()
     }
 }

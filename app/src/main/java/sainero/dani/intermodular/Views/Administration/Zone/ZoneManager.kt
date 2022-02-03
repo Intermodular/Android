@@ -123,21 +123,18 @@ private fun filterContentByName(allZones: List<Zonas>, filterName: String) {
 
         for (i in allZones) {
             if (i.name.contains(filterName)) {
-
                 item {
-
                     Row (
                         Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
                             .clickable {
                                 GlobalVariables.navController.navigate("${Destinations.EditZone.route}/${i._id}")
-                            }) {
-
+                            }
+                    ) {
                         Text(text = i.name)
                         Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.abbreviation)
-
+                        Text(text = i.nºTables.toString())
                     }
                 }
             }

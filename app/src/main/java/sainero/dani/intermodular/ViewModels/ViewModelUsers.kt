@@ -1,5 +1,6 @@
 package sainero.dani.intermodular.ViewModels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -7,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import sainero.dani.intermodular.Api.ApiService
+import sainero.dani.intermodular.DataClass.PostUsers
 import sainero.dani.intermodular.DataClass.Users
 
 class ViewModelUsers: ViewModel() {
@@ -46,13 +48,20 @@ class ViewModelUsers: ViewModel() {
     }
 
     //Métodos post
-    var newUser: Users by mutableStateOf(Users(0,"error","","","","","","","",""))
-    fun uploadUser(user:Users) {
+    var newUser: Users by mutableStateOf(Users(0,"error","","","","","","","","",false))
+    //var newUser: PostUsers by mutableStateOf(PostUsers("error","","","","","","","",""))
+
+    fun uploadUser(user: PostUsers) {
         viewModelScope.launch {
             val apiService = ApiService.getInstance()
 
             try {
-                 apiService.uploadUser(/*completeUser = user, _id = user._id,user.name, user.surname, user.dni, user.phoneNumber,user.fnac,user.user, user.password,user.email*/)
+                val response = apiService.uploadUser(user)
+                if (response.isSuccessful)
+                    newUser = response.body()!!
+                else
+                    Log.d("Error: upload API","Error: upload API")
+            //apiService.uploadUser(user)
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }

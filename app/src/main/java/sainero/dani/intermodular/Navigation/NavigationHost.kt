@@ -24,6 +24,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.ViewModels.*
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainIngredient
+import sainero.dani.intermodular.Views.Administration.Products.Types.MainProductEditType
 import sainero.dani.intermodular.Views.Administration.Products.Types.MainProductTypeManager
 import sainero.dani.intermodular.Views.Administration.Zone.MainEditZone
 import sainero.dani.intermodular.Views.Administration.Zone.MainNewZone
@@ -69,12 +70,13 @@ fun NavigationHost(
         }
         
         composable(route = Destinations.ProductTypeManager.route) {
-            MainProductTypeManager(mainViewModelSearchBar = mainViewModelSearchBar)
+            viewModelTipos.getTypesList()
+            MainProductTypeManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelTipos = viewModelTipos)
         }
         
         composable(route = Destinations.ZoneManager.route) {
             viewModelZonas.getZoneList()
-            MainZoneManager(mainViewModelSearchBar = mainViewModelSearchBar,viewModelZonas)
+            MainZoneManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelZonas = viewModelZonas)
         }
         
         composable(
@@ -93,6 +95,7 @@ fun NavigationHost(
         ) {
             val id = it.arguments?.getInt("employeeId")
             requireNotNull(id)
+
             viewModelUsers.getUserList()
             MainEditEmployee(id,viewModelUsers)
         }
@@ -100,7 +103,7 @@ fun NavigationHost(
         
         composable(route = Destinations.ProductManager.route) {
             viewModelProductos.getProductList()
-            MainProductManager(mainViewModelSearchBar = mainViewModelSearchBar,viewModelProductos)
+            MainProductManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelProductos = viewModelProductos)
         }
 
         composable(
@@ -110,7 +113,7 @@ fun NavigationHost(
             val id = it.arguments?.getInt("productId")
             requireNotNull(id)
             viewModelProductos.getProductList()
-            MainEditProduct(id,viewModelProductos)
+            MainEditProduct(id = id, viewModelProductos =  viewModelProductos)
         }
 
         composable(route = Destinations.NewEmployee.route) {
@@ -142,6 +145,16 @@ fun NavigationHost(
 
         composable(route = Destinations.NewZone.route) {
             MainNewZone(viewModelZonas)
+        }
+
+        composable(
+            route = Destinations.ProductEditType.route,
+            arguments = listOf(navArgument("typeTd"){type = NavType.IntType})
+        ) {
+            val id = it.arguments?.getInt("typeId")
+            requireNotNull(id)
+            viewModelTipos.getTypesList()
+            MainProductEditType(id = id,viewModelTipos = viewModelTipos)
         }
     }
 }

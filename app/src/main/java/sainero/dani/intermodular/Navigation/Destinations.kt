@@ -19,4 +19,6 @@ sealed class Destinations (
     object  Ingredient: Destinations("Administration.Products.Ingredients.Ingredients")
     object  EditZone: Destinations("Administration.Zone.EditZone")
     object  NewZone: Destinations("Administration.Zone.NewZone")
+    object  ProductEditType: Destinations("Administration.Products.Types.ProductEditType")
+
 }

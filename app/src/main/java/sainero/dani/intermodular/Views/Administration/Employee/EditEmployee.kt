@@ -47,7 +47,8 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     var deleteUser = remember { mutableStateOf(false)}
 
     //Posible consulta en la Base de datos ¿? (but is ok)
-    var selectedUser: Users = Users(0,"error","","","","","","","","")
+
+    var selectedUser: Users = Users(0,"error","","","","","","","","",false)
     viewModelUsers.userListResponse.forEach{
         if (it._id.equals(id))  selectedUser = it
     }
@@ -60,6 +61,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     var (textUserUser, onValueChangeUserUser) = rememberSaveable { mutableStateOf(selectedUser.user) }
     var (textPasswordUser, onValueChangePasswordUser) = rememberSaveable { mutableStateOf(selectedUser.password) }
     var (textRolUser, onValueChangeRolUser) = rememberSaveable { mutableStateOf(selectedUser.rol) }
+    var (textPhoneNumberUser, onValueChangePhoneNumberUser) = rememberSaveable { mutableStateOf(selectedUser.phoneNumber) }
 
     //Funciones extras a realizar
     if (deleteUser.value) {
@@ -131,6 +133,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                 createRowList(text = "Email", value = textEmailUser, onValueChange = onValueChangeEmailUser)
                 createRowList(text = "User", value = textUserUser, onValueChange = onValueChangeUserUser)
                 createRowList(text = "Contraseña", value = textPasswordUser, onValueChange = onValueChangePasswordUser)
+                createRowList(text = "Rol", value = textPhoneNumberUser, onValueChange = onValueChangePhoneNumberUser)
                 createRowList(text = "Rol", value = textRolUser, onValueChange = onValueChangeRolUser)
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -175,7 +178,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
                     Button(
                         onClick = {
-                            selectedUser = Users(id,textDniUser, textNameUser, textSurnameUser, textFnacUser, "", textUserUser, textPasswordUser, textRolUser,textEmailUser)
+                            selectedUser = Users(_id = id, dni = textDniUser, name =  textNameUser, surname =  textSurnameUser, fnac =  textFnacUser, user =  textUserUser, password =  textPasswordUser, rol =  textRolUser, email =  textEmailUser, newUser = false, phoneNumber = "" )
                             //actualizar en la BD con este objeto
                             viewModelUsers.editUser(selectedUser)
 

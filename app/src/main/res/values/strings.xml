@@ -19,4 +19,5 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_edit_zone">EditZone</string>
     <string name="title_activity_new_zone">NewZone</string>
+    <string name="title_activity_product_edit_type">ProductEditType</string>
 </resources>

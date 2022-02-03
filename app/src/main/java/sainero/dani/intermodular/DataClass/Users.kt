@@ -12,6 +12,19 @@ data class Users(
     @SerializedName("usuario") val user: String,
     val password: String,
     val rol: String,
-    val email: String
+    val email: String,
+    val newUser: Boolean
+)
 
-    )
+data class PostUsers(
+    @SerializedName("nombre") val name: String,
+    @SerializedName("apellido") val surname: String,
+    val dni: String,
+    @SerializedName("telefono") val phoneNumber: String,
+    val fnac: String,
+    @SerializedName("usuario") val user: String,
+    val password: String,
+    val rol: String,
+    val email: String,
+    val newUser: Boolean
+)

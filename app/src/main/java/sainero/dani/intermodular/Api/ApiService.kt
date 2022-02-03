@@ -1,5 +1,6 @@
 package sainero.dani.intermodular.Api
 
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
@@ -18,18 +19,8 @@ interface ApiService {
 
     @POST("empleado")
     suspend fun uploadUser(
-        /*
-        //@Query("completeUser") completeUser: Users,
-        @Query("_id") _id: Int,
-        @Query("name") name: String,
-        @Query("surname") surname: String,
-        @Query("dni") dni: String,
-        @Query("phoneNumber") phoneNumber: String,
-        @Query("fnac") fnac: String,
-        @Query("user") user: String,
-        @Query("password") password: String,
-        @Query("email") email: String*/
-    )
+        @Body user :PostUsers
+    ) : Response<Users>
 
     @PUT("empleado")
     suspend fun editUser(
@@ -44,8 +35,6 @@ interface ApiService {
 
 
     //Productos
-
-
     @GET("productos")
     suspend fun getproducts() : List<Productos>
 
@@ -95,11 +84,83 @@ interface ApiService {
         @Path("id") id:Int
     ): Zonas
 
+    //Extras
+    @GET("extras")
+    suspend fun getExtras() : List<Extras>
+
+    @GET("extra/id/{id}")
+    suspend fun getExtraById(
+        @Path("id") id: Int
+    ): List<Extras>
+
+    @POST("extra")
+    suspend fun uploadExtra(
+        @Body extra :Extras
+    )
+
+    @PUT("extra")
+    suspend fun editExtra(
+
+    ): Extras
+
+    @DELETE("extra/id/{id}")
+    suspend fun deleteExtra(
+        @Path("id") id:Int
+    ): Extras
+
+    //Mesas
+    @GET("mesas")
+    suspend fun getTables() : List<Mesas>
+
+    @GET("mesa/id/{id}")
+    suspend fun getTableById(
+        @Path("id") id: Int
+    ): List<Mesas>
+
+    @POST("mesa")
+    suspend fun uploadTable(
+        @Body mesa :Mesas
+    )
+
+    @PUT("mesa")
+    suspend fun editTable(
+
+    ): Mesas
+
+    @DELETE("mesa/id/{id}")
+    suspend fun deleteTable(
+        @Path("id") id:Int
+    ): Mesas
+
+
+    //Mesas
+    @GET("tipos")
+    suspend fun getTypes() : List<Tipos>
+
+    @GET("tipo/id/{id}")
+    suspend fun getTypeById(
+        @Path("id") id: Int
+    ): List<Tipos>
+
+    @POST("tipo")
+    suspend fun uploadType(
+        @Body tipo :Tipos
+    )
+
+    @PUT("tipo")
+    suspend fun editType(
+
+    ): Tipos
+
+    @DELETE("tipo/id/{id}")
+    suspend fun deleteType(
+        @Path("id") id:Int
+    ): Tipos
+
 
 
     companion object {
        private var apiService: ApiService? = null
-
 
         fun getInstance() : ApiService {
             if (apiService == null) {
