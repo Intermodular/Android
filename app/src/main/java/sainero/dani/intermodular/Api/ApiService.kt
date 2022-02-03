@@ -71,7 +71,7 @@ interface ApiService {
 
     @POST("zona")
     suspend fun uploadZone(
-        @Query("completeZone") completeZone: Zonas,
+       @Body zone: Zonas,
     )
 
     @PUT("zonas")

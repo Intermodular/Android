@@ -42,7 +42,7 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
     val expanded = remember { mutableStateOf(false) }
 
     //Esto se eliminará por una consulta a la BD
-    var selectedZone : Zonas = Zonas(_id,"Zone${_id}","Z${_id}",_id)
+    var selectedZone : Zonas = Zonas(_id,"Zone${_id}",2)
 
     viewModelZonas.zonesListResponse.forEach{
         if (it._id.equals(_id)) selectedZone = it
@@ -50,7 +50,6 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
 
     //Textos
     var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf(selectedZone.name) }
-    var (textAbreviacion, onValueChangeAbreviacion) = rememberSaveable{ mutableStateOf(selectedZone.abbreviation) }
     var (textNºmesas, onValueChangeNºmesas) = rememberSaveable{ mutableStateOf(selectedZone.nºTables.toString()) }
 
 
@@ -85,7 +84,6 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
             ) {
 
                 createRowList(text = "Nombre", value = textName, onValueChange = onValueChangeName, true)
-                createRowList(text = "Abreviación", value = textAbreviacion, onValueChange = onValueChangeAbreviacion, true )
                 createRowList(text = "NºMesas", value = textNºmesas, onValueChange = onValueChangeNºmesas, false)
 
 
@@ -97,7 +95,6 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                     Button(
                         onClick = {
                             textName = ""
-                            textAbreviacion = ""
                             textNºmesas = ""
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -127,7 +124,6 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                     Button(
                         onClick = {
                             selectedZone.name = textName
-                            selectedZone.abbreviation =  textAbreviacion
                             selectedZone.nºTables = textNºmesas.toInt()
 
                             //Guardar zona  en la BB

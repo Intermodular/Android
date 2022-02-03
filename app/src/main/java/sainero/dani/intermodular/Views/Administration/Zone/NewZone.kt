@@ -46,7 +46,6 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
 
     //Textos
     var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf("") }
-    var (textAbreviacion, onValueChangeAbreviacion) = rememberSaveable{ mutableStateOf("") }
     var (textNºmesas, onValueChangeNºmesas) = rememberSaveable{ mutableStateOf("") }
 
 
@@ -82,7 +81,6 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
             ) {
 
                 createRowList(text = "Nombre", value = textName, onValueChange = onValueChangeName, true)
-                createRowList(text = "Abreviación", value = textAbreviacion, onValueChange = onValueChangeAbreviacion, true )
                 createRowList(text = "NºMesas", value = textNºmesas, onValueChange = onValueChangeNºmesas, false)
 
 
@@ -94,7 +92,6 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
                     Button(
                         onClick = {
                             textName = ""
-                            textAbreviacion = ""
                             textNºmesas = ""
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -124,8 +121,13 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
                     Button(
                         onClick = {
                             //Guardar zona en la BD
-                            val zone: Zonas = Zonas(0,textName,textAbreviacion,textNºmesas.toInt())
-                        },
+                            val zone: Zonas
+                            if (textNºmesas.equals(""))
+                                 zone = Zonas(0,textName,0)
+                            else
+                                 zone = Zonas(0,textName,textNºmesas.toInt())
+                            viewModelZonas.uploadZone(zone)
+                          },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
                             contentColor = Color.Blue
