@@ -36,6 +36,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
+import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.Views.Administration.Products.ui.theme.IntermodularTheme
 
 
@@ -53,14 +54,13 @@ class ProductManager : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainProductManager(mainViewModelSearchBar: MainViewModelSearchBar) {
+fun MainProductManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelProductos: ViewModelProductos) {
+
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
-    var allProducts: MutableList<Productos> = mutableListOf()
+    var allProducts: List<Productos> = viewModelProductos.productListResponse
     val scope = rememberCoroutineScope()
 
-    for(i in 1..50) allProducts.add(Productos(i.toString(),"Product ${i}","Comida", mutableListOf<String>("ingrediente1", "ingrediente2"),1.5f,mutableListOf<String>("Vegano", "Gluten"),"rutaImg",1))
-    var allproductsFilter: MutableList<Productos> = mutableListOf()
 
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState
     val searchTextState by mainViewModelSearchBar.searchTextState
@@ -94,10 +94,7 @@ fun MainProductManager(mainViewModelSearchBar: MainViewModelSearchBar) {
 
         },
         content = {
-            /*
-            for(i in allProducts) if(i._id.toInt() >= 10 && i._id.toInt() <= 20) allproductsFilter.add(i)
-            creteProductList(allproductsFilter)
-           */
+
             aplicateFilter.value = true
             if (aplicateFilter.value) {
 
@@ -162,7 +159,7 @@ private fun creteProductList(listProducts: MutableList<Productos>) {
                         .clickable {
                             GlobalVariables.navController.navigate("${Destinations.EditProduct.route}/${i._id}")
                         }) {
-                    Text(text = i.nombre)
+                    Text(text = i.name)
                 }
             }
         }
@@ -176,7 +173,7 @@ private fun filterContentByName(allProducts: List<Productos>, filterName: String
     ) {
 
         for (i in allProducts) {
-            if (i.nombre.contains(filterName)) {
+            if (i.name.contains(filterName)) {
 
                 item {
 
@@ -188,9 +185,9 @@ private fun filterContentByName(allProducts: List<Productos>, filterName: String
                                 navController.navigate("${Destinations.EditProduct.route}/${i._id}")
                             }) {
 
-                        Text(text = i.nombre)
+                        Text(text = i.name)
                         Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.tipo)
+                        Text(text = i.type)
 
                     }
                 }

@@ -60,7 +60,6 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
     val showToast = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    val newEmployee: Users = Users(0,textNameUser,textSurnameUser,textDniUser,textTelUser,textFnacUser,textUserUser,textPasswordUser,textRolUser,textEmailUser)
 
 
     Scaffold(
@@ -94,7 +93,6 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                 createRowList(text = "User", value = textUserUser, onValueChange = onValueChangeUserUser)
                 createRowList(text = "Contraseña", value = textPasswordUser, onValueChange = onValueChangePasswordUser)
                 createRowList(text = "Rol", value = textRolUser, onValueChange = onValueChangeRolUser)
-
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
@@ -141,6 +139,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
 
                     Button(
                         onClick = {
+                            val newEmployee: Users = Users(0,textNameUser,textSurnameUser,textDniUser,textTelUser,textFnacUser,textUserUser,textPasswordUser,textRolUser,textEmailUser)
 
                             viewModelUsers.uploadUser(newEmployee)
                         },

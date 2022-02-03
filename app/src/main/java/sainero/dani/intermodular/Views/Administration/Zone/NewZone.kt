@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import sainero.dani.intermodular.DataClass.Zonas
+import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.ui.theme.IntermodularTheme
 
 class NewZone : ComponentActivity() {
@@ -36,7 +37,7 @@ class NewZone : ComponentActivity() {
 }
 
 @Composable
-fun MainNewZone() {
+fun MainNewZone(viewModelZonas: ViewModelZonas) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
 
@@ -182,6 +183,6 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
 @Composable
 fun DefaultPreview14() {
     IntermodularTheme {
-        MainNewZone()
+        //MainNewZone()
     }
 }

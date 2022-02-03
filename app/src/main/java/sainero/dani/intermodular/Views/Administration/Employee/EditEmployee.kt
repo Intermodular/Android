@@ -46,7 +46,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     val result = remember { mutableStateOf("") }
     var deleteUser = remember { mutableStateOf(false)}
 
-    //Posible consulta en la Base de datos ¿?
+    //Posible consulta en la Base de datos ¿? (but is ok)
     var selectedUser: Users = Users(0,"error","","","","","","","","")
     viewModelUsers.userListResponse.forEach{
         if (it._id.equals(id))  selectedUser = it
@@ -65,6 +65,8 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     if (deleteUser.value) {
         confirmDeleteUser(viewModelUsers = viewModelUsers,id = id)
     }
+
+    //Ventana
     Scaffold(
 
         scaffoldState = scaffoldState,
@@ -77,13 +79,9 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                 backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
-
-
-
                     IconButton(
                         onClick = {
                             deleteUser.value = true
-
                         }
                     ) {
                         Icon(
@@ -92,7 +90,6 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
                     }
-
 
                     Box (Modifier.wrapContentSize()){
                         IconButton(onClick = {
@@ -178,8 +175,9 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
                     Button(
                         onClick = {
-                            //selectedUser = Users(id,textDniUser, textNameUser, textSurnameUser, textFnacUser, "", textUserUser, textPasswordUser, textRolUser,textEmailUser)
+                            selectedUser = Users(id,textDniUser, textNameUser, textSurnameUser, textFnacUser, "", textUserUser, textPasswordUser, textRolUser,textEmailUser)
                             //actualizar en la BD con este objeto
+                            viewModelUsers.editUser(selectedUser)
 
                         },
                         colors = ButtonDefaults.buttonColors(

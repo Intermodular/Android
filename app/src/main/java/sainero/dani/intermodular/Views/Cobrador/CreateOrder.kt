@@ -25,7 +25,7 @@ class CreateOrder : ComponentActivity() {
 }
 
 @Composable
-fun MainCreateOrder(id: String,) {
+fun MainCreateOrder(id: Int,) {
     //Realizar la busqueda a la BD usando el idTable
 
 
@@ -35,6 +35,6 @@ fun MainCreateOrder(id: String,) {
 @Composable
 fun DefaultPreview7() {
     IntermodularTheme {
-        MainCreateOrder("1")
+        MainCreateOrder(1)
     }
 }

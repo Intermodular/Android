@@ -52,22 +52,20 @@ class ViewModelUsers: ViewModel() {
             val apiService = ApiService.getInstance()
 
             try {
-                 apiService.uploadUser(user)
-
-
+                 apiService.uploadUser(/*completeUser = user, _id = user._id,user.name, user.surname, user.dni, user.phoneNumber,user.fnac,user.user, user.password,user.email*/)
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }
         }
     }
 
-    var editUser: Users by mutableStateOf(Users(0,"error","","","","","","","",""))
-    fun editUser() {
+    //var editUser: Users by mutableStateOf(Users(0,"error","","","","","","","",""))
+    fun editUser(user: Users) {
         viewModelScope.launch {
             val apiService = ApiService.getInstance()
 
             try {
-                editUser = apiService.editUser()
+                /*editUser =*/ apiService.editUser(user._id, user)
 
 
             } catch (e: Exception) {
@@ -77,13 +75,12 @@ class ViewModelUsers: ViewModel() {
     }
 
     //Métodos Delete
-    var deleteUser: Users by mutableStateOf(Users(0,"error","","","","","","","",""))
     fun deleteUser(id: Int) {
         viewModelScope.launch {
             val apiService = ApiService.getInstance()
 
             try {
-                deleteUser = apiService.deleteUser(id)
+               apiService.deleteUser(id)
 
 
             } catch (e: Exception) {

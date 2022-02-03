@@ -18,4 +18,5 @@ sealed class Destinations (
     object  NewEmployee: Destinations("Administration.Employee.NewEmployee")
     object  Ingredient: Destinations("Administration.Products.Ingredients.Ingredients")
     object  EditZone: Destinations("Administration.Zone.EditZone")
+    object  NewZone: Destinations("Administration.Zone.NewZone")
 }

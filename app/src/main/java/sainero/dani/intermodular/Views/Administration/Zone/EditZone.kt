@@ -19,8 +19,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.DataClass.Zonas
+import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.ui.theme.IntermodularTheme
 
 class EditZone : ComponentActivity() {
@@ -33,18 +35,23 @@ class EditZone : ComponentActivity() {
 }
 
 @Composable
-fun MainEditZone(_id: Int) {
+fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
+
+    viewModelZonas.getZoneById(_id)
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
 
     //Esto se eliminará por una consulta a la BD
-    var zone : Zonas = Zonas(_id,"Zone${_id}","Z${_id}",_id)
+    var selectedZone : Zonas = Zonas(_id,"Zone${_id}","Z${_id}",_id)
 
+    viewModelZonas.zonesListResponse.forEach{
+        if (it._id.equals(_id)) selectedZone = it
+    }
 
     //Textos
-    var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf("") }
-    var (textAbreviacion, onValueChangeAbreviacion) = rememberSaveable{ mutableStateOf("") }
-    var (textNºmesas, onValueChangeNºmesas) = rememberSaveable{ mutableStateOf("") }
+    var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf(selectedZone.name) }
+    var (textAbreviacion, onValueChangeAbreviacion) = rememberSaveable{ mutableStateOf(selectedZone.abbreviation) }
+    var (textNºmesas, onValueChangeNºmesas) = rememberSaveable{ mutableStateOf(selectedZone.nºTables.toString()) }
 
 
     Scaffold(
@@ -89,9 +96,9 @@ fun MainEditZone(_id: Int) {
                 ) {
                     Button(
                         onClick = {
-                            textName = zone.nombre
-                            textAbreviacion = zone.abreviación
-                            textNºmesas = zone.nºMesas.toString()
+                            textName = ""
+                            textAbreviacion = ""
+                            textNºmesas = ""
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -119,9 +126,9 @@ fun MainEditZone(_id: Int) {
 
                     Button(
                         onClick = {
-                            zone.nombre = textName
-                            zone.abreviación =  textAbreviacion
-                            zone.nºMesas = textNºmesas.toInt()
+                            selectedZone.name = textName
+                            selectedZone.abbreviation =  textAbreviacion
+                            selectedZone.nºTables = textNºmesas.toInt()
 
                             //Guardar zona  en la BB
 

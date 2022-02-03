@@ -25,15 +25,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.bumptech.glide.util.Util
 import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Views.Administration.Products.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.Views.Administration.Employee.ToastDemo
+import java.util.function.ToDoubleBiFunction
 
 
 @ExperimentalFoundationApi
@@ -49,31 +53,33 @@ class EditProduct : ComponentActivity() {
 }
 
 @Composable
-fun MainEditProduct(id: String) {
+fun MainEditProduct(id: Int,viewModelProductos: ViewModelProductos) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
 
-    //Esto se eliminará por una consulta a la BD
-    var selectedProduct: Productos
-    val allProducts: MutableList<Productos> = mutableListOf()
-    for(i in 1..50) allProducts.add(Productos(i.toString(),"Product ${i}","Comida", mutableListOf<String>("ingrediente1", "ingrediente2"),1.5f,mutableListOf<String>("Vegano", "Gluten"),"rutaImg",1))
+    viewModelProductos.getProductById(id)
+    var ingredientes: MutableList<String> = mutableListOf()
+    var especification: MutableList<String> = mutableListOf()
 
-    //Esto es una busqueda en la BD
-    for(i in allProducts)
-        if(i._id.equals(id))
-            selectedProduct = i
+    //Consulta BD
+    var selectedProduct: Productos = Productos(0,"","",ingredientes,3.4f, especification,"",1)
+    viewModelProductos.productListResponse.forEach{
+        if (it._id.equals(id))  selectedProduct = it
+    }
+
 
     //Textos
-    var (textName, onValueChangeName) = rememberSaveable{mutableStateOf("")}
-    var (textTipe, onValueChangeTipe) = rememberSaveable{mutableStateOf("")}
-    var (textIngredients, onValueChangeIngredients) = rememberSaveable{mutableStateOf("")}
-    var (textCost, onValueChangeCost) = rememberSaveable{mutableStateOf("")}
-    var (textEspecification, onValueChangeEspecification) = rememberSaveable{mutableStateOf("")}
-    var (textImg, onValueChangeImg) = rememberSaveable{mutableStateOf("")}
-    var (textStock, onValueChangeStock) = rememberSaveable{mutableStateOf("")}
+    var (textName, onValueChangeName) = rememberSaveable{mutableStateOf(selectedProduct.name)}
+    var (textTipe, onValueChangeTipe) = rememberSaveable{mutableStateOf(selectedProduct.type)}
+     ingredientes = selectedProduct.ingredients
+    //var (textIngredients, onValueChangeIngredients) = rememberSaveable{mutableStateOf("")}
+    var (textCost, onValueChangeCost) = rememberSaveable{mutableStateOf(selectedProduct.price.toString())}
+    especification = selectedProduct.especifications
+    //var (textEspecification, onValueChangeEspecification) = rememberSaveable{mutableStateOf("")}
+    var (textImg, onValueChangeImg) = rememberSaveable{mutableStateOf(selectedProduct.name)}
+    var (textStock, onValueChangeStock) = rememberSaveable{mutableStateOf(selectedProduct.stock.toString())}
 
     //Drop down
-    val ingredientes = listOf("Pan", "Pimiento", "Tomate", "Queso") //Consulta BD
 
 
     Scaffold(
@@ -86,7 +92,10 @@ fun MainEditProduct(id: String) {
                 backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
-                    IconButton(onClick = { /*Eliminar elementod e la Base de datos y ir atras*/ }) {
+                    IconButton(onClick = {
+                        viewModelProductos.deleteProduct(id)
+                        navController.navigate(Destinations.ProductManager.route)
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
                             contentDescription = "Delete Icon",
@@ -107,10 +116,9 @@ fun MainEditProduct(id: String) {
             ) {
                 createRowList("Nombre",textName,onValueChangeName)
                 createRowList("Tipo",textTipe,onValueChangeTipe)
-                //createRowList("Ingredientes",textIngredients,onValueChangeIngredients)
                 dropDownMenu("Ingredientes",ingredientes,id)
                 createRowList("Coste",textCost,onValueChangeCost)
-                createRowList("Especificación",textEspecification,onValueChangeEspecification)
+                dropDownMenu("Especificaciones",especification,id)
                 createRowList("Imágen",textImg,onValueChangeImg)
                 createRowList("Stock",textStock,onValueChangeStock)
 
@@ -123,9 +131,7 @@ fun MainEditProduct(id: String) {
                         onClick = {
                             textName = ""
                             textTipe = ""
-                            textIngredients = ""
                             textCost = ""
-                            textEspecification = ""
                             textImg = ""
                             textStock = ""
                         },
@@ -189,10 +195,10 @@ fun MainEditProduct(id: String) {
 }
 
 @Composable
-private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: String) {
+private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int) {
     Spacer(modifier = Modifier.padding(4.dp))
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf("Ingredientes") }
+    var selectedText by remember { mutableStateOf(text) }
     var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
     var editItem = remember{ mutableStateOf(false)}
 
@@ -215,7 +221,6 @@ private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Strin
                 modifier = Modifier
                     .padding(start = 10.dp, end = 20.dp)
                     .onGloballyPositioned { coordinates ->
-                        //This value is used to assign to the DropDown the same width
                         textfieldSize = coordinates.size.toSize()
                     },
                 trailingIcon = {
@@ -280,6 +285,6 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
 @Composable
 fun DefaultPreview11() {
     IntermodularTheme {
-        MainEditProduct("")
+       // MainEditProduct("")
     }
 }

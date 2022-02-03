@@ -55,7 +55,7 @@ fun MainAccessToTables() {
     val scope = rememberCoroutineScope()
 
     for(i in 1..150)
-        allTables.add(Mesas("mesa" + i ,4,"terraza"))
+        allTables.add(Mesas(i,"mesa" + i ,4,"terraza"))
 
     Column(
         modifier = Modifier

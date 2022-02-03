@@ -31,6 +31,7 @@ import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
+import sainero.dani.intermodular.ViewModels.ViewModelZonas
 
 @ExperimentalFoundationApi
 
@@ -46,14 +47,14 @@ class ZoneAdministration : ComponentActivity() {
 }
 
 @Composable
-fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar) {
+fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelZonas: ViewModelZonas) {
+
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     //Consulta BD
-    var allZones: MutableList<Zonas> = mutableListOf()
-    for(i in 1..50) allZones.add(Zonas(i,"zona ${i}","Z${i}",i))
+    var allZones: List<Zonas> = viewModelZonas.zonesListResponse
 
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState
     val searchTextState by mainViewModelSearchBar.searchTextState
@@ -105,7 +106,7 @@ fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    GlobalVariables.navController.navigate(Destinations.NewProduct.route)
+                    GlobalVariables.navController.navigate(Destinations.NewZone.route)
                 }
             ) {
                 Text("+")
@@ -121,7 +122,7 @@ private fun filterContentByName(allZones: List<Zonas>, filterName: String) {
     ) {
 
         for (i in allZones) {
-            if (i.nombre.contains(filterName)) {
+            if (i.name.contains(filterName)) {
 
                 item {
 
@@ -133,9 +134,9 @@ private fun filterContentByName(allZones: List<Zonas>, filterName: String) {
                                 GlobalVariables.navController.navigate("${Destinations.EditZone.route}/${i._id}")
                             }) {
 
-                        Text(text = i.nombre)
+                        Text(text = i.name)
                         Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.abreviación)
+                        Text(text = i.abbreviation)
 
                     }
                 }

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.Views.Administration.Products.ui.theme.IntermodularTheme
 
 @ExperimentalFoundationApi
@@ -38,7 +39,7 @@ class NewProduct : ComponentActivity() {
 }
 
 @Composable
-fun MainNewProduct() {
+fun MainNewProduct(viewModelProductos: ViewModelProductos) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
 
@@ -181,6 +182,6 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
 @Composable
 fun DefaultPreview12() {
     IntermodularTheme {
-        MainNewProduct()
+        //MainNewProduct()
     }
 }
