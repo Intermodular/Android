@@ -32,12 +32,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.*
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import java.util.regex.Pattern
 
 @ExperimentalFoundationApi
 
@@ -71,6 +73,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
     val focusRequester = remember { FocusRequester() }
     val context = LocalContext.current
 
+    var nameError by remember { mutableStateOf(false) }
 
 
 
@@ -91,7 +94,6 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                 .padding(20.dp)
                     //Tests
                 .clickable {
-                    //Toast.makeText(context, test.toString(), Toast.LENGTH_SHORT).show()
 
                     navController.navigate(Destinations.MainAdministrationActivity.route)
                 }
@@ -107,11 +109,12 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                 value = textUser,
                 onValueChange = {
                     textUser = it
+                    nameError = !isValidUser(it)
                 },
-                placeholder = { Text("Pepe") },
+                placeholder = { Text("User") },
                 singleLine = true,
                 label = { Text(text = "User") },
-              //  keyboardActions = KeyboardActions(),
+                isError = nameError,
                 modifier = Modifier
                     .padding(start = 50.dp, end = 50.dp)
                     .fillMaxWidth()
@@ -122,6 +125,20 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                         }
                         false
                     }
+            )
+
+            val assistiveElementText = if (nameError) "El usuario no puede estar vacio ni contener caracteres especiales" else ""
+            val assistiveElementColor = if (nameError) {
+                MaterialTheme.colors.error
+            } else {
+                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+            }
+
+            Text(
+                text = assistiveElementText,
+                color = assistiveElementColor,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 50.dp, end = 50.dp)
             )
 
 
@@ -163,12 +180,10 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
             Spacer(modifier = Modifier.padding(10.dp))
             Button(
                 onClick = {
-                       // Toast.makeText(context, viewModelUsers.userListResponse[0].toString(),Toast.LENGTH_SHORT).show()
-
                         viewModelUsers.userListResponse.forEach{
 
                         if (it.user.equals(textUser) && it.password.equals(textPassword))
-                            if (it.rol.equals("admin"))
+                            if (it.rol.equals("Administrador"))
                                 showDialog.value = true
                             else
                                 navController.navigate(Destinations.AccessToTables.route)
@@ -210,16 +225,10 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
 
     }
 }
-/*
 
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    val navController = rememberNavController()
-    LoginMain()
-
-}*/
+//Validaciones
+private fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 
 
 
@@ -262,4 +271,10 @@ private fun adminAlertDestination() {
 
 
 
+@Preview
+@Composable
+fun DefaultPreview() {
+   // LoginMain()
+
+}
 

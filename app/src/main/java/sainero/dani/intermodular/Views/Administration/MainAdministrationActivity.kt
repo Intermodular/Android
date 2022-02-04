@@ -37,8 +37,12 @@ class MainAdministrationActivity : ComponentActivity() {
         }
     }
 }
+//API Key
+//GOgVQm3MOJNPcKODXTZqFq90b5p4wjsqmcJ6vTJJY4Rod4tTEWywir0HYAvU4oYe
 
 
+//Endpoint
+//https://data.mongodb-api.com/app/data-cdrvt/endpoint/data/beta
 
 @Composable
 fun MainAdministrationActivityView() {
