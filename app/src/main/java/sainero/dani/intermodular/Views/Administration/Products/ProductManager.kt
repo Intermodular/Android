@@ -37,7 +37,6 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
-import sainero.dani.intermodular.Views.Administration.Products.ui.theme.IntermodularTheme
 
 
 @ExperimentalFoundationApi
@@ -45,9 +44,7 @@ class ProductManager : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            IntermodularTheme {
 
-            }
         }
     }
 }
@@ -174,21 +171,18 @@ private fun filterContentByName(allProducts: List<Productos>, filterName: String
 
         for (i in allProducts) {
             if (i.name.contains(filterName)) {
-
                 item {
-
                     Row (
                         Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
                             .clickable {
                                 navController.navigate("${Destinations.EditProduct.route}/${i._id}")
-                            }) {
-
+                            }
+                    ) {
                         Text(text = i.name)
                         Spacer(modifier = Modifier.padding(10.dp))
                         Text(text = i.type)
-
                     }
                 }
             }
@@ -217,9 +211,9 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                 )
             }
             Box (Modifier.wrapContentSize()){
-                IconButton(onClick = {
-                    expanded.value = true
-                }) {
+                IconButton(
+                    onClick = { expanded.value = true }
+                ) {
                     Icon(
                         Icons.Filled.MoreVert,
                         contentDescription = "Localized description"
@@ -339,7 +333,5 @@ private fun SearchAppBar(
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview10() {
-    IntermodularTheme {
       //  MainProductManager()
-    }
 }

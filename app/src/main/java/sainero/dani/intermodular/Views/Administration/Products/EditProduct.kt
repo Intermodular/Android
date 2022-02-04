@@ -31,7 +31,6 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.util.Util
 import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Views.Administration.Products.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
@@ -45,9 +44,7 @@ class EditProduct : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            IntermodularTheme {
 
-            }
         }
     }
 }
@@ -71,11 +68,9 @@ fun MainEditProduct(id: Int,viewModelProductos: ViewModelProductos) {
     //Textos
     var (textName, onValueChangeName) = rememberSaveable{mutableStateOf(selectedProduct.name)}
     var (textTipe, onValueChangeTipe) = rememberSaveable{mutableStateOf(selectedProduct.type)}
-     ingredientes = selectedProduct.ingredients
-    //var (textIngredients, onValueChangeIngredients) = rememberSaveable{mutableStateOf("")}
+    ingredientes = selectedProduct.ingredients
     var (textCost, onValueChangeCost) = rememberSaveable{mutableStateOf(selectedProduct.price.toString())}
     especification = selectedProduct.especifications
-    //var (textEspecification, onValueChangeEspecification) = rememberSaveable{mutableStateOf("")}
     var (textImg, onValueChangeImg) = rememberSaveable{mutableStateOf(selectedProduct.name)}
     var (textStock, onValueChangeStock) = rememberSaveable{mutableStateOf(selectedProduct.stock.toString())}
 
@@ -259,7 +254,6 @@ private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int) 
 
 @Composable
 private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit) {
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -279,12 +273,8 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
 }
 
 
-
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview11() {
-    IntermodularTheme {
        // MainEditProduct("")
-    }
 }

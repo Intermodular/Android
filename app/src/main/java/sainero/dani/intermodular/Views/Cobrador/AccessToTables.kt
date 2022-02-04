@@ -28,6 +28,7 @@ import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.ViewModels.ViewModelMesas
 
 @ExperimentalFoundationApi
 
@@ -43,19 +44,14 @@ class AccessToTables : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainAccessToTables() {
+fun MainAccessToTables(viewModelMesas: ViewModelMesas) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    var allTables: MutableList<Mesas> = mutableListOf()
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
 
-
-    val globalVariables = GlobalVariables()
-
     val scope = rememberCoroutineScope()
 
-    for(i in 1..150)
-        allTables.add(Mesas(i,"mesa" + i ,4,"terraza"))
+    var allTables: List<Mesas> = viewModelMesas.mesasListResponse
 
     Column(
         modifier = Modifier
@@ -158,7 +154,7 @@ fun MainAccessToTables() {
                             Box (Modifier.padding(10.dp)) {
                                 Button(
                                     onClick = {
-                                        GlobalVariables.navController.navigate(Destinations.CreateOrder.route + "/${i.nombre}")
+                                        GlobalVariables.navController.navigate(Destinations.CreateOrder.route + "/${i.name}")
                                       },
                                     contentPadding = PaddingValues(10.dp),
                                     colors = ButtonDefaults.buttonColors(
@@ -166,7 +162,7 @@ fun MainAccessToTables() {
                                         contentColor = Color.Blue
                                     )
                                 ) {
-                                    Text(text = i.nombre)
+                                    Text(text = i.name)
                                 }
                             }
                         }
@@ -188,6 +184,5 @@ fun createTables() {
 @ExperimentalFoundationApi
 @Composable
 fun DefaultPreview3() {
-    val navController = rememberNavController()
-    MainAccessToTables()
+    //MainAccessToTables()
 }

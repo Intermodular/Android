@@ -1,12 +1,13 @@
 package sainero.dani.intermodular.ViewModels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import sainero.dani.intermodular.Api.ApiService
+import sainero.dani.intermodular.Api.ApiServiceZone
 import sainero.dani.intermodular.DataClass.Zonas
 
 class ViewModelZonas: ViewModel() {
@@ -17,7 +18,7 @@ class ViewModelZonas: ViewModel() {
     var zonesListResponse: List <Zonas> by mutableStateOf ( listOf ())
     fun getZoneList() {
         viewModelScope.launch {
-            val apiService = ApiService.getInstance()
+            val apiService = ApiServiceZone.getInstance()
 
             try {
                 val zoneList = apiService.getZones()
@@ -30,15 +31,13 @@ class ViewModelZonas: ViewModel() {
     }
 
     var zone: List <Zonas> by mutableStateOf(listOf())
-
     fun getZoneById(id:Int) {
         viewModelScope.launch {
-            val apiService = ApiService.getInstance()
+            val apiService = ApiServiceZone.getInstance()
 
             try {
                 val zoneById = apiService.getZoneById(id)
                 zone = zoneById
-
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }
@@ -46,23 +45,34 @@ class ViewModelZonas: ViewModel() {
     }
 
     //Métodos post
+    var uploadZone: MutableList<Zonas> = mutableListOf()
     fun uploadZone(zone: Zonas) {
         viewModelScope.launch {
-            val apiService = ApiService.getInstance()
+            val apiService = ApiServiceZone.getInstance()
 
             try {
-                apiService.uploadZone(zone)
+                val response = apiService.uploadZone(zone)
+                if (response.isSuccessful)
+                    uploadZone.add(response.body()!!)
+                else
+                    Log.d("Error: upload zone","Error: uplaod zone")
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }
         }
     }
 
+    var editZone: MutableList<Zonas> = mutableListOf()
     fun editZone(zone: Zonas) {
         viewModelScope.launch {
-            val apiService = ApiService.getInstance()
+            val apiService = ApiServiceZone.getInstance()
+
             try {
-                apiService.editZone(zone._id)
+                val response = apiService.editZone(zone)
+                if (response.isSuccessful)
+                    editZone.add(response.body()!!)
+                else
+                    Log.d("Error: edit zone","Error: edit zone")
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }
@@ -70,15 +80,17 @@ class ViewModelZonas: ViewModel() {
     }
 
     //Métodos Delete
+    var deleteZone: MutableList<Zonas> = mutableListOf()
     fun deleteZone(id: Int) {
         viewModelScope.launch {
-            val apiService = ApiService.getInstance()
+            val apiService = ApiServiceZone.getInstance()
 
             try {
-                apiService.deleteZone(id)
-                apiService.deleteZone(id)
-
-
+                val response = apiService.deleteZone(id)
+                if (response.isSuccessful)
+                    deleteZone.add(response.body()!!)
+                else
+                    Log.d("Error: delete zone","Error: delete zone")
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }

@@ -28,7 +28,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import sainero.dani.intermodular.Api.MainViewModel
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
@@ -39,7 +38,6 @@ import sainero.dani.intermodular.Utils.SearchWidgetState
 
 @ExperimentalFoundationApi
 class EmployeeManager : ComponentActivity() {
-    private val mainViewModel by  viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

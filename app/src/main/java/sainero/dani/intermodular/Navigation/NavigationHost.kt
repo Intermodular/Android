@@ -9,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import sainero.dani.intermodular.Api.MainViewModel
 import sainero.dani.intermodular.Views.*
 import sainero.dani.intermodular.Views.Administration.Employee.MainEditEmployee
 import sainero.dani.intermodular.Views.Administration.Employee.MainEmployeeManager
@@ -60,8 +59,8 @@ fun NavigationHost(
         }
         
         composable(route = Destinations.AccessToTables.route) {
-
-            MainAccessToTables()
+            viewModelMesas.getMesaList()
+            MainAccessToTables(viewModelMesas = viewModelMesas)
         }
         
         composable(route = Destinations.EmployeeManager.route) {

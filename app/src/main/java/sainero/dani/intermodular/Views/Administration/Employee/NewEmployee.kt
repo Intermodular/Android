@@ -27,7 +27,6 @@ import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
-import sainero.dani.intermodular.Views.Administration.Employee.ui.theme.IntermodularTheme
 
 
 @ExperimentalFoundationApi
@@ -35,9 +34,7 @@ class NewEmployee : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            IntermodularTheme {
 
-            }
         }
     }
 }
@@ -135,13 +132,22 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                         Text(text = "Revertir cambios", fontSize = 15.sp)
                     }
 
-
-
                     Button(
                         onClick = {
-                            val newEmployee: Users = Users(_id = 0, name =  textNameUser, surname =  textSurnameUser, dni =  textDniUser, phoneNumber =  textTelUser, fnac =  textFnacUser, user =  textUserUser, password =  textPasswordUser, rol =  textRolUser, email =  textEmailUser, newUser = false)
-
-                          //  viewModelUsers.uploadUser(newEmployee)
+                            val newEmployee: Users = Users(
+                                _id = 0,
+                                name =  textNameUser,
+                                surname =  textSurnameUser,
+                                dni =  textDniUser,
+                                phoneNumber =  textTelUser,
+                                fnac =  textFnacUser,
+                                user =  textUserUser,
+                                password =  textPasswordUser,
+                                rol =  textRolUser,
+                                email =  textEmailUser,
+                                newUser = true
+                            )
+                            viewModelUsers.uploadUser(newEmployee)
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -200,9 +206,7 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview13() {
-    IntermodularTheme {
       //  MainNewEmployee()
-    }
 }
 
 

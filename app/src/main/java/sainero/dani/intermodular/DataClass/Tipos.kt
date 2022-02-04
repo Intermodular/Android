@@ -1,8 +1,10 @@
 package sainero.dani.intermodular.DataClass
 
+import com.google.gson.annotations.SerializedName
+
 data class Tipos(
     val _id: Int,
-    val nombre: String,
+    @SerializedName("nombre") val name: String,
     val img : String,
-    val extrasCompatibles: MutableList<Extras>
+    @SerializedName("extrasCompatibles") val compatibleExtras: MutableList<Extras>
 )

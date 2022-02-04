@@ -47,6 +47,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     var deleteUser = remember { mutableStateOf(false)}
 
     //Posible consulta en la Base de datos ¿? (but is ok)
+    viewModelUsers.getUserById(id)
 
     var selectedUser: Users = Users(0,"error","","","","","","","","",false)
     viewModelUsers.userListResponse.forEach{
@@ -116,7 +117,6 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
                 }
             )
-
         },
         content = {
             Spacer(modifier = Modifier.padding(10.dp))

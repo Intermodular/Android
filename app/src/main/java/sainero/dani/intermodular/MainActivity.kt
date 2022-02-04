@@ -6,15 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.lifecycle.viewmodel.compose.viewModel
-import sainero.dani.intermodular.Api.MainViewModel
 import sainero.dani.intermodular.ViewModels.*
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 
 @ExperimentalFoundationApi
 class MainActivity : ComponentActivity() {
-    private val mainViewModel by viewModels<MainViewModel>()
     private val mainViewModelSearchBar: MainViewModelSearchBar by viewModels()
 
     private val viewModelExtras by viewModels<ViewModelExtras>()

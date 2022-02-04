@@ -41,9 +41,6 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
 
-    var zone : Zonas
-
-
     //Textos
     var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf("") }
     var (textNºmesas, onValueChangeNºmesas) = rememberSaveable{ mutableStateOf("") }
@@ -60,13 +57,6 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
                 backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
-                    IconButton(onClick = { /*Eliminar elementod e la Base de datos y ir atras*/ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "Delete Icon",
-                            tint = Color.White
-                        )
-                    }
 
                 }
             )
@@ -115,8 +105,6 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
                         Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                         Text(text = "Revertir cambios", fontSize = 15.sp)
                     }
-
-
 
                     Button(
                         onClick = {

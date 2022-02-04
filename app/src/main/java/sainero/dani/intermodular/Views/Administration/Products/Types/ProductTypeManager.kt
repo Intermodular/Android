@@ -119,23 +119,18 @@ private fun filterContentByName(allTypes: List<Tipos>, filterName: String) {
     LazyColumn(
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {
-
         for (i in allTypes) {
-            if (i.nombre.contains(filterName)) {
-
+            if (i.name.contains(filterName)) {
                 item {
-
                     Row (
                         Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
                             .clickable {
                                 GlobalVariables.navController.navigate("${Destinations.EditZone.route}/${i._id}")
-                            }) {
-
-                        Text(text = i.nombre)
-
-
+                            }
+                    ) {
+                        Text(text = i.name)
                     }
                 }
             }
