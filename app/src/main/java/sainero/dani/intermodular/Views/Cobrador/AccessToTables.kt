@@ -154,7 +154,7 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas) {
                             Box (Modifier.padding(10.dp)) {
                                 Button(
                                     onClick = {
-                                        GlobalVariables.navController.navigate(Destinations.CreateOrder.route + "/${i.name}")
+                                        GlobalVariables.navController.navigate(Destinations.CreateOrder.route + "/${i._id}")
                                       },
                                     contentPadding = PaddingValues(10.dp),
                                     colors = ButtonDefaults.buttonColors(
@@ -162,7 +162,7 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas) {
                                         contentColor = Color.Blue
                                     )
                                 ) {
-                                    Text(text = i.name)
+                                    Text(text = i.zone)
                                 }
                             }
                         }

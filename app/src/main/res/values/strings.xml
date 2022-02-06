@@ -20,4 +20,7 @@
     <string name="title_activity_edit_zone">EditZone</string>
     <string name="title_activity_new_zone">NewZone</string>
     <string name="title_activity_product_edit_type">ProductEditType</string>
+    <string name="title_activity_table_manager">TableManager</string>
+    <string name="title_activity_edit_table">EditTable</string>
+    <string name="title_activity_new_table">NewTable</string>
 </resources>

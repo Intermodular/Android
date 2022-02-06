@@ -28,6 +28,9 @@ import sainero.dani.intermodular.Views.Administration.Products.Types.MainProduct
 import sainero.dani.intermodular.Views.Administration.Zone.MainEditZone
 import sainero.dani.intermodular.Views.Administration.Zone.MainNewZone
 import sainero.dani.intermodular.Views.Administration.Zone.MainZoneManager
+import sainero.dani.intermodular.Views.Administration.Zone.Table.MainEditTable
+import sainero.dani.intermodular.Views.Administration.Zone.Table.MainNewTable
+import sainero.dani.intermodular.Views.Administration.Zone.Table.MainTableManager
 
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
@@ -154,6 +157,26 @@ fun NavigationHost(
             requireNotNull(id)
             viewModelTipos.getTypesList()
             MainProductEditType(id = id,viewModelTipos = viewModelTipos)
+        }
+
+        composable(route = Destinations.TableManager.route){
+            viewModelMesas.getMesaList()
+            MainTableManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelMesas = viewModelMesas)
+        }
+
+        composable(
+            route = "${Destinations.EditTable.route}/{tableId}",
+            arguments = listOf(navArgument("tableId"){type = NavType.IntType})
+        ){
+            val id = it.arguments?.getInt("tableId")
+            requireNotNull(id)
+            viewModelMesas.getMesaList()
+            MainEditTable(_id = id, viewModelMesas = viewModelMesas)
+        }
+
+        composable(route = Destinations.NewTable.route){
+            viewModelMesas.getMesaList()
+            MainNewTable(viewModelMesas = viewModelMesas)
         }
     }
 }

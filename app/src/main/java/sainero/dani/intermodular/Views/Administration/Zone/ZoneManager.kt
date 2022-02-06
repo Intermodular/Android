@@ -25,10 +25,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.DataClass.Zonas
+import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
@@ -202,6 +204,7 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                 ) {
                     DropdownMenuItem(
                         onClick = {
+                            navController.navigate(Destinations.TableManager.route)
                             expanded.value = false
                         }
                     ) {

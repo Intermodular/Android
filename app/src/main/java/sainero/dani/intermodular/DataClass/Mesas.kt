@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class Mesas(
     val _id: Int,
-    @SerializedName("nombre") val name: String,
-    @SerializedName("numSillas") val numChair: Int,
-    @SerializedName("estado") val state: String,
-    @SerializedName("numero") val number: Int
+    @SerializedName("zona") var zone: String,
+    @SerializedName("numSillas") var numChair: Int,
+    @SerializedName("estado") var state: String,
+    @SerializedName("numero") var number: Int
 )
