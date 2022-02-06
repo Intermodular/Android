@@ -62,7 +62,8 @@ fun NavigationHost(
         
         composable(route = Destinations.AccessToTables.route) {
             viewModelMesas.getMesaList()
-            MainAccessToTables(viewModelMesas = viewModelMesas)
+            viewModelZonas.getZoneList()
+            MainAccessToTables(viewModelMesas = viewModelMesas, viewModelZonas = viewModelZonas)
         }
         
         composable(route = Destinations.EmployeeManager.route) {

@@ -69,9 +69,7 @@ fun MainEspecifications(id: Int, viewModelProductos: ViewModelProductos) {
                     color = Color.White
                 )
             }
-
             createEspecifications(allEspecifications,myEspecifications,id, viewModelProductos,selectedProduct)
-
         }
     }
 }
