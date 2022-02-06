@@ -103,7 +103,7 @@ fun MainProductManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelP
 
             }
         },
-        //Preguntar sobre si quieren agregar un producto así
+
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {

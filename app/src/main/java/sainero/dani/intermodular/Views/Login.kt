@@ -95,7 +95,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                     //Tests
                 .clickable {
 
-                    navController.navigate("${Destinations.AccessToTables.route}")
+                    navController.navigate("${Destinations.MainAdministrationActivity.route}")
                 }
         )
         Column(

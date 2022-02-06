@@ -23,6 +23,7 @@ class ViewModelProductos: ViewModel() {
 
             try {
                 val productList = apiService.getproducts()
+
                 productListResponse = productList
 
             } catch (e: Exception) {

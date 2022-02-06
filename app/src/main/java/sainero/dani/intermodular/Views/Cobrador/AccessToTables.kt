@@ -1,5 +1,6 @@
 package sainero.dani.intermodular.Views.Cobrador
 
+import android.inputmethodservice.Keyboard
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
@@ -10,8 +11,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -24,6 +27,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +37,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
+import okhttp3.internal.assertThreadDoesntHoldLock
 import sainero.dani.intermodular.DataClass.Mesas
+import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Navigation.NavigationHost
@@ -69,7 +75,7 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
     var allZones: List<Zonas> = viewModelZonas.zonesListResponse
 
     //Filters
-    var allStates: MutableList<String> = mutableListOf("Todas","Libre","Ocupado","Reservado")
+    var allStates: MutableList<String> = mutableListOf("Todas","Libre","Ocupada","Reservada")
     var textState = rememberSaveable{mutableStateOf("Todas")}
 
     var allNamesOfZones: MutableList<String> = mutableListOf()
@@ -77,14 +83,17 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
     allZones.forEach { allNamesOfZones.add(it.name) }
     var textSelectedZone = rememberSaveable{ mutableStateOf("Todas")}
 
-    //Filters
-    var nºMesas by rememberSaveable { mutableStateOf("") }
+    var (nºMesa, onValueChangeNºMesa) = rememberSaveable{ mutableStateOf("") }
+    var (nºComensales, onValueChangeNºComensales) = rememberSaveable{ mutableStateOf("") }
+
+    val aplicateFilters = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+
     ) {
         Scaffold(
             scaffoldState = scaffoldState,
@@ -158,7 +167,7 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
                     scaffoldState = scaffoldStateFilter,
                     content = {
                         Column(
-                            verticalArrangement = Arrangement.Center
+                            verticalArrangement = Arrangement.Center,
                         ) {
                             Column(
                                 modifier = Modifier
@@ -177,70 +186,27 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
 
                             }
                             Spacer(modifier = Modifier.padding(10.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(text = "NºMesa")
-                                    OutlinedTextField(
-                                        value = nºMesas,
-                                        onValueChange = {
-                                            nºMesas = it
-                                        },
-                                        placeholder = { Text("NºMesas") },
-                                        singleLine = true,
-                                        modifier = Modifier
-                                            .padding(start = 50.dp, end = 50.dp)
-                                            .onKeyEvent {
-                                                if (it.nativeKeyEvent.keyCode.equals(KeyEvent.KEYCODE_ENTER)) {
-                                                    true
-                                                }
-                                                false
-                                            }
-                                    )
-                                }
-                            }
-////////////////////
 
-                            textSelectedZone.value = selectedDropDownMenu(text = "Zona",suggestions = allNamesOfZones)
-                            textState.value = selectedDropDownMenu(text = "Estado",suggestions = allStates)
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(text = "NºMesa")
-                                    OutlinedTextField(
-                                        value = nºMesas,
-                                        onValueChange = {
-                                            nºMesas = it
-                                        },
-                                        placeholder = { Text("NºMesas") },
-                                        singleLine = true,
-                                        modifier = Modifier
-                                            .padding(start = 50.dp, end = 50.dp)
-                                            .fillMaxWidth()
-                                            .onKeyEvent {
-                                                if (it.nativeKeyEvent.keyCode.equals(KeyEvent.KEYCODE_ENTER)) {
-                                                    true
-                                                }
-                                                false
-                                            }
-                                    )
-                                }
-                            }
+                            createRowList(
+                                text = "NºMesa",
+                                value = nºMesa,
+                                onValueChange = onValueChangeNºMesa,
+                                KeyboardType = KeyboardType.Number
+                            )
+                            textSelectedZone.value = selectedDropDownMenu(text = "Zona",suggestions = allNamesOfZones,onValueChangeNºMesa = onValueChangeNºMesa)
+                            textState.value = selectedDropDownMenu(text = "Estado",suggestions = allStates,onValueChangeNºMesa = onValueChangeNºMesa)
+                            createRowList(
+                                text = "NºComensales",
+                                value = nºComensales,
+                                onValueChange = onValueChangeNºComensales,
+                                KeyboardType = KeyboardType.Number
+                            )
                         }
                     },
                     floatingActionButton = {
                         FloatingActionButton(
                             onClick = {
-                                //Aplicar filtros
+                                aplicateFilters.value = true
                             }
                         ) {
                             Icon(
@@ -262,47 +228,17 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
                     verticalArrangement = Arrangement.Center
                 ) {
 
-                    LazyVerticalGrid(
-                        cells = GridCells.Adaptive(120.dp),
-                        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
-                    ) {
-                        for (i in allTables) {
-                            item {
-                                Box(Modifier.padding(10.dp)) {
-                                    Button(
-                                        onClick = {
-                                            navController.navigate(Destinations.CreateOrder.route + "/${i._id}")
-                                        },
-                                        contentPadding = PaddingValues(10.dp),
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = checkState(i.state),
-                                            contentColor = Color.Blue
-                                        )
-                                    ) {
-                                        Column(
-                                            verticalArrangement = Arrangement.SpaceAround
-                                        ) {
-                                            Text(
-                                                text = "${i.zone} (${i.numChair})",
-                                                fontSize = 10.sp,
-                                                modifier = Modifier.fillMaxSize(),
-                                                textAlign = TextAlign.Center
-                                            )
-                                            Text(
-                                                text = i.number.toString(),
-                                                fontSize = 20.sp,
-                                                modifier = Modifier.fillMaxSize(),
-                                                textAlign = TextAlign.Center
-                                            )
+                        filterByAllFilters(
+                            allTables = allTables,
+                            nºMesasFilter = nºMesa,
+                            zoneFilter = textSelectedZone.value,
+                            stateFilter = textState.value,
+                            dinersFilter = nºComensales
+                        )
 
-                                            Spacer(modifier = Modifier.padding(4.dp))
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+
                 }
+
             },
         )
     }
@@ -310,7 +246,7 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
 
 
 @Composable
-private fun selectedDropDownMenu(text: String,suggestions: List<String>): String {
+private fun selectedDropDownMenu(text: String,suggestions: List<String>,onValueChangeNºMesa: (String) -> Unit): String {
     Spacer(modifier = Modifier.padding(4.dp))
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(suggestions[0]) }
@@ -326,6 +262,7 @@ private fun selectedDropDownMenu(text: String,suggestions: List<String>): String
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
+        Spacer(modifier = Modifier.padding(10.dp))
         Text(text = "${text}:", Modifier.width(100.dp))
         Column() {
 
@@ -353,6 +290,7 @@ private fun selectedDropDownMenu(text: String,suggestions: List<String>): String
                     DropdownMenuItem(onClick = {
                         selectedText = label
                         expanded = false
+                        onValueChangeNºMesa("")
                     }) {
                         Text(text = label)
                     }
@@ -375,8 +313,114 @@ private fun checkState(state: String): Color {
     return Color.White
 }
 
-fun createTables() {
+@Composable
+private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit, KeyboardType: KeyboardType) {
 
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        Spacer(modifier = Modifier.padding(10.dp))
+        Text(text = "${text}:", Modifier.width(100.dp))
+        OutlinedTextField(
+            value = value,
+            onValueChange = {
+                onValueChange(it)
+            },
+            placeholder = { Text(text) },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType),
+            label = { Text(text = text) },
+            modifier = Modifier
+                .padding(start = 10.dp, end = 20.dp)
+        )
+    }
+}
+
+@ExperimentalFoundationApi
+@Composable
+private fun filterByAllFilters(allTables: List<Mesas>, nºMesasFilter: String,zoneFilter: String, stateFilter: String, dinersFilter: String) {
+
+    //Obtener todas las mesas (Luego le vamos restando las que no cumplan la condición)
+    val allFilterTables: MutableList<Mesas> = mutableListOf()
+    val removeTables: MutableList<Mesas> = mutableListOf()
+    allTables.forEach { allFilterTables.add(it) }
+    var listOfAllFilterTables: List<Mesas> = mutableListOf()
+
+    if (!nºMesasFilter.equals("")) {
+        allFilterTables.forEach{
+            if (it.number.equals(nºMesasFilter.toInt())) listOfAllFilterTables = listOf(it)
+        }
+    } else {
+        //State
+        if (!stateFilter.equals("Todas"))
+            allFilterTables.forEach {
+                if (!it.state.equals(stateFilter)) removeTables.add(it)
+            }
+
+        //Zone
+        if (!zoneFilter.equals("Todas"))
+            allFilterTables.forEach {
+                if (!it.zone.equals(zoneFilter) ) removeTables.add(it)
+            }
+
+        //Diners
+        if (!dinersFilter.equals(""))
+            allFilterTables.forEach{
+                if (it.numChair < dinersFilter.toInt()) removeTables.add(it)
+            }
+
+
+        removeTables.forEach{
+            allFilterTables.remove(it)
+        }
+        listOfAllFilterTables = allFilterTables
+    }
+    createTables(allFilterTables = listOfAllFilterTables)
+}
+
+@ExperimentalFoundationApi
+@Composable
+private fun createTables(allFilterTables: List<Mesas>) {
+    LazyVerticalGrid(
+        cells = GridCells.Adaptive(120.dp),
+        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
+    ) {
+        for (i in allFilterTables) {
+            item {
+                Box(Modifier.padding(10.dp)) {
+                    Button(
+                        onClick = {
+                            navController.navigate(Destinations.CreateOrder.route + "/${i._id}")
+                        },
+                        contentPadding = PaddingValues(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = checkState(i.state),
+                            contentColor = Color.Blue
+                        )
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Text(
+                                text = "${i.zone} (${i.numChair})",
+                                fontSize = 10.sp,
+                                modifier = Modifier.fillMaxSize(),
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = i.number.toString(),
+                                fontSize = 20.sp,
+                                modifier = Modifier.fillMaxSize(),
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.padding(4.dp))
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 
