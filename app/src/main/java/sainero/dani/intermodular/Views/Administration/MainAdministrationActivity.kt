@@ -26,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 
 @ExperimentalFoundationApi
 
@@ -37,8 +38,12 @@ class MainAdministrationActivity : ComponentActivity() {
         }
     }
 }
+//API Key
+//GOgVQm3MOJNPcKODXTZqFq90b5p4wjsqmcJ6vTJJY4Rod4tTEWywir0HYAvU4oYe
 
 
+//Endpoint
+//https://data.mongodb-api.com/app/data-cdrvt/endpoint/data/beta
 
 @Composable
 fun MainAdministrationActivityView() {
@@ -47,7 +52,6 @@ fun MainAdministrationActivityView() {
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
 
-    val navController = GlobalVariables.navController
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -74,7 +78,7 @@ fun MainAdministrationActivityView() {
                             DropdownMenuItem(
                                 onClick = {
                                     expanded.value = false
-                                    navController?.navigate(Destinations.AccessToTables.route)
+                                    navController.navigate(Destinations.AccessToTables.route)
                                 }) {
                                     Text(text = "Entrar como cobrador")
                                 }

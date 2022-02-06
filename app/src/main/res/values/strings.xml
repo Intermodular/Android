@@ -20,6 +20,13 @@
     <string name="title_activity_edit_zone">EditZone</string>
     <string name="title_activity_new_zone">NewZone</string>
     <string name="title_activity_product_edit_type">ProductEditType</string>
+    <string name="title_activity_especifications">Especifications</string>
+    <string name="title_activity_drag_drop_list">DragDropList</string>
+    <string name="title_activity_drag_drop_list_extensions">DragDropListExtensions</string>
+    <string name="title_activity_drag_drop_list_state">DragDropListState</string>
+    <string name="title_activity_main_drag_and_drop">MainDragAndDrop</string>
+    <string name="title_activity_product_new_typ">ProductNewTyp</string>
+    <string name="title_activity_extras">Extras</string>
     <string name="title_activity_table_manager">TableManager</string>
     <string name="title_activity_edit_table">EditTable</string>
     <string name="title_activity_new_table">NewTable</string>

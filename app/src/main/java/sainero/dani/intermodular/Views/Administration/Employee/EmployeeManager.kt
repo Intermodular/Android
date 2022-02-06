@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +21,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -126,8 +129,21 @@ fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewMode
             content = {
 
 
-                aplicateFilter.value = true
-                if (aplicateFilter.value)  filterContentByName(allUsers = allUsers, filterName = filter)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .border(
+                            width = 3.dp,
+                            brush = Brush.horizontalGradient(
+                                listOf(Color.Yellow, Color.Blue, Color.Red)
+                            ),
+                            shape = RectangleShape
+                        )
+                ) {
+                    aplicateFilter.value = true
+                    if (aplicateFilter.value)  filterContentByName(allUsers = allUsers, filterName = filter)
+                }
+
 
             }
 
@@ -139,31 +155,55 @@ fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewMode
 @Composable
 private fun filterContentByName(allUsers: List<Users>,filterName: String) {
     LazyColumn(
-        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
+        contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
+
     ) {
 
-        for (i in allUsers) {
-            if (i.name.contains(filterName)) {
 
-                item {
+        item {
+            Column(
+                verticalArrangement = Arrangement.SpaceAround
+            ) {
+                Row (
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                ) {
+                    Text(
+                        text = "Nombre",
+                    )
+                    Spacer(modifier = Modifier.padding(10.dp))
+                    Text(
+                        text = "DNI",
+                    )
+                    Spacer(modifier = Modifier.padding(10.dp))
+                    Text(text = "Rol")
+                }
 
-                    Row (
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .clickable {
-                                navController.navigate("${Destinations.EditEmployee.route}/${i._id}")
-                            }) {
-
-                        Text(text = i.name)
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.dni)
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.rol)
-                    }
+                for (i in allUsers) {
+                    if (i.name.contains(filterName)) {
+                            Row (
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp)
+                                    .clickable {
+                                        navController.navigate("${Destinations.EditEmployee.route}/${i._id}")
+                                    }
+                            ) {
+                                    Text(text = i.name)
+                                    Spacer(modifier = Modifier.padding(10.dp))
+                                    Text(text = i.dni)
+                                    Spacer(modifier = Modifier.padding(10.dp))
+                                    Text(text = i.rol)
+                            }
+                        }
                 }
             }
+
         }
+
     }
 
 }
@@ -222,7 +262,7 @@ fun DefaultAppBar(onSearchClicked: () -> Unit) {
                     Icon(
                         Icons.Filled.MoreVert,
                         contentDescription = "Localized description",
-                        tint = Color.Red
+                        tint = Color.White
                     )
                 }
 

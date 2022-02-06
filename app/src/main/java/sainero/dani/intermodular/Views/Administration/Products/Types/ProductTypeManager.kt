@@ -27,6 +27,7 @@ import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
@@ -104,7 +105,7 @@ fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewMo
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    GlobalVariables.navController.navigate(Destinations.NewProduct.route)
+                    GlobalVariables.navController.navigate(Destinations.ProductNewType.route)
                 }
             ) {
                 Text("+")
@@ -127,7 +128,7 @@ private fun filterContentByName(allTypes: List<Tipos>, filterName: String) {
                             .fillMaxWidth()
                             .padding(10.dp)
                             .clickable {
-                                GlobalVariables.navController.navigate("${Destinations.EditZone.route}/${i._id}")
+                                navController.navigate("${Destinations.ProductEditType.route}/${i._id}")
                             }
                     ) {
                         Text(text = i.name)

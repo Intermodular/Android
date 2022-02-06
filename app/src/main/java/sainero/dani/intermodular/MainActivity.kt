@@ -32,6 +32,12 @@ class MainActivity : ComponentActivity() {
             viewModelUsers.getUserList()
             viewModelProductos.getProductList()
             viewModelZonas.getZoneList()
+            viewModelExtras.getExtrasList()
+            viewModelMesas.getMesaList()
+            viewModelTipos.getTypesList()
+
+            //viewModelPedidos
+
             NavigationHost(mainViewModelSearchBar, viewModelUsers,viewModelExtras,viewModelMesas,viewModelNominas,viewModelPedidos,viewModelProductos,viewModelTipos,viewModelZonas)
         }
     }

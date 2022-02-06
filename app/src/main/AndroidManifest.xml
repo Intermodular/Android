@@ -29,6 +29,41 @@
             android:label="@string/title_activity_table_manager"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
+            android:name=".Views.Administration.Products.Types.Extras.Extras"
+            android:exported="false"
+            android:label="@string/title_activity_extras"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.Administration.Products.Types.ui.theme.ProductNewTyp"
+            android:exported="false"
+            android:label="@string/title_activity_product_new_typ"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Utils.DragAndDrop.MainDragAndDrop"
+            android:exported="false"
+            android:label="@string/title_activity_main_drag_and_drop"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Utils.DragAndDrop.DragDropListState"
+            android:exported="false"
+            android:label="@string/title_activity_drag_drop_list_state"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Utils.DragAndDrop.DragDropListExtensions"
+            android:exported="false"
+            android:label="@string/title_activity_drag_drop_list_extensions"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Utils.DragAndDrop.DragDropList"
+            android:exported="false"
+            android:label="@string/title_activity_drag_drop_list"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.Administration.Products.Especifications.Especifications"
+            android:exported="false"
+            android:label="@string/title_activity_especifications"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
             android:name=".Views.Administration.Products.Types.ProductEditType"
             android:exported="true"
             android:label="@string/title_activity_product_edit_type"

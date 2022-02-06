@@ -23,6 +23,7 @@ class ViewModelProductos: ViewModel() {
 
             try {
                 val productList = apiService.getproducts()
+
                 productListResponse = productList
 
             } catch (e: Exception) {
@@ -31,15 +32,15 @@ class ViewModelProductos: ViewModel() {
         }
     }
 
-    var product: List <Productos> by mutableStateOf(listOf())
+    var product: Productos by mutableStateOf (Productos(0,"","", arrayListOf("") ,2f, arrayListOf(""),"",0))
     fun getProductById(id:Int) {
         viewModelScope.launch {
             val apiService = ApiServiceProduct.getInstance()
 
             try {
-                val productById = apiService.getProductById(id)
-                product = productById
-
+                val respuesta = apiService.getProductById(id)
+                if (respuesta.isSuccessful)
+                    product = respuesta.body()!!
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }
@@ -47,7 +48,7 @@ class ViewModelProductos: ViewModel() {
     }
 
     //Métodos post
-    val newProduct: MutableList<Productos> = mutableListOf()
+    var newProduct: Productos by mutableStateOf (Productos(0,"","", arrayListOf("") ,2f, arrayListOf(""),"",0))
     fun uploadProduct(product: Productos) {
         viewModelScope.launch {
             val apiService = ApiServiceProduct.getInstance()
@@ -55,7 +56,7 @@ class ViewModelProductos: ViewModel() {
             try {
                 val result = apiService.uploadProduct(product)
                 if (result.isSuccessful)
-                     newProduct.add(result.body()!!)
+                     newProduct = result.body()!!
                 else
                     Log.d("Error: upload product","Error: upload product")
             } catch (e: Exception) {
@@ -64,14 +65,14 @@ class ViewModelProductos: ViewModel() {
         }
     }
 
-    val editProduct: MutableList<Productos> = mutableListOf()
+    var editProduct: Productos by mutableStateOf (Productos(0,"","", arrayListOf("") ,2f, arrayListOf(""),"",0))
     fun editProduct(product: Productos) {
         viewModelScope.launch {
             val apiService = ApiServiceProduct.getInstance()
             try {
                 val result = apiService.editProduct(product = product)
                 if (result.isSuccessful)
-                    editProduct.add(result.body()!!)
+                    editProduct = result.body()!!
                 else
                     Log.d("Error: edit product","Error: edit product")
             } catch (e: Exception) {
@@ -81,7 +82,7 @@ class ViewModelProductos: ViewModel() {
     }
 
     //Métodos Delete
-    val deleteProduct: MutableList<Productos> = mutableListOf()
+    var deleteProduct: Productos by mutableStateOf (Productos(0,"","", arrayListOf("") ,2f, arrayListOf(""),"",0))
 
     fun deleteProduct(id: Int) {
         viewModelScope.launch {
@@ -90,7 +91,7 @@ class ViewModelProductos: ViewModel() {
             try {
                 val result = apiService.deleteProduct(id)
                 if (result.isSuccessful)
-                    deleteProduct.add(result.body()!!)
+                    deleteProduct = result.body()!!
                 else
                     Log.d("Error: edit product","Error: edit product")
 

@@ -14,7 +14,7 @@ interface ApiServiceProduct {
     @GET("producto/id/{id}")
     suspend fun getProductById(
         @Path("id") id: Int
-    ): List<Productos>
+    ): Response<Productos>
 
     @POST("producto")
     suspend fun uploadProduct(

@@ -3,67 +3,74 @@ package sainero.dani.intermodular.Views.Administration.Products.Types
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
+import sainero.dani.intermodular.DataClass.Extras
 import sainero.dani.intermodular.DataClass.Tipos
 import sainero.dani.intermodular.DataClass.Users
+import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.ViewModels.ViewModelExtras
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
-import sainero.dani.intermodular.Views.Administration.Products.Types.ui.theme.IntermodularTheme
+import sainero.dani.intermodular.ViewModels.ViewModelUsers
+import java.util.regex.Pattern
 
 class ProductEditType : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            IntermodularTheme {
 
-            }
         }
     }
 }
 
 @Composable
-fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos) {
+fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, viewModelExtras: ViewModelExtras) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
     var deleteType = remember { mutableStateOf(false) }
 
-    //Posible consulta en la Base de datos ¿? (but is ok)
 
-    /*
-    var selectedType: Tipos = Tipos(_id = id,"","")
+    //Posible consulta en la Base de datos ¿? (but is ok)
+    var selectedType: Tipos = Tipos(_id = id,"","", arrayListOf())
     viewModelTipos.typeListResponse.forEach{
-        if (it._id.equals(id))  selectedUser = it
+        if (it._id.equals(id))  selectedType = it
     }
 
-    var (textDniUser, onValueChangeDniUser) = rememberSaveable { mutableStateOf(selectedUser.dni) }
-    var (textNameUser, onValueChangeNameUser) = rememberSaveable { mutableStateOf(selectedUser.name) }
-    var (textSurnameUser, onValueChangeSurnameUser) = rememberSaveable { mutableStateOf(selectedUser.surname) }
-    var (textFnacUser, onValueChangeFnacUser) = rememberSaveable { mutableStateOf(selectedUser.fnac) }
-    var (textEmailUser, onValueChangeEmailUser) = rememberSaveable { mutableStateOf(selectedUser.email) }
-    var (textUserUser, onValueChangeUserUser) = rememberSaveable { mutableStateOf(selectedUser.user) }
-    var (textPasswordUser, onValueChangePasswordUser) = rememberSaveable { mutableStateOf(selectedUser.password) }
-    var (textRolUser, onValueChangeRolUser) = rememberSaveable { mutableStateOf(selectedUser.rol) }
-    var (textPhoneNumberUser, onValueChangePhoneNumberUser) = rememberSaveable { mutableStateOf(selectedUser.phoneNumber) }
+    var allExtras = viewModelExtras.extrasListResponse
+    var allNamesOfExtras: MutableList<String> = mutableListOf()
+    allExtras.forEach {allNamesOfExtras.add(it.name) }
+
+    //Text
+
+    var (textName, onValueChangeName) = rememberSaveable { mutableStateOf(selectedType.name) }
+    var (nameError,nameErrorChange) = remember { mutableStateOf(false) }
+    val textOfNameError: String = "El nombre no puede ser mayor a 14 carácteres"
+
+    var (textImg, onValueChangeImg) = rememberSaveable { mutableStateOf(selectedType.img) }
+    var (textCompatibleExtras, onValueCompatibleExtras) = rememberSaveable { mutableStateOf(selectedType.compatibleExtras) }
+
 
     //Funciones extras a realizar
-    if (deleteUser.value) {
-        confirmDeleteUser(viewModelUsers = viewModelUsers,id = id)
+    if (deleteType.value) {
+        confirmDeleteType(viewModelTipos = viewModelTipos, id = id)
     }
 
     //Ventana
@@ -74,19 +81,19 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Edición de empleado",color = Color.White)
+                    Text(text = "Edición de Tipo",color = Color.White)
                 },
                 backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     IconButton(
                         onClick = {
-                            deleteUser.value = true
+                            deleteType.value = true
                         }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Eliminar empleado",
+                            contentDescription = "Eliminar tipo",
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
                     }
@@ -107,7 +114,7 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos) {
                                 onClick = {
                                     expanded.value = false
                                 }) {
-                                Text(text = "Gestionar nominas")
+                                Text(text = "")
                             }
                         }
                     }
@@ -124,15 +131,21 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos) {
                     .fillMaxWidth()
             ) {
 
-                createRowList(text = "DNI", value = textDniUser, onValueChange = onValueChangeDniUser)
-                createRowList(text = "Name", value = textNameUser, onValueChange = onValueChangeNameUser)
-                createRowList(text = "Surname", value = textSurnameUser, onValueChange = onValueChangeSurnameUser)
-                createRowList(text = "Fecha Nacimiento", value = textFnacUser, onValueChange = onValueChangeFnacUser)
-                createRowList(text = "Email", value = textEmailUser, onValueChange = onValueChangeEmailUser)
-                createRowList(text = "User", value = textUserUser, onValueChange = onValueChangeUserUser)
-                createRowList(text = "Contraseña", value = textPasswordUser, onValueChange = onValueChangePasswordUser)
-                createRowList(text = "Rol", value = textPhoneNumberUser, onValueChange = onValueChangePhoneNumberUser)
-                createRowList(text = "Rol", value = textRolUser, onValueChange = onValueChangeRolUser)
+                createRowListWithErrorMesaje(
+                    text = "Name",
+                    value = textName,
+                    onValueChange = onValueChangeName,
+                    validateError = ::isValidNameOfType,
+                    errorMesaje = textOfNameError,
+                    changeError = nameErrorChange,
+                    error = nameError,
+                    mandatory = true,
+                    numericTextBoard = false
+                )
+
+                createRowList(text = "Img", value = textImg, onValueChange = onValueChangeImg)
+
+                dropDownMenu(text = "Extras", suggestions = allNamesOfExtras, idOfItem = id, navigate = "")
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
@@ -141,14 +154,10 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos) {
                 ) {
                     Button(
                         onClick = {
-                            textDniUser = selectedUser.dni
-                            textNameUser = selectedUser.name
-                            textSurnameUser = selectedUser.surname
-                            textFnacUser = selectedUser.fnac
-                            textEmailUser = selectedUser.email
-                            textUserUser = selectedUser.user
-                            textPasswordUser = selectedUser.password
-                            textRolUser = selectedUser.rol
+                            textName = ""
+                            textImg = ""
+                            textCompatibleExtras = arrayListOf()
+
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -176,8 +185,8 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos) {
 
                     Button(
                         onClick = {
-                            selectedUser = Users(_id = id, dni = textDniUser, name =  textNameUser, surname =  textSurnameUser, fnac =  textFnacUser, user =  textUserUser, password =  textPasswordUser, rol =  textRolUser, email =  textEmailUser, newUser = false, phoneNumber = "" )
-//                            viewModelUsers.editUser(selectedUser)
+                            selectedType = Tipos(id,textName,textImg,textCompatibleExtras)
+                            viewModelTipos.editType(selectedType)
 
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -204,13 +213,196 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos) {
 
                 }
             }
-        })*/
+        })
 }
+
+
+
+
+@Composable
+private fun createRowListWithErrorMesaje(
+    text: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    validateError: (String) -> Boolean,
+    errorMesaje: String,
+    changeError: (Boolean) -> Unit,
+    error: Boolean,
+    mandatory: Boolean,
+    numericTextBoard : Boolean
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        Text(text = "${text}:", Modifier.width(100.dp))
+        Column(
+            verticalArrangement = Arrangement.SpaceAround,
+        ) {
+            OutlinedTextField(
+                value = value,
+                onValueChange = {
+                    onValueChange(it)
+                    changeError(!validateError(it))
+                },
+                placeholder = { Text(text) },
+                label = { Text(text = text) },
+                isError = error,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (numericTextBoard) KeyboardType.Number else KeyboardType.Text),
+
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 20.dp)
+            )
+            val assistiveElementText = if (error) errorMesaje else if (mandatory) "*Obligatorio" else ""
+            val assistiveElementColor = if (error) {
+                MaterialTheme.colors.error
+            } else {
+                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+            }
+            Text(
+                text = assistiveElementText,
+                color = assistiveElementColor,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 10.dp, end = 20.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit) {
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        Text(text = "${text}:", Modifier.width(100.dp))
+        OutlinedTextField(
+            value = value,
+            onValueChange = {
+                onValueChange(it)
+            },
+            placeholder = { Text(text) },
+            label = { Text(text = text) },
+            modifier = Modifier
+                .padding(start = 10.dp, end = 20.dp)
+        )
+    }
+}
+
+@Composable
+private fun confirmDeleteType(viewModelTipos: ViewModelTipos, id: Int) {
+    MaterialTheme {
+
+        Column {
+            AlertDialog(
+                onDismissRequest = {
+                },
+                title = {
+                    Text(text = "¿Seguro que desea eliminar el tipo seleccionado?")
+                },
+                text = {
+                    Text("No podrás volver a recuperarlo")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModelTipos.deleteType(id)
+                            GlobalVariables.navController.navigate(Destinations.ProductTypeManager.route)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Blue,
+                            contentColor = Color.White
+                        ),
+                    ) {
+                        Text("Aceptar")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            GlobalVariables.navController.navigate("${Destinations.ProductEditType.route}/${id}")
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Blue,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int,navigate: String) {
+    Spacer(modifier = Modifier.padding(4.dp))
+    var expanded by remember { mutableStateOf(false) }
+    var selectedText by remember { mutableStateOf(text) }
+    var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
+    var editItem = remember{ mutableStateOf(false)}
+
+    val icon = if (expanded)
+        Icons.Filled.KeyboardArrowUp
+    else
+        Icons.Filled.KeyboardArrowDown
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Text(text = "${text}:", Modifier.width(100.dp))
+        Column() {
+
+            OutlinedTextField(
+                value = selectedText,
+                onValueChange = { selectedText = it },
+                enabled = false,
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 20.dp)
+                    .onGloballyPositioned { coordinates ->
+                        textfieldSize = coordinates.size.toSize()
+                    },
+                trailingIcon = {
+                    Icon(icon, "arrowExpanded",
+                        Modifier.clickable { expanded = !expanded })
+                },
+                leadingIcon = {
+                    Icon(Icons.Default.Edit,"Edit ${text}",
+                        Modifier.clickable{
+                            editItem.value = true
+                            GlobalVariables.navController.navigate(navigate)
+
+                        })
+                }
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+            ) {
+                suggestions.forEach { label ->
+                    DropdownMenuItem(onClick = {
+                        selectedText = label
+                        expanded = false
+                    }) {
+                        Text(text = label)
+                    }
+                }
+            }
+        }
+    }
+}
+
+//Validaciones
+private fun isValidNameOfType(text: String) = Pattern.compile("^[^)(]{1,14}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview15() {
-    IntermodularTheme {
 
-    }
 }
