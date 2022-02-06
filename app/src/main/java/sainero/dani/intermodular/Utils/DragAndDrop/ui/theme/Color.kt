@@ -1,4 +1,4 @@
-package sainero.dani.intermodular.Views.Administration.Products.Ingredients.ui.theme
+package sainero.dani.intermodular.Utils.DragAndDrop.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

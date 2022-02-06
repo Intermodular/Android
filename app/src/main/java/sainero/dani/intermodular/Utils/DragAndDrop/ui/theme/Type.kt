@@ -1,4 +1,4 @@
-package sainero.dani.intermodular.Views.Administration.Products.Types.ui.theme
+package sainero.dani.intermodular.Utils.DragAndDrop.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

@@ -95,7 +95,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                     //Tests
                 .clickable {
 
-                    navController.navigate(Destinations.MainAdministrationActivity.route)
+                    navController.navigate("${Destinations.ProductTypeManager.route}")
                 }
         )
         Column(
@@ -250,7 +250,7 @@ private fun adminAlertDestination() {
                 confirmButton = {
                     Button(
                         onClick = {
-                            GlobalVariables.navController.navigate(Destinations.MainAdministrationActivity.route)
+                            navController.navigate(Destinations.MainAdministrationActivity.route)
                         }) {
                         Text("Administración")
                     }
@@ -258,7 +258,7 @@ private fun adminAlertDestination() {
                 dismissButton = {
                     Button(
                         onClick = {
-                            GlobalVariables.navController.navigate(Destinations.AccessToTables.route)
+                            navController.navigate(Destinations.AccessToTables.route)
                         }) {
                         Text("Cobrador")
                     }

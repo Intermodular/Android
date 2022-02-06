@@ -6,5 +6,6 @@ data class Tipos(
     val _id: Int,
     @SerializedName("nombre") val name: String,
     val img : String,
-    @SerializedName("extrasCompatibles") val compatibleExtras: MutableList<Extras>
+    @SerializedName("listaExtras") val compatibleExtras: MutableList<Any>
+
 )

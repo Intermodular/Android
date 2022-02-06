@@ -26,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 
 @ExperimentalFoundationApi
 
@@ -51,7 +52,6 @@ fun MainAdministrationActivityView() {
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
 
-    val navController = GlobalVariables.navController
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -78,7 +78,7 @@ fun MainAdministrationActivityView() {
                             DropdownMenuItem(
                                 onClick = {
                                     expanded.value = false
-                                    navController?.navigate(Destinations.AccessToTables.route)
+                                    navController.navigate(Destinations.AccessToTables.route)
                                 }) {
                                     Text(text = "Entrar como cobrador")
                                 }

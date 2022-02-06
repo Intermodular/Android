@@ -20,5 +20,6 @@ sealed class Destinations (
     object  EditZone: Destinations("Administration.Zone.EditZone")
     object  NewZone: Destinations("Administration.Zone.NewZone")
     object  ProductEditType: Destinations("Administration.Products.Types.ProductEditType")
-
+    object  Especifications: Destinations("Administration.Products.Especifications.Especifications")
+    object  ProductNewType: Destinations("Administration.Products.Types.ProductNewType")
 }

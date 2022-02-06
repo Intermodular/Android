@@ -7,6 +7,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -90,7 +93,9 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
     var (textPasswordUser, onValueChangePasswordUser) = rememberSaveable { mutableStateOf(selectedUser.password) }
 
-    var textRolUser = rememberSaveable { mutableListOf(selectedUser.rol)}
+    var textRolUser = rememberSaveable { mutableListOf(selectedUser.rol,"")}
+
+    if (textRolUser[0].equals("Administrador")) textRolUser[1] = "Empleado" else textRolUser[1] = "Administrador"
 
     //Funciones extras a realizar
     if (deleteUser.value) {
@@ -153,152 +158,206 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                     .padding(start = 10.dp)
                     .fillMaxWidth()
             ) {
+                LazyColumn(
+                    content = {
+                        item {
+                            createRowListWithErrorMesaje(
+                                text = "DNI",
+                                value = textDniUser,
+                                onValueChange = onValueChangeDniUser,
+                                validateError = ::isValidDni,
+                                errorMesaje = nameOfDniError,
+                                changeError = dniErrorChange,
+                                error = dniError,
+                                mandatory = true,
+                                numericTextBoard = false
+                            )
+                        }
+                        item {
+                            createRowListWithErrorMesaje(
+                                text = "Name",
+                                value = textNameUser,
+                                onValueChange = onValueChangeNameUser,
+                                validateError = ::isValidName,
+                                errorMesaje = nameOfNameError,
+                                changeError = nameErrorChange,
+                                error = nameError,
+                                mandatory = true,
+                                numericTextBoard = false
+                            )
+                        }
+                        item {
+                            createRowListWithErrorMesaje(
+                                text = "Surname",
+                                value = textSurnameUser,
+                                onValueChange = onValueChangeSurnameUser,
+                                validateError = ::isValidSurname,
+                                errorMesaje = nameOfsurnameError,
+                                changeError = surnameErrorChange,
+                                error = surnameError,
+                                mandatory = true,
+                                numericTextBoard = false
+                            )
+                        }
+                        item {
+                            createRowListWithErrorMesaje(
+                                text = "Phone Number",
+                                value = textPhoneNumberUser,
+                                onValueChange = onValueChangePhoneNumberUser,
+                                validateError = ::isValidPhoneNumber,
+                                errorMesaje = nameOfTelError,
+                                changeError = telErrorChange,
+                                error = telError,
+                                mandatory = false,
+                                numericTextBoard = false
+                            )
+                        }
+                        item {
+                            createRowListWithErrorMesaje(
+                                text = "Fecha Nacimiento",
+                                value = textFnacUser,
+                                onValueChange = onValueChangeFnacUser,
+                                validateError = ::isValidDateOfBirth,
+                                errorMesaje = nameOfFnacError,
+                                changeError = fNacErrorChange,
+                                error = fNacError,
+                                mandatory = false,
+                                numericTextBoard = false
+                            )
+                        }
+                        item {
 
-                createRowListWithErrorMesaje(
-                    text = "DNI",
-                    value = textDniUser,
-                    onValueChange = onValueChangeDniUser,
-                    validateError = ::isValidDni,
-                    errorMesaje = nameOfDniError,
-                    changeError = dniErrorChange,
-                    error = dniError
-                )
+                            createRowListWithErrorMesaje(
+                                text = "User",
+                                value = textUserUser,
+                                onValueChange = onValueChangeUserUser,
+                                validateError = ::isValidUser,
+                                errorMesaje = nameOfUserError,
+                                changeError = userErrorChange,
+                                error = userError,
+                                mandatory = true,
+                                numericTextBoard = false
+                            )
+                        }
+                        item {
+                            createRowListWithErrorMesaje(
+                                text = "Email",
+                                value = textEmailUser,
+                                onValueChange = onValueChangeEmailUser,
+                                validateError = ::isValidEmail,
+                                errorMesaje = nameOfEmailError,
+                                changeError = emailErrorChange,
+                                error = emailError,
+                                mandatory = true,
+                                numericTextBoard = false
+                            )
+                        }
+                        item {
+                            dropDownMenu(text = "Rol",textRolUser)
+                        }
+                        item {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                            ) {
+                                Button(
+                                    onClick = {
+                                        textDniUser = selectedUser.dni
+                                        textNameUser = selectedUser.name
+                                        textSurnameUser = selectedUser.surname
+                                        textFnacUser = selectedUser.fnac
+                                        textEmailUser = selectedUser.email
+                                        textUserUser = selectedUser.user
+                                        textPasswordUser = selectedUser.password
+                                        textRolUser[0] = selectedUser.rol
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color.White,
+                                        contentColor = Color.Blue
+                                    ),
+                                    contentPadding = PaddingValues(
+                                        start = 10.dp,
+                                        top = 6.dp,
+                                        end = 10.dp,
+                                        bottom = 6.dp
+                                    )
+                                ) {
 
-                createRowListWithErrorMesaje(
-                    text = "Name",
-                    value = textNameUser,
-                    onValueChange = onValueChangeNameUser,
-                    validateError = ::isValidName,
-                    errorMesaje = nameOfNameError,
-                    changeError = nameErrorChange,
-                    error = nameError
-                )
+                                    Text(text = "Revertir cambios", fontSize = 15.sp)
+                                }
 
-                createRowListWithErrorMesaje(
-                    text = "Surname",
-                    value = textSurnameUser,
-                    onValueChange = onValueChangeSurnameUser,
-                    validateError = ::isValidSurname,
-                    errorMesaje = nameOfsurnameError,
-                    changeError = surnameErrorChange,
-                    error = surnameError
-                )
-                createRowListWithErrorMesaje(
-                    text = "Phone Number",
-                    value = textPhoneNumberUser,
-                    onValueChange = onValueChangePhoneNumberUser,
-                    validateError = ::isValidPhoneNumber,
-                    errorMesaje = nameOfTelError,
-                    changeError = telErrorChange,
-                    error = telError
-                )
 
-                createRowListWithErrorMesaje(
-                    text = "Fecha Nacimiento",
-                    value = textFnacUser,
-                    onValueChange = onValueChangeFnacUser,
-                    validateError = ::isValidDateOfBirth,
-                    errorMesaje = nameOfFnacError,
-                    changeError = fNacErrorChange,
-                    error = fNacError
-                )
 
-                createRowListWithErrorMesaje(
-                    text = "User",
-                    value = textUserUser,
-                    onValueChange = onValueChangeUserUser,
-                    validateError = ::isValidUser,
-                    errorMesaje = nameOfUserError,
-                    changeError = userErrorChange,
-                    error = userError
-                )
+                                Button(
+                                    onClick = {
+                                        selectedUser = Users(
+                                            _id = id,
+                                            dni = textDniUser,
+                                            name =  textNameUser,
+                                            surname =  textSurnameUser,
+                                            fnac =  textFnacUser,
+                                            user =  textUserUser,
+                                            password =  textPasswordUser,
+                                            rol =  textRolUser.get(0),
+                                            email =  textEmailUser,
+                                            newUser = false,
+                                            phoneNumber = textPhoneNumberUser )
+                                        viewModelUsers.editUser(selectedUser)
 
-                //Como van los roles ¿?
-                createRowListWithErrorMesaje(
-                    text = "Email",
-                    value = textEmailUser,
-                    onValueChange = onValueChangeEmailUser,
-                    validateError = ::isValidEmail,
-                    errorMesaje = nameOfEmailError,
-                    changeError = emailErrorChange,
-                    error = emailError
-                )
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color.White,
+                                        contentColor = Color.Blue
+                                    ),
+                                    contentPadding = PaddingValues(
+                                        start = 10.dp,
+                                        top = 6.dp,
+                                        end = 10.dp,
+                                        bottom = 6.dp
+                                    )
+                                ) {
+                                    Text(text = "Guardar cambios", fontSize = 15.sp)
+                                }
 
-                createRowList(text = "Contraseña", value = textPasswordUser, onValueChange = onValueChangePasswordUser)
-                dropDownMenu(text = "Rol",textRolUser)
-
-                Spacer(modifier = Modifier.padding(10.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    Button(
-                        onClick = {
-                            textDniUser = selectedUser.dni
-                            textNameUser = selectedUser.name
-                            textSurnameUser = selectedUser.surname
-                            textFnacUser = selectedUser.fnac
-                            textEmailUser = selectedUser.email
-                            textUserUser = selectedUser.user
-                            textPasswordUser = selectedUser.password
-                            textRolUser[0] = selectedUser.rol
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
-                        contentPadding = PaddingValues(
-                            start = 10.dp,
-                            top = 6.dp,
-                            end = 10.dp,
-                            bottom = 6.dp
-                        ),
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 20.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Revertir cambios",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                        Text(text = "Revertir cambios", fontSize = 15.sp)
+                                Button(
+                                    onClick = {
+                                        selectedUser = Users(
+                                            _id = selectedUser._id,
+                                            dni = selectedUser.dni,
+                                            name =  selectedUser.name,
+                                            surname =  selectedUser.surname,
+                                            fnac =  selectedUser.fnac,
+                                            user =  selectedUser.user,
+                                            password =  selectedUser.password,
+                                            rol =  selectedUser.rol,
+                                            email =  selectedUser.email,
+                                            newUser = true,
+                                            phoneNumber = selectedUser.phoneNumber
+                                        )
+                                        viewModelUsers.editUser(selectedUser)
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color.White,
+                                        contentColor = Color.Blue
+                                    ),
+                                    contentPadding = PaddingValues(
+                                        start = 10.dp,
+                                        top = 6.dp,
+                                        end = 10.dp,
+                                        bottom = 6.dp
+                                    )
+                                ) {
+                                    Text(text = "Restablecer contraseña", fontSize = 15.sp)
+                                }
+                            }
+                        }
                     }
 
+                )
 
-
-                    Button(
-                        onClick = {
-                            selectedUser = Users(_id = id, dni = textDniUser, name =  textNameUser, surname =  textSurnameUser, fnac =  textFnacUser, user =  textUserUser, password =  textPasswordUser, rol =  textRolUser.get(0), email =  textEmailUser, newUser = false, phoneNumber = "" )
-                            //actualizar en la BD con este objeto
-                            viewModelUsers.editUser(selectedUser)
-
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
-                        contentPadding = PaddingValues(
-                            start = 10.dp,
-                            top = 6.dp,
-                            end = 10.dp,
-                            bottom = 6.dp
-                        ),
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 20.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Done,
-                            contentDescription = "Guardar cambios",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                        Text(text = "Guardar cambios", fontSize = 15.sp)
-                    }
-
-                }
             }
-        })
+        }
+    )
 
 }
 
@@ -381,7 +440,9 @@ private fun createRowListWithErrorMesaje(
     validateError: (String) -> Boolean,
     errorMesaje: String,
     changeError: (Boolean) -> Unit,
-    error: Boolean
+    error: Boolean,
+    mandatory: Boolean,
+    numericTextBoard : Boolean
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -399,18 +460,13 @@ private fun createRowListWithErrorMesaje(
                 },
                 placeholder = { Text(text) },
                 label = { Text(text = text) },
-                isError = error,/*
-                leadingIcon = {
-                    if (text.equals("Phone Number"))
-                    Icon(
-                        imageVector = Icons.Filled.Phone,
-                        contentDescription = "Decorate Phone number"
-                    )
-                },*/
+                isError = error,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (numericTextBoard) KeyboardType.Number else KeyboardType.Text),
+
                 modifier = Modifier
                     .padding(start = 10.dp, end = 20.dp)
             )
-            val assistiveElementText = if (error) errorMesaje else "*Obligatorio"
+            val assistiveElementText = if (error) errorMesaje else if (mandatory) "*Obligatorio" else ""
             val assistiveElementColor = if (error) {
                 MaterialTheme.colors.error
             } else {

@@ -107,7 +107,7 @@ fun MainProductManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelP
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    GlobalVariables.navController.navigate(Destinations.NewProduct.route)
+                    navController.navigate(Destinations.NewProduct.route)
                 }
             ) {
                 Text("+")
