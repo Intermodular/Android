@@ -14,6 +14,21 @@
         android:theme="@style/Theme.Intermodular"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Views.Administration.Zone.Table.NewTable"
+            android:exported="false"
+            android:label="@string/title_activity_new_table"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.Administration.Zone.Table.EditTable"
+            android:exported="false"
+            android:label="@string/title_activity_edit_table"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
+            android:name=".Views.Administration.Zone.Table.TableManager"
+            android:exported="false"
+            android:label="@string/title_activity_table_manager"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
             android:name=".Views.Administration.Products.Types.Extras.Extras"
             android:exported="false"
             android:label="@string/title_activity_extras"

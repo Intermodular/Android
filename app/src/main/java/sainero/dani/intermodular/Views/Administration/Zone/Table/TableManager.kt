@@ -1,9 +1,8 @@
-package sainero.dani.intermodular.Views.Administration.Zone
+package sainero.dani.intermodular.Views.Administration.Zone.Table
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,42 +20,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import sainero.dani.intermodular.DataClass.Productos
-import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.DataClass.Mesas
+import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
-import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
+import sainero.dani.intermodular.Utils.MainViewModelSearchBar
+import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
 
-@ExperimentalFoundationApi
-
-class ZoneAdministration : ComponentActivity() {
+class TableManager : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            IntermodularTheme {
 
-            }
         }
     }
 }
 
 @Composable
-fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelZonas: ViewModelZonas) {
-
+fun MainTableManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelMesas: ViewModelMesas){
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     //Consulta BD
-    var allZones: List<Zonas> = viewModelZonas.zonesListResponse
+    var allMesas: List<Mesas> = viewModelMesas.mesasListResponse
 
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState
     val searchTextState by mainViewModelSearchBar.searchTextState
@@ -97,8 +87,8 @@ fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelZona
             aplicateFilter.value = true
             if (aplicateFilter.value) {
 
-                filterContentByName(
-                    allZones = allZones,
+                filtercontentbyname(
+                    allMesas = allMesas,
                     filterName = filter
                 )
 
@@ -108,7 +98,7 @@ fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelZona
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    GlobalVariables.navController.navigate(Destinations.NewZone.route)
+                    navController.navigate(Destinations.NewTable.route)
                 }
             ) {
                 Text("+")
@@ -117,33 +107,37 @@ fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelZona
     )
 }
 
+
 @Composable
-private fun filterContentByName(allZones: List<Zonas>, filterName: String) {
+fun filtercontentbyname(allMesas: List<Mesas>, filterName: String){
     LazyColumn(
-        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
+        contentPadding = PaddingValues(start = 30.dp , end = 30.dp)
     ) {
 
-        for (i in allZones) {
-            if (i.name.contains(filterName)) {
+        for (i in allMesas) {
+            if (i.zone.contains(filterName)) {
                 item {
                     Row (
                         Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
                             .clickable {
-                                GlobalVariables.navController.navigate("${Destinations.EditZone.route}/${i._id}")
+                                navController.navigate("${Destinations.EditTable.route}/${i._id}")
                             }
                     ) {
-                        Text(text = i.name)
+                        Text(text = i.zone)
                         Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.nºTables.toString())
+                        Text(text = i.numChair.toString())
+                        Spacer(modifier = Modifier.padding(10.dp))
+                        Text(text = i.state.toString())
+                        Spacer(modifier = Modifier.padding(10.dp))
+                        Text(text = i.number.toString())
                     }
                 }
             }
         }
     }
 }
-
 
 @Composable
 private fun MainAppBar(
@@ -176,7 +170,7 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
 
     TopAppBar(
         title = {
-            Text(text = "Lista de Zona",color = Color.White)
+            Text(text = "Lista de Mesa",color = Color.White)
         },
         actions = {
             IconButton(
@@ -187,30 +181,6 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                     contentDescription = "Search Icon",
                     tint = Color.White
                 )
-            }
-            Box (Modifier.wrapContentSize()){
-                IconButton(onClick = {
-                    expanded.value = true
-                }) {
-                    Icon(
-                        Icons.Filled.MoreVert,
-                        contentDescription = "Localized description"
-                    )
-                }
-
-                DropdownMenu(
-                    expanded = expanded.value,
-                    onDismissRequest = { expanded.value = false }
-                ) {
-                    DropdownMenuItem(
-                        onClick = {
-                            navController.navigate(Destinations.TableManager.route)
-                            expanded.value = false
-                        }
-                    ) {
-                        Text(text = "Gestionar Mesas")
-                    }
-                }
             }
         },
         backgroundColor = Color.Blue
@@ -299,9 +269,6 @@ private fun SearchAppBar(
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview5() {
-    IntermodularTheme {
+fun DefaultPreview16() {
 
-        //MainZoneManager(mainViewModelSearchBar = "")
-    }
 }

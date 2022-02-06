@@ -1,4 +1,4 @@
-package sainero.dani.intermodular.Views.Administration.Zone
+package sainero.dani.intermodular.Views.Administration.Zone.Table
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,14 +21,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import sainero.dani.intermodular.DataClass.Productos
+import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.DataClass.Zonas
+import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.ViewModels.ViewModelMesas
+import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
-import sainero.dani.intermodular.ui.theme.IntermodularTheme
-import java.util.regex.Pattern
+import sainero.dani.intermodular.Views.Administration.Zone.Table.ui.theme.IntermodularTheme
 
-class EditZone : ComponentActivity() {
+class EditTable : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -38,37 +40,43 @@ class EditZone : ComponentActivity() {
 }
 
 @Composable
-fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
+fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
 
-    viewModelZonas.getZoneById(_id)
+    viewModelMesas.getMesaById(_id)
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
+    var deleteUser = remember { mutableStateOf(false)}
+
+    if (deleteUser.value){
+        confirmDeleteTable(viewModelMesas = viewModelMesas,id = _id)
+    }
 
     //Esto se eliminará por una consulta a la BD
-    var selectedZone : Zonas = Zonas(_id,"Zone${_id}",2)
+    var selectedTable : Mesas = Mesas(_id,"Table${_id}",2,"libre",3)
 
-    viewModelZonas.zonesListResponse.forEach{
-        if (it._id.equals(_id)) selectedZone = it
+    viewModelMesas.mesasListResponse.forEach{
+        if (it._id.equals(_id)) selectedTable = it
     }
 
     //Textos
-    var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf("") }
-    var (nameError,nameErrorChange) = remember { mutableStateOf(false) }
-    val nameOfNameError: String = "El nombre no puede contener ')(' ni ser mayor de 10"
-    var (textNºmesas, onValueChangeNºmesas) = rememberSaveable{ mutableStateOf(selectedZone.nºTables.toString()) }
-
+    var (textZone, onValueChangeZone) = rememberSaveable{ mutableStateOf(selectedTable.zone) }
+    var (textNºsillas, onValueChangeNºsillas) = rememberSaveable{ mutableStateOf(selectedTable.numChair.toString()) }
+    var (textState, onValueChangeState) = rememberSaveable{ mutableStateOf(selectedTable.state)}
+    var (textNumber, onValueChangeNumber) = rememberSaveable{ mutableStateOf(selectedTable.number.toString())}
 
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Edición de Zona",color = Color.White)
+                    Text(text = "Edición de Mesa",color = Color.White)
                 },
                 backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
-                    IconButton(onClick = { /*Eliminar elementod e la Base de datos y ir atras*/ }) {
+                    IconButton(onClick = {
+                        deleteUser.value = true
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
                             contentDescription = "Delete Icon",
@@ -88,26 +96,10 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                     .fillMaxWidth()
             ) {
 
-                createRowListWithErrorMesaje(
-                    text = "Nombre",
-                    value = textName,
-                    onValueChange = onValueChangeName,
-                    validateError = ::isValidNameOfZone,
-                    errorMesaje = nameOfNameError,
-                    changeError = nameErrorChange,
-                    error = nameError,
-                    mandatory = true,
-                    numericTextBoard = false
-
-                )
-
-                createRowList(
-                    text = "NºMesas",
-                    value = textNºmesas,
-                    onValueChange = onValueChangeNºmesas,
-                    enable = false
-                )
-
+                createRowList(text = "Nombre", value = textZone, onValueChange = onValueChangeZone,false, true)
+                createRowList(text = "NºSillas", value = textNºsillas, onValueChange = onValueChangeNºsillas,true, true)
+                createRowList(text = "Estado", value = textState, onValueChange = onValueChangeState, false,true)
+                createRowList(text = "Numero", value = textNumber, onValueChange = onValueChangeNumber, true,true)
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
@@ -116,8 +108,8 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                 ) {
                     Button(
                         onClick = {
-                            textName = ""
-                            textNºmesas = ""
+                            textZone = ""
+                            textNºsillas = ""
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -145,8 +137,10 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
 
                     Button(
                         onClick = {
-                            selectedZone.name = textName
-                            selectedZone.nºTables = textNºmesas.toInt()
+                            selectedTable.zone = textZone
+                            selectedTable.numChair = textNºsillas.toInt()
+                            selectedTable.state = textState
+                            selectedTable.number = textNumber.toInt()
 
                             //Guardar zona  en la BB
 
@@ -182,10 +176,8 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
 }
 
 
-
-
 @Composable
-private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit, enable: Boolean) {
+fun createRowList(text: String, value: String, onValueChange: (String) -> Unit, numeric : Boolean, enable: Boolean) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -194,7 +186,6 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
         Text(text = "${text}:", Modifier.width(100.dp))
         OutlinedTextField(
             value = value,
-
             enabled = enable,
             onValueChange = {
                 onValueChange(it)
@@ -202,70 +193,61 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
             placeholder = { Text(text) },
             label = { Text(text = text) },
             modifier = Modifier
-                .padding(start = 10.dp, end = 20.dp)
+                .padding(start = 10.dp, end = 20.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (numeric) KeyboardType.Number else KeyboardType.Text)
         )
+
     }
 }
 
 @Composable
-private fun createRowListWithErrorMesaje(
-    text: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    validateError: (String) -> Boolean,
-    errorMesaje: String,
-    changeError: (Boolean) -> Unit,
-    error: Boolean,
-    mandatory: Boolean,
-    numericTextBoard : Boolean
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column(
-            verticalArrangement = Arrangement.SpaceAround,
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = {
-                    onValueChange(it)
-                    changeError(!validateError(it))
-                },
-                placeholder = { Text(text) },
-                label = { Text(text = text) },
-                isError = error,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (numericTextBoard) KeyboardType.Number else KeyboardType.Text),
+private fun confirmDeleteTable(viewModelMesas: ViewModelMesas, id: Int) {
+    MaterialTheme {
 
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-            )
-            val assistiveElementText = if (error) errorMesaje else if (mandatory) "*Obligatorio" else ""
-            val assistiveElementColor = if (error) {
-                MaterialTheme.colors.error
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            }
-            Text(
-                text = assistiveElementText,
-                color = assistiveElementColor,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = 10.dp, end = 20.dp)
+        Column {
+            AlertDialog(
+                onDismissRequest = {
+                },
+                title = {
+                    Text(text = "¿Seguro que desea eliminar la mesa seleccionada?")
+                },
+                text = {
+                    Text("No podrás volver a recuperarla")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModelMesas.deleteMesa(id)
+                            GlobalVariables.navController.navigate(Destinations.TableManager.route)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Blue,
+                            contentColor = Color.White
+                        ),
+                    ) {
+                        Text("Aceptar")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            GlobalVariables.navController.navigate("${Destinations.EditTable.route}/${id}")
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Blue,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Cancelar")
+                    }
+                }
             )
         }
     }
 }
 
-
-//Validaciones
-private fun isValidNameOfZone(text: String) = Pattern.compile("^[^()]{0,10}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-
-
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview9() {
-    IntermodularTheme {
-       // Greeting("Android")
-    }
+fun DefaultPreview17() {
+
 }

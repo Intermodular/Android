@@ -211,7 +211,7 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
 
 
 @Composable
-fun MainAppBar(
+private fun MainAppBar(
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
     onTextChange: (String) -> Unit,
