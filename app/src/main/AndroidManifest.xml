@@ -19,7 +19,7 @@
             android:label="@string/title_activity_extras"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".Views.Administration.Products.Types.ui.theme.ProductNewTyp"
+            android:name=".Views.Administration.Products.Types.ui.theme.ProductNewType"
             android:exported="false"
             android:label="@string/title_activity_product_new_typ"
             android:theme="@style/Theme.Intermodular.NoActionBar" />

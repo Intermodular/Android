@@ -47,7 +47,7 @@ class ViewModelExtras: ViewModel() {
     }
 
     //Métodos post
-    var newExtra: Extras by mutableStateOf(Extras(0,"error"))
+    var newExtra: Extras by mutableStateOf(Extras(name = "",price = 0f))
     fun uploadExtra(extra: Extras) {
         viewModelScope.launch {
             val apiService = ApiServiceExtra.getInstance()
@@ -64,7 +64,7 @@ class ViewModelExtras: ViewModel() {
         }
     }
 
-    var editExtra: Extras by mutableStateOf(Extras(0,"error"))
+    var editExtra: Extras by mutableStateOf(Extras(name = "",price = 0f))
     fun editExtra(extra: Extras) {
         viewModelScope.launch {
             val apiService = ApiServiceExtra.getInstance()

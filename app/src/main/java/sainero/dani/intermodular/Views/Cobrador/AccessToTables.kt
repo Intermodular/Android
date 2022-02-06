@@ -157,7 +157,8 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
                         ) {
                             Icon(Icons.Filled.Menu, contentDescription = "")
                         }
-                    },
+                    }
+
                 )
             },
             drawerShape = MaterialTheme.shapes.large,
@@ -345,7 +346,7 @@ private fun filterByAllFilters(allTables: List<Mesas>, nºMesasFilter: String,zo
     val removeTables: MutableList<Mesas> = mutableListOf()
     allTables.forEach { allFilterTables.add(it) }
     var listOfAllFilterTables: List<Mesas> = mutableListOf()
-
+    allFilterTables.sortedBy {it.number}
     if (!nºMesasFilter.equals("")) {
         allFilterTables.forEach{
             if (it.number.equals(nºMesasFilter.toInt())) listOfAllFilterTables = listOf(it)
@@ -373,7 +374,9 @@ private fun filterByAllFilters(allTables: List<Mesas>, nºMesasFilter: String,zo
         removeTables.forEach{
             allFilterTables.remove(it)
         }
-        listOfAllFilterTables = allFilterTables
+
+        if(!dinersFilter.equals("")) listOfAllFilterTables = allFilterTables.sortedBy {it.numChair}
+        else listOfAllFilterTables = allFilterTables
     }
     createTables(allFilterTables = listOfAllFilterTables)
 }
