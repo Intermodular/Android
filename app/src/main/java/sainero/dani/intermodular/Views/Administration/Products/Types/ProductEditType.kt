@@ -3,8 +3,9 @@ package sainero.dani.intermodular.Views.Administration.Products.Types
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,7 +14,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
@@ -22,10 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import sainero.dani.intermodular.DataClass.Extras
+import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.DataClass.Tipos
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelExtras
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
@@ -42,10 +47,44 @@ class ProductEditType : ComponentActivity() {
 
 @Composable
 fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, viewModelExtras: ViewModelExtras) {
+   /* var (valueOfEditExtras, onChangeEditExtras) = remember { mutableStateOf(false) }
+
+    if (valueOfEditExtras) editExtra(onChangeEditExtras)
+    else */
+        editType(id = id, viewModelTipos = viewModelTipos/*,onChangeEditExtras*/)
+
+}
+
+@Composable
+private fun editExtra(onChangeEditExtras: (Boolean) -> Unit) {
+    val state = remember { mutableStateOf(0) }
+    val allNamesOfExtras = listOf("1", "2", "3", "4", "5")
+
+    ScrollableTabRow(
+        selectedTabIndex = state.value,
+        modifier = Modifier.wrapContentWidth(),
+        edgePadding = 16.dp
+    ) {
+        allNamesOfExtras.forEachIndexed { index, title ->
+            Tab(
+                text = { Text(title) },
+                selected = state.value == index,
+                onClick = {
+                    state.value = index
+                    onChangeEditExtras(false)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun editType(id: Int, viewModelTipos: ViewModelTipos/*, onChangeEditExtras: (Boolean) -> Unit*/) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
     var deleteType = remember { mutableStateOf(false) }
+    var state = remember { mutableStateOf(0) }
 
 
     //Posible consulta en la Base de datos ¿? (but is ok)
@@ -54,11 +93,10 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, viewModelExtras:
         if (it._id.equals(id))  selectedType = it
     }
 
-    var allExtras = viewModelExtras.extrasListResponse
-    var allNamesOfExtras: MutableList<String> = mutableListOf()
-    allExtras.forEach {allNamesOfExtras.add(it.name) }
-
     //Text
+
+    var allNamesOfExtras: MutableList<String> = mutableListOf()
+    selectedType.compatibleExtras.forEach{allNamesOfExtras.add(it.name)}
 
     var (textName, onValueChangeName) = rememberSaveable { mutableStateOf(selectedType.name) }
     var (nameError,nameErrorChange) = remember { mutableStateOf(false) }
@@ -72,6 +110,7 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, viewModelExtras:
     if (deleteType.value) {
         confirmDeleteType(viewModelTipos = viewModelTipos, id = id)
     }
+
 
     //Ventana
     Scaffold(
@@ -145,7 +184,7 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, viewModelExtras:
 
                 createRowList(text = "Img", value = textImg, onValueChange = onValueChangeImg)
 
-                dropDownMenu(text = "Extras", suggestions = allNamesOfExtras, idOfItem = id, navigate = "")
+                dropDownMenu(text = "Extras", suggestions = allNamesOfExtras, idOfItem = id/*,onChangeEditExtras = onChangeEditExtras*/)
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
@@ -215,8 +254,6 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, viewModelExtras:
             }
         })
 }
-
-
 
 
 @Composable
@@ -338,7 +375,7 @@ private fun confirmDeleteType(viewModelTipos: ViewModelTipos, id: Int) {
 
 
 @Composable
-private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int,navigate: String) {
+private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int/*, onChangeEditExtras: (Boolean) -> Unit*/) {
     Spacer(modifier = Modifier.padding(4.dp))
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(text) }
@@ -374,8 +411,8 @@ private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int,n
                     Icon(Icons.Default.Edit,"Edit ${text}",
                         Modifier.clickable{
                             editItem.value = true
-                            GlobalVariables.navController.navigate(navigate)
-
+                            //onChangeEditExtras(true)
+                            navController.navigate(Destinations.Extras.route)
                         })
                 }
             )

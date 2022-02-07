@@ -9,6 +9,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,8 +23,10 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -86,7 +89,8 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
     var (nºMesa, onValueChangeNºMesa) = rememberSaveable{ mutableStateOf("") }
     var (nºComensales, onValueChangeNºComensales) = rememberSaveable{ mutableStateOf("") }
 
-    val aplicateFilters = remember { mutableStateOf(false) }
+    val restartFilters = remember { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier
@@ -188,26 +192,59 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
                             }
                             Spacer(modifier = Modifier.padding(10.dp))
 
-                            createRowList(
-                                text = "NºMesa",
-                                value = nºMesa,
-                                onValueChange = onValueChangeNºMesa,
-                                KeyboardType = KeyboardType.Number
-                            )
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                            ) {
+                                Spacer(modifier = Modifier.padding(10.dp))
+                                Text(text = "NºMesa:", Modifier.width(100.dp))
+                                OutlinedTextField(
+                                    value = nºMesa,
+                                    onValueChange = {
+                                        onValueChangeNºComensales("")
+                                        onValueChangeNºMesa(it)
+                                        restartFilters.value = true
+                                    },
+                                    placeholder = { Text("NºMesa") },
+                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                                    label = { Text(text = "NºMesa") },
+                                    modifier = Modifier
+                                        .padding(start = 10.dp, end = 20.dp)
+                                )
+                            }
+
+                            //Reiniciar valores ¿?
                             textSelectedZone.value = selectedDropDownMenu(text = "Zona",suggestions = allNamesOfZones,onValueChangeNºMesa = onValueChangeNºMesa)
                             textState.value = selectedDropDownMenu(text = "Estado",suggestions = allStates,onValueChangeNºMesa = onValueChangeNºMesa)
-                            createRowList(
-                                text = "NºComensales",
-                                value = nºComensales,
-                                onValueChange = onValueChangeNºComensales,
-                                KeyboardType = KeyboardType.Number
-                            )
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                            ) {
+                                Spacer(modifier = Modifier.padding(10.dp))
+                                Text(text = "NºComensales:", Modifier.width(100.dp))
+                                OutlinedTextField(
+                                    value = nºComensales,
+                                    onValueChange = {
+                                        onValueChangeNºComensales(it)
+                                        nºMesa = ""
+                                    },
+                                    placeholder = { Text("NºComensales") },
+                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                                    label = { Text(text = "NºComensales") },
+                                    modifier = Modifier
+                                        .padding(start = 10.dp, end = 20.dp)
+                                )
+                            }
+
+
                         }
                     },
                     floatingActionButton = {
                         FloatingActionButton(
                             onClick = {
-                                aplicateFilters.value = true
+
                             }
                         ) {
                             Icon(
@@ -250,9 +287,8 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
 private fun selectedDropDownMenu(text: String,suggestions: List<String>,onValueChangeNºMesa: (String) -> Unit): String {
     Spacer(modifier = Modifier.padding(4.dp))
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(suggestions[0]) }
+    var selectedText by remember { mutableStateOf("Todas") }
     var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
-    var editItem = remember{ mutableStateOf(false)}
 
     val icon = if (expanded)
         Icons.Filled.KeyboardArrowUp
@@ -269,12 +305,12 @@ private fun selectedDropDownMenu(text: String,suggestions: List<String>,onValueC
 
             OutlinedTextField(
                 value = selectedText,
-                onValueChange = { selectedText = it },
+                onValueChange = {  },
                 enabled = false,
                 modifier = Modifier
                     .padding(start = 10.dp, end = 20.dp)
-                    .onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size.toSize()
+                    .onGloballyPositioned {
+                        textfieldSize = it.size.toSize()
                     },
                 trailingIcon = {
                     Icon(icon, "arrowExpanded",
@@ -394,6 +430,13 @@ private fun createTables(allFilterTables: List<Mesas>) {
                     Button(
                         onClick = {
                             navController.navigate(Destinations.CreateOrder.route + "/${i._id}")
+                        },
+                        modifier = Modifier.pointerInput(Unit){
+                              detectTapGestures (
+                                  onLongPress = {
+                                        //Evnto al mantener
+                                  }
+                              )
                         },
                         contentPadding = PaddingValues(10.dp),
                         colors = ButtonDefaults.buttonColors(

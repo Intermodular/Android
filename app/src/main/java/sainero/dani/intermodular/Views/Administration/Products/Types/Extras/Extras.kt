@@ -20,7 +20,7 @@ class Extras : ComponentActivity() {
 }
 
 @Composable
-fun MainExtras(id:Int, viewModelExtras: ViewModelExtras) {
+fun MainExtras(id:Int) {
 
 }
 

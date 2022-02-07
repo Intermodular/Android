@@ -4,6 +4,7 @@ package sainero.dani.intermodular.Navigation
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,6 +25,7 @@ import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.ViewModels.*
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainIngredient
+import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainExtras
 import sainero.dani.intermodular.Views.Administration.Products.Types.MainProductEditType
 import sainero.dani.intermodular.Views.Administration.Products.Types.MainProductNewType
 import sainero.dani.intermodular.Views.Administration.Products.Types.MainProductTypeManager
@@ -91,7 +93,9 @@ fun NavigationHost(
             val id = backStackEntry.arguments?.getInt("tableId")
             requireNotNull(id,{"La id de la mesa no puede ser nula"})
 
-            MainCreateOrder(id)
+            viewModelProductos.getProductList()
+            viewModelTipos.getTypesList()
+            MainCreateOrder(id, viewModelProductos, viewModelTipos)
         }
 
         composable(
@@ -205,6 +209,10 @@ fun NavigationHost(
         composable(route = Destinations.NewTable.route){
             viewModelMesas.getMesaList()
             MainNewTable(viewModelMesas = viewModelMesas)
+        }
+
+        composable(route = Destinations.Extras.route){
+            MainExtras(id = 0)
         }
     }
 }

@@ -25,4 +25,5 @@ sealed class Destinations (
     object  TableManager: Destinations("Administration.Zone.TableManager")
     object  EditTable: Destinations("Administration.Zone.EditTable")
     object  NewTable: Destinations("Administration.Zone.NewTable")
+    object  Extras: Destinations("Administration.Products.Types.Extras")
 }
