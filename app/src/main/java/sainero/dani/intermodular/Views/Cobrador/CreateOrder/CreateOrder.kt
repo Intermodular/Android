@@ -1,7 +1,11 @@
-package sainero.dani.intermodular.Views.Cobrador
+package sainero.dani.intermodular.Views.Cobrador.CreateOrder
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
@@ -26,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,15 +40,14 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import kotlinx.coroutines.launch
-import sainero.dani.intermodular.DataClass.Mesas
-import sainero.dani.intermodular.DataClass.Productos
-import sainero.dani.intermodular.DataClass.Tipos
+import sainero.dani.intermodular.DataClass.*
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Navigation.NavigationHost
@@ -52,6 +56,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
+import sainero.dani.intermodular.Views.Administration.Employee.ToastDemo
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.Especifications
 
 class CreateOrder : ComponentActivity() {
@@ -68,7 +73,13 @@ class CreateOrder : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainCreateOrder(tableId: Int, viewModelProductos: ViewModelProductos, viewModelTipos: ViewModelTipos, viewModelMesas: ViewModelMesas) {
+fun MainCreateOrder(
+    tableId: Int,
+    viewModelProductos: ViewModelProductos,
+    viewModelTipos: ViewModelTipos,
+    viewModelMesas: ViewModelMesas,
+    mainViewModelCreateOrder: MainViewModelCreateOrder
+) {
 
     //Busquedas BD
     val allTypes = viewModelTipos.typeListResponse
@@ -90,16 +101,34 @@ fun MainCreateOrder(tableId: Int, viewModelProductos: ViewModelProductos, viewMo
     //Variables de extra
     val (informationProduct,onValueChangedInformationProduct) = remember { mutableStateOf(false) }
     val (selectedProduct,onValueChangeSelectedProduct) = remember { mutableStateOf(Productos(0,"","", arrayListOf(),0f, arrayListOf(),"",0))}
+//Crear linea pedido
+
+    //Variables de pedido
+    val Pedidos: Pedidos = Pedidos(0,0, arrayListOf())
+    val lineasPedido: MutableList<LineaPedido> = remember { mutableListOf() }
+    val lineaPedido : LineaPedido
+    lineasPedido.forEach{
+
+    }
+
 
 
     //Variables de ayuda
     var state = remember { mutableStateOf(0)}
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     var nameOfSelectedType = remember { mutableStateOf(allTypesNames[0])}
+    var selectedType = remember { mutableStateOf(Tipos(0,"","", arrayListOf()))}
+    allTypes.forEach { if (it.name.equals(nameOfSelectedType.value)) selectedType.value = it }
+    var clearViewModel = remember { mutableStateOf(true)}
+    var (editOrder,onValueChangeEditOrder) = remember { mutableStateOf(false)}
 
-    //No obtiene el tipo seleccionado
-    var selectedType = remember { Tipos(0,"","", arrayListOf(),)}
-    allTypes.forEach { if (it.name.equals(nameOfSelectedType)) selectedType = it }
+
+    if (clearViewModel.value) {
+        mainViewModelCreateOrder._lineasPedidos.clear()
+        mainViewModelCreateOrder._lineasExtras.clear()
+        clearViewModel.value = false
+    }
+
 
     val scope = rememberCoroutineScope()
 
@@ -113,7 +142,17 @@ fun MainCreateOrder(tableId: Int, viewModelProductos: ViewModelProductos, viewMo
                     Text(text = "Mesa número ${selectedTable.number}")
                 },
                 actions = {
-
+                    IconButton(
+                        onClick = {
+                            onValueChangeEditOrder(true)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.edit_note) ,
+                            contentDescription = "Eliminar empleado",
+                            tint = Color.White
+                        )
+                    }
                 },
                 navigationIcon = {
 
@@ -179,56 +218,66 @@ fun MainCreateOrder(tableId: Int, viewModelProductos: ViewModelProductos, viewMo
         },
         content = {
             //Crear filtro
-            if (informationProduct) {
-                createAllProductEspecifications(producto = selectedProduct,selectedType = selectedType)
+            if (editOrder) {
+                order(onValueChangeEditOrder,mainViewModelCreateOrder)
             } else {
-                Column(
-                    verticalArrangement = Arrangement.SpaceAround
-                ) {
-                    ScrollableTabRow(
-                        selectedTabIndex = state.value,
-                        divider = {
-                            /* Divider(
-                                 modifier = Modifier
-                                     .height(8.dp)
-                                     .fillMaxWidth()
-                                     .background(color = Color.Blue)
-                             )*/
-                        },
-                        modifier = Modifier.wrapContentWidth(),
-                        edgePadding = 16.dp,
-                    ) {
-                        allTypesNames.forEachIndexed { index, title ->
-                            Tab(
-                                text = { Text(title) },
-                                selected = state.value == index,
-                                onClick = {
-                                    state.value = index
-                                    nameOfSelectedType.value = title
-                                }
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.padding(10.dp))
-
-                    createProducts(
-                        allProducts =
-                        aplicateProductsFilters(
-                            allProducts = allProducts,
-                            nameOfSelectedType = nameOfSelectedType.value,
-                            getAllFilterEspecifications(
-                                isVegano = isCheckedVegano,
-                                isVegetariano = isCheckedVegetariano,
-                                isPescetariano = isCheckedPescetariano,
-                                isSinGluten = isCheckedSinGluten,
-                                isPicante = isCheckedPicante
-                            )
-                        ),
+                if (informationProduct) {
+                    createAllProductEspecifications(
+                        producto = selectedProduct,
+                        selectedType = selectedType.value,
                         onValueChangeInformationProduct = onValueChangedInformationProduct,
-                        onValueChangeSelectedProduct = onValueChangeSelectedProduct
+                        mainViewModelCreateOrder = mainViewModelCreateOrder
                     )
+                } else {
+                    Column(
+                        verticalArrangement = Arrangement.SpaceAround
+                    ) {
+                        ScrollableTabRow(
+                            selectedTabIndex = state.value,
+                            divider = {
+                                /* Divider(
+                                     modifier = Modifier
+                                         .height(8.dp)
+                                         .fillMaxWidth()
+                                         .background(color = Color.Blue)
+                                 )*/
+                            },
+                            modifier = Modifier.wrapContentWidth(),
+                            edgePadding = 16.dp,
+                        ) {
+                            allTypesNames.forEachIndexed { index, title ->
+                                Tab(
+                                    text = { Text(title) },
+                                    selected = state.value == index,
+                                    onClick = {
+                                        state.value = index
+                                        nameOfSelectedType.value = title
+                                    }
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.padding(10.dp))
+
+                        createProducts(
+                            allProducts =
+                            aplicateProductsFilters(
+                                allProducts = allProducts,
+                                nameOfSelectedType = nameOfSelectedType.value,
+                                getAllFilterEspecifications(
+                                    isVegano = isCheckedVegano,
+                                    isVegetariano = isCheckedVegetariano,
+                                    isPescetariano = isCheckedPescetariano,
+                                    isSinGluten = isCheckedSinGluten,
+                                    isPicante = isCheckedPicante
+                                )
+                            ),
+                            onValueChangeInformationProduct = onValueChangedInformationProduct,
+                            onValueChangeSelectedProduct = onValueChangeSelectedProduct
+                        )
+                    }
                 }
             }
+
 
 
         }
@@ -342,10 +391,10 @@ private fun createProducts(
 }
 
 @Composable
-private fun createAllProductEspecifications(producto: Productos, selectedType: Tipos) {
+private fun createAllProductEspecifications(producto: Productos, selectedType: Tipos, onValueChangeInformationProduct: (Boolean) -> Unit,mainViewModelCreateOrder: MainViewModelCreateOrder) {
     var description = rememberSaveable { mutableStateOf("") }
-    var numExtra = rememberSaveable { mutableStateOf("") }
-    var textQuantity = rememberSaveable{ mutableStateOf("") }
+    var numExtra = rememberSaveable { mutableStateOf("0") }
+    var textQuantity = rememberSaveable{ mutableStateOf("1") }
 
     LazyColumn(
         content = {
@@ -379,7 +428,7 @@ private fun createAllProductEspecifications(producto: Productos, selectedType: T
                                 ),
                                 contentDescription ="Imágen del producto",
                                 modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Inside
+                                contentScale = ContentScale.Fit
                             )
                         }
 
@@ -472,6 +521,26 @@ private fun createAllProductEspecifications(producto: Productos, selectedType: T
                                 )
                             }
                         }
+                        val lineaExtra : LineaExtra = LineaExtra(it,numExtra.value.toInt())
+                        mainViewModelCreateOrder.addLineaExtras(lineaExtra)
+                    }
+
+                    Button(
+                        onClick = {
+
+                            onValueChangeInformationProduct(false)
+                            mainViewModelCreateOrder.addLineaPedido(
+                                LineaPedido(producto = producto,
+                                    anotaciones = description.value,
+                                    cantidad = textQuantity.value.toInt(),
+                                    costeLinea = 0f,
+                                    lineasExtra = mainViewModelCreateOrder._lineasExtras
+                                )
+                            )
+                        }
+                    ) {
+                        Text(text = "Guardar")
+
                     }
                 }
             }
@@ -499,6 +568,32 @@ private fun getAllFilterEspecifications(
     return  especifications
 }
 
+@Composable
+private fun order(onValueChangeEditOrder: (Boolean) -> Unit,mainViewModelCreateOrder: MainViewModelCreateOrder) {
+    LazyColumn(
+        content = {
+            mainViewModelCreateOrder._lineasPedidos.forEach{
+                item {
+                    Text(text = it.producto.name.toString())
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        //enviara
+                        onValueChangeEditOrder(false)
+                    }
+                ) {
+                    Text(text = "Enviar")
+                }
+            }
+        }
+    )
+
+    //Toast.makeText(LocalContext.current,"Text",Toast.LENGTH_LONG).show()
+
+
+}
 @Composable
 private fun LabelledCheckbox(labelText: String,isCheckedValue: Boolean,onValueChangeCheked: (Boolean) -> Unit) {
     Row(modifier = Modifier.padding(8.dp)) {

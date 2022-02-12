@@ -22,7 +22,7 @@ import sainero.dani.intermodular.Views.Administration.Products.MainEditProduct
 import sainero.dani.intermodular.Views.Administration.Products.MainNewProduct
 import sainero.dani.intermodular.Views.Administration.Products.MainProductManager
 import sainero.dani.intermodular.Views.Cobrador.MainAccessToTables
-import sainero.dani.intermodular.Views.Cobrador.MainCreateOrder
+import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainCreateOrder
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.ViewModels.*
@@ -38,6 +38,7 @@ import sainero.dani.intermodular.Views.Administration.Zone.MainZoneManager
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainEditTable
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainNewTable
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainTableManager
+import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainViewModelCreateOrder
 
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
@@ -51,7 +52,8 @@ fun NavigationHost(
     viewModelPedidos: ViewModelPedidos,
     viewModelProductos: ViewModelProductos,
     viewModelTipos: ViewModelTipos,
-    viewModelZonas: ViewModelZonas
+    viewModelZonas: ViewModelZonas,
+    mainViewModelCreateOrder: MainViewModelCreateOrder
 ){
     navController = rememberNavController()
 
@@ -99,7 +101,7 @@ fun NavigationHost(
             viewModelMesas.getMesaList()
             viewModelProductos.getProductList()
             viewModelTipos.getTypesList()
-            MainCreateOrder(id, viewModelProductos, viewModelTipos, viewModelMesas)
+            MainCreateOrder(id, viewModelProductos, viewModelTipos, viewModelMesas,mainViewModelCreateOrder)
         }
 
         composable(

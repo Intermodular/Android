@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
@@ -180,6 +181,7 @@ private fun filterContentByName(allProducts: List<Productos>, filterName: String
                                 navController.navigate("${Destinations.EditProduct.route}/${i._id}")
                             }
                     ) {
+
                         Text(text = i.name)
                         Spacer(modifier = Modifier.padding(10.dp))
                         Text(text = i.type)
