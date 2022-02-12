@@ -30,7 +30,7 @@ class ViewModelMesas: ViewModel()  {
         }
     }
 
-    var mesa: List <Mesas> by mutableStateOf(listOf())
+    var table: List <Mesas> by mutableStateOf(listOf())
 
     fun getMesaById(id:Int) {
         viewModelScope.launch {
@@ -38,7 +38,7 @@ class ViewModelMesas: ViewModel()  {
 
             try {
                 val mesaById = apiService.getTableById(id)
-                mesa = mesaById
+                table = mesaById
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }

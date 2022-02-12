@@ -3,18 +3,17 @@ package sainero.dani.intermodular.Views.Cobrador
 import android.inputmethodservice.Keyboard
 import android.os.Bundle
 import android.view.KeyEvent
+import android.widget.PopupMenu
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -23,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
@@ -36,6 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupPositionProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.rememberNavController
@@ -420,30 +422,58 @@ private fun filterByAllFilters(allTables: List<Mesas>, nºMesasFilter: String,zo
 @ExperimentalFoundationApi
 @Composable
 private fun createTables(allFilterTables: List<Mesas>) {
+    var showMenu by remember { mutableStateOf(false) }
+
     LazyVerticalGrid(
         cells = GridCells.Adaptive(120.dp),
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {
         for (i in allFilterTables) {
             item {
+                /*val infiniteTransition = rememberInfiniteTransition()
+                val scale by infiniteTransition.animateFloat(
+                    initialValue = 1f,
+                    targetValue = 1.2f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1000),
+                        repeatMode = RepeatMode.Reverse
+                    )
+                )*/
                 Box(Modifier.padding(10.dp)) {
                     Button(
                         onClick = {
                             navController.navigate(Destinations.CreateOrder.route + "/${i._id}")
                         },
-                        modifier = Modifier.pointerInput(Unit){
+                        modifier = Modifier,
+
+                           // .scale(scale)
+                            /*
+                            .pointerInput(Unit){
                               detectTapGestures (
                                   onLongPress = {
-                                        //Evnto al mantener
+                                        //Evento al mantener
+                                    showMenu = true
+
+
                                   }
                               )
-                        },
+
+                        }*/
                         contentPadding = PaddingValues(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = checkState(i.state),
                             contentColor = Color.Blue
                         )
                     ) {
+                        if(showMenu) {
+                            Popup() {
+                                Column(
+                                    verticalArrangement = Arrangement.SpaceAround
+                                ) {
+                                    Text(text = "Liberar mesa")
+                                }
+                            }
+                        }
                         Column(
                             verticalArrangement = Arrangement.SpaceAround
                         ) {

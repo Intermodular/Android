@@ -1,6 +1,8 @@
 package sainero.dani.intermodular.Navigation
 
 
+import android.os.Bundle
+import android.os.Parcelable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -10,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import sainero.dani.intermodular.DataClass.Tipos
 import sainero.dani.intermodular.Views.*
 import sainero.dani.intermodular.Views.Administration.Employee.MainEditEmployee
 import sainero.dani.intermodular.Views.Administration.Employee.MainEmployeeManager
@@ -93,9 +96,10 @@ fun NavigationHost(
             val id = backStackEntry.arguments?.getInt("tableId")
             requireNotNull(id,{"La id de la mesa no puede ser nula"})
 
+            viewModelMesas.getMesaList()
             viewModelProductos.getProductList()
             viewModelTipos.getTypesList()
-            MainCreateOrder(id, viewModelProductos, viewModelTipos)
+            MainCreateOrder(id, viewModelProductos, viewModelTipos, viewModelMesas)
         }
 
         composable(
@@ -172,7 +176,7 @@ fun NavigationHost(
             requireNotNull(id)
             viewModelTipos.getTypesList()
             viewModelExtras.getExtrasList()
-            MainProductEditType(id = id,viewModelTipos = viewModelTipos,viewModelExtras = viewModelExtras)
+            MainProductEditType(id = id,viewModelTipos = viewModelTipos)
         }
 
 
@@ -211,8 +215,16 @@ fun NavigationHost(
             MainNewTable(viewModelMesas = viewModelMesas)
         }
 
-        composable(route = Destinations.Extras.route){
-            MainExtras(id = 0)
+        composable(
+            route = "${Destinations.Extras.route}/{objectType}",
+            arguments = listOf(navArgument("objectType") { Bundle().apply {
+                /*putParcelable("bt_device", Tipos)*/
+            }})
+        ){
+            var objectType = it.arguments?.getParcelable<Parcelable>("objectType")
+            requireNotNull(objectType)
+            viewModelTipos.getTypesList()
+          //  MainExtras()
         }
     }
 }

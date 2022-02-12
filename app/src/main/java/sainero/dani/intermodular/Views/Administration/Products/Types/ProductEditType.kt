@@ -46,12 +46,16 @@ class ProductEditType : ComponentActivity() {
 }
 
 @Composable
-fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, viewModelExtras: ViewModelExtras) {
-   /* var (valueOfEditExtras, onChangeEditExtras) = remember { mutableStateOf(false) }
+fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos) {
+    var (valueOfEditExtras, onChangeEditExtras) = remember { mutableStateOf(false) }
+
+    //Posible consulta en la Base de datos ¿? (but is ok)
+    var selectedType: Tipos = Tipos(_id = id,"","", arrayListOf())
+    viewModelTipos.typeListResponse.forEach{ if (it._id.equals(id))  selectedType = it }
 
     if (valueOfEditExtras) editExtra(onChangeEditExtras)
-    else */
-        editType(id = id, viewModelTipos = viewModelTipos/*,onChangeEditExtras*/)
+    else
+        editType(id = id, viewModelTipos = viewModelTipos,onChangeEditExtras = onChangeEditExtras,selectedType)
 
 }
 
@@ -59,27 +63,172 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, viewModelExtras:
 private fun editExtra(onChangeEditExtras: (Boolean) -> Unit) {
     val state = remember { mutableStateOf(0) }
     val allNamesOfExtras = listOf("1", "2", "3", "4", "5")
+    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
+    val expanded = remember { mutableStateOf(false) }
 
-    ScrollableTabRow(
-        selectedTabIndex = state.value,
-        modifier = Modifier.wrapContentWidth(),
-        edgePadding = 16.dp
-    ) {
-        allNamesOfExtras.forEachIndexed { index, title ->
-            Tab(
-                text = { Text(title) },
-                selected = state.value == index,
-                onClick = {
-                    state.value = index
-                    onChangeEditExtras(false)
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+             TopAppBar(
+                 title = {
+                     Text(text = "Edición de extras")
+                 },
+                 actions = {
+                     IconButton(
+                         onClick = {
+
+                         }
+                     ) {
+                         Icon(
+                             imageVector = Icons.Default.Delete,
+                             contentDescription = "Eliminar tipo",
+                             modifier = Modifier.size(ButtonDefaults.IconSize)
+                         )
+                     }
+
+                     Box (Modifier.wrapContentSize()){
+                         IconButton(onClick = {
+                             expanded.value = true
+                         }) {
+                             Icon(
+                                 Icons.Filled.MoreVert,
+                                 contentDescription = "More icon"
+                             )
+                         }
+
+                         DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
+                             DropdownMenuItem(
+                                 onClick = {
+                                     expanded.value = false
+                                 }) {
+                                 Text(text = "")
+                             }
+                         }
+                     }
+
+                 }
+             )
+        }, 
+        content = {
+            val arrayExtras: MutableList<Extras> = remember { mutableListOf() }
+            val addExtra = remember{ mutableStateOf(false)}
+            val deleteExtra = remember{ mutableStateOf(false)}
+            var nameOfExtraToDelete = remember { mutableStateOf(Extras("",0f))}
+
+            if (addExtra.value) {
+                arrayExtras.add(Extras("Nombre",0f))
+                addExtra.value = false
+            }
+
+            if (deleteExtra.value) {
+                arrayExtras.remove(nameOfExtraToDelete.value)
+                deleteExtra.value = false
+
+            }
+
+            LazyColumn(
+                contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
+            ) {
+                arrayExtras.forEach { extra ->
+                    item {
+                        Column(
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            var selectedText by remember { mutableStateOf("") }
+
+                            Row(
+                                modifier = Modifier.height(IntrinsicSize.Min),
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                OutlinedTextField(
+                                    value =  selectedText,
+                                    modifier = Modifier.size(width = 200.dp, height = 55.dp),
+                                    onValueChange = {
+                                        selectedText = it
+                                        extra.name = selectedText
+                                    },
+                                    placeholder = { Text(text = extra.name)},
+                                )
+
+                                Spacer(modifier = Modifier.padding(3.dp))
+                                var selectedTextPrice by remember { mutableStateOf("") }
+                                OutlinedTextField(
+                                    value =  selectedTextPrice,
+                                    modifier = Modifier.size(width = 50.dp, height = 55.dp),
+                                    onValueChange = {
+                                        selectedTextPrice = it
+                                        extra.price = selectedText.toFloat()
+                                    },
+                                    placeholder = { Text(text = extra.price.toString())},
+                                )
+                                IconButton(
+                                    onClick = {
+                                        nameOfExtraToDelete.value = extra
+                                        deleteExtra.value = true
+
+
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Delete suggestion",
+                                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                                    )
+                                }
+
+                            }
+
+                        }
+                    }
                 }
-            )
+                item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(
+                                modifier = Modifier.fillMaxSize(),
+                                onClick = {
+                                    addExtra.value = true
+                                }
+                            ) {
+                                Text(text = "Añadir Extra")
+                            }
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(
+                                onClick = {
+                                    onChangeEditExtras(false)
+                                }
+                            ) {
+                                Text(text = "Cancelar cambios")
+                            }
+                            Button(
+                                onClick = {
+                                    //Gradar cambios
+                                }
+                            ) {
+                                Text(text = "Guardar cambios")
+                            }
+                        }
+                    }
+
+                }
+            }
         }
-    }
+    )
+}
+@Composable
+private fun createExtras() {
+
 }
 
 @Composable
-private fun editType(id: Int, viewModelTipos: ViewModelTipos/*, onChangeEditExtras: (Boolean) -> Unit*/) {
+private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras: (Boolean) -> Unit, selectedType: Tipos) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
@@ -87,11 +236,7 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos/*, onChangeEditExtr
     var state = remember { mutableStateOf(0) }
 
 
-    //Posible consulta en la Base de datos ¿? (but is ok)
-    var selectedType: Tipos = Tipos(_id = id,"","", arrayListOf())
-    viewModelTipos.typeListResponse.forEach{
-        if (it._id.equals(id))  selectedType = it
-    }
+
 
     //Text
 
@@ -184,7 +329,7 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos/*, onChangeEditExtr
 
                 createRowList(text = "Img", value = textImg, onValueChange = onValueChangeImg)
 
-                dropDownMenu(text = "Extras", suggestions = allNamesOfExtras, idOfItem = id/*,onChangeEditExtras = onChangeEditExtras*/)
+                dropDownMenu(text = "Extras", suggestions = allNamesOfExtras, idOfItem = id,onChangeEditExtras = onChangeEditExtras)
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
@@ -224,7 +369,9 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos/*, onChangeEditExtr
 
                     Button(
                         onClick = {
-                            selectedType = Tipos(id,textName,textImg,textCompatibleExtras)
+
+                            //Modificar el eleemnto padre¿?
+                            //selectedType = Tipos(id,textName,textImg,textCompatibleExtras)
                             viewModelTipos.editType(selectedType)
 
                         },
@@ -375,7 +522,7 @@ private fun confirmDeleteType(viewModelTipos: ViewModelTipos, id: Int) {
 
 
 @Composable
-private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int/*, onChangeEditExtras: (Boolean) -> Unit*/) {
+private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int, onChangeEditExtras: (Boolean) -> Unit) {
     Spacer(modifier = Modifier.padding(4.dp))
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(text) }
@@ -411,8 +558,8 @@ private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int/*
                     Icon(Icons.Default.Edit,"Edit ${text}",
                         Modifier.clickable{
                             editItem.value = true
-                            //onChangeEditExtras(true)
-                            navController.navigate(Destinations.Extras.route)
+                            onChangeEditExtras(true)
+                            //navController.navigate(Destinations.Extras.route)
                         })
                 }
             )
