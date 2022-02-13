@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import sainero.dani.intermodular.DataClass.Zonas
+import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.ui.theme.IntermodularTheme
 import java.util.regex.Pattern
@@ -62,6 +63,19 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
 
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            GlobalVariables.navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
                 }
             )
 

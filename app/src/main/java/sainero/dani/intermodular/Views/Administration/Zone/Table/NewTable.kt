@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.DataClass.Zonas
+import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.Views.Administration.Zone.Table.ui.theme.IntermodularTheme
 
@@ -54,6 +55,19 @@ fun MainNewTable(viewModelMesas: ViewModelMesas){
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
 
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            GlobalVariables.navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
                 }
             )
 

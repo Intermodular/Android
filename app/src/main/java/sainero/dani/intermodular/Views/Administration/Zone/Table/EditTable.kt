@@ -83,7 +83,19 @@ fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
                             tint = Color.White
                         )
                     }
-
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            GlobalVariables.navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
                 }
             )
 

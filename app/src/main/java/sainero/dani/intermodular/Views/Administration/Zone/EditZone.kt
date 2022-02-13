@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.DataClass.Zonas
+import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.ui.theme.IntermodularTheme
 import java.util.regex.Pattern
@@ -76,6 +77,19 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                         )
                     }
 
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            GlobalVariables.navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
                 }
             )
 
