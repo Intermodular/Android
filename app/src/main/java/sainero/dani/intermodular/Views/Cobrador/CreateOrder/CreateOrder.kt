@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,12 +48,14 @@ import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import kotlinx.coroutines.launch
+import org.intellij.lang.annotations.JdkConstants
 import sainero.dani.intermodular.DataClass.*
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
@@ -149,7 +152,7 @@ fun MainCreateOrder(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.edit_note) ,
-                            contentDescription = "Eliminar empleado",
+                            contentDescription = "Eliminar pedido",
                             tint = Color.White
                         )
                     }
@@ -483,64 +486,127 @@ private fun createAllProductEspecifications(producto: Productos, selectedType: T
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 20.dp, bottom = 20.dp)
                         ) {
                             IconButton(
                                 onClick = {
                                     //Restar 1
+                                    if (numExtra.value.toInt() > 0){
                                     numExtra.value = (numExtra.value.toInt() - 1).toString()
+                                    }
+
 
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "More icon"
+                                    painter = painterResource(id = R.drawable.remove_circle_outline),
+                                    contentDescription = "Less icon",
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .padding(start = 20.dp)
                                 )
                             }
 
                             TextField(
                                 value = numExtra.value,
                                 onValueChange = { numExtra.value = it },
-                                label = { Text(it.name) },
+                                label = { Text(it.name, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()) },
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(100.dp)
+                                    .width((LocalConfiguration.current.screenWidthDp / 2).dp)
+                                    .height(60.dp)
                                     .padding(PaddingValues(start = 20.dp, end = 20.dp)),
-                                enabled = true
+                                enabled = false,
+                                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
                                 )
 
                             IconButton(
                                 onClick = {
                                     //Sumar 1
-                                    numExtra.value = (numExtra.value.toInt() + 1).toString()
+                                    if (numExtra.value.toInt() + 1 < 10){
+                                        numExtra.value = (numExtra.value.toInt() + 1).toString()
+                                    }
                                 }
                             ) {
                                 Icon(
-                                    Icons.Default.AddCircle,
-                                    contentDescription = "More icon"
+                                    painter = painterResource(id = R.drawable.add_circle_outline),
+                                    contentDescription = "More icon",
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .padding(end = 20.dp)
                                 )
                             }
                         }
                         val lineaExtra : LineaExtra = LineaExtra(it,numExtra.value.toInt())
                         mainViewModelCreateOrder.addLineaExtras(lineaExtra)
                     }
+                    Row(
+                        Modifier.fillMaxWidth().padding(end = 40.dp, start = 40.dp, bottom = 30.dp),
 
-                    Button(
-                        onClick = {
-
-                            onValueChangeInformationProduct(false)
-                            mainViewModelCreateOrder.addLineaPedido(
-                                LineaPedido(producto = producto,
-                                    anotaciones = description.value,
-                                    cantidad = textQuantity.value.toInt(),
-                                    costeLinea = 0f,
-                                    lineasExtra = mainViewModelCreateOrder._lineasExtras
-                                )
-                            )
-                        }
                     ) {
-                        Text(text = "Guardar")
+                        Row(
+                            Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 2),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            Button(
+                                onClick = {
+
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color.White,
+                                    contentColor = Color.Blue
+                                ),
+                                contentPadding = PaddingValues(
+                                    start = 10.dp,
+                                    top = 6.dp,
+                                    end = 10.dp,
+                                    bottom = 6.dp
+                                ),
+                                modifier = Modifier.width(100.dp).height(50.dp)
+                            ) {
+                                Text(text = "Cancelar")
+
+                            }
+                        }
+
+                        Row(
+                            Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 2),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Button(
+                                onClick = {
+                                    var lineaDePedido = LineaPedido(producto = producto,
+                                        anotaciones = description.value,
+                                        cantidad = textQuantity.value.toInt(),
+                                        costeLinea = 0f,
+                                        lineasExtra = mainViewModelCreateOrder._lineasExtras
+                                    )
+                                    mainViewModelCreateOrder._lineasPedidos.remove(mainViewModelCreateOrder.pedidoEditar)
+                                    onValueChangeInformationProduct(false)
+                                    mainViewModelCreateOrder.addLineaPedido(
+                                        lineaDePedido
+                                    )
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color.White,
+                                    contentColor = Color.Blue
+                                ),
+                                contentPadding = PaddingValues(
+                                    start = 10.dp,
+                                    top = 6.dp,
+                                    end = 10.dp,
+                                    bottom = 6.dp
+                                ),
+                                modifier = Modifier.width(100.dp).height(50.dp)
+                            ) {
+                                Text(text = "Guardar")
+
+                            }
+                        }
 
                     }
+
                 }
             }
         }
@@ -571,9 +637,86 @@ private fun getAllFilterEspecifications(
 private fun order(onValueChangeEditOrder: (Boolean) -> Unit,mainViewModelCreateOrder: MainViewModelCreateOrder) {
     LazyColumn(
         content = {
+            item {
+
+                Row(
+                    //verticalArrangement = Arrangement.SpaceAround,
+                    //horizontalAlignment = Alignment.Start
+                    //horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 25.dp, bottom = 20.dp, end = 25.dp)
+                        .clickable {
+
+                        }
+                ) {
+                    Text(
+                        text = "Nombre",
+                        textAlign = TextAlign.Left,
+                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                        )
+                    Text(
+                        text = "Cantidad",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                    )
+                    Text(
+                        text = "Precio",
+                        textAlign = TextAlign.Right,
+                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                    )
+                        //Spacer(modifier = Modifier.padding(start = 55.dp, bottom = 20.dp))
+                }
+            }
             mainViewModelCreateOrder._lineasPedidos.forEach{
                 item {
-                    Text(text = it.producto.name.toString())
+                    Column(
+                        //verticalArrangement = Arrangement.SpaceAround,
+                        //horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row (
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 25.dp, bottom = 20.dp, end = 25.dp)
+                                .clickable {
+                                    mainViewModelCreateOrder.pedidoEditar = it
+
+                                    navController.navigate(Destinations.CreateOrder.route)
+                                }
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    text = it.producto.name.toString(),
+                                    textAlign = TextAlign.Left,
+                                    modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                                )
+                            }
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = it.cantidad.toString(),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                                )
+                            }
+                            //Spacer(modifier = Modifier.padding(start = 50.dp, bottom = 20.dp))
+                            Column(
+                                horizontalAlignment = Alignment.End
+                            ) {
+                                //val priceExtras = it.lineasExtra.forEach()
+                                //val result = (it.cantidad * it.producto.price) + it.lineasExtra.get(0).extra.price * it.lineasExtra.get(0).cantidad)
+                                Text(text = ((it.cantidad * it.producto.price) + it.lineasExtra.get(0).extra.price).toString(),
+                                textAlign = TextAlign.Right,
+                                modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                                )
+                            }
+                            //Spacer(modifier = Modifier.padding(start = 40.dp, bottom = 20.dp))
+                        }
+                    }
+
                 }
             }
             item {

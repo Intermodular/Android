@@ -29,6 +29,7 @@ class MainViewModelCreateOrder : ViewModel() {
     private val _lineaPedido: LineaPedido = LineaPedido(lineasExtra = arrayListOf(),costeLinea = 0f,cantidad = 0,anotaciones = "",producto = Productos(_id = 0,type = "",price = 0f,especifications = arrayListOf(),stock = 0,img = "",ingredients = arrayListOf(),name = ""))
     val _lineasPedidos: MutableList<LineaPedido> = mutableListOf()
     private val _lineaExtras = ""
+    var pedidoEditar: LineaPedido = LineaPedido(lineasExtra = arrayListOf(),costeLinea = 0f,cantidad = 0,anotaciones = "",producto = Productos(_id = 0,type = "",price = 0f,especifications = arrayListOf(),stock = 0,img = "",ingredients = arrayListOf(),name = ""))
     val _lineasExtras: MutableList<LineaExtra> = mutableListOf()
 
     fun addLineaPedido(newValue: LineaPedido) {
