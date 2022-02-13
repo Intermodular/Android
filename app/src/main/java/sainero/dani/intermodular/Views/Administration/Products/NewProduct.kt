@@ -82,6 +82,19 @@ fun MainNewProduct(viewModelProductos: ViewModelProductos,viewModelTipos: ViewMo
                 actions = {
 
 
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            GlobalVariables.navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
                 }
             )
 

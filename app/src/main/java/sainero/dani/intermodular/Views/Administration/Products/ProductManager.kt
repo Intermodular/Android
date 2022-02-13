@@ -14,10 +14,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -238,7 +235,20 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                 }
             }
         },
-        backgroundColor = Color.Blue
+        backgroundColor = Color.Blue,
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    navController.popBackStack()
+                }
+            ) {
+                Icon(
+                    Icons.Filled.ArrowBack,
+                    contentDescription = "",
+                    tint = Color.White
+                )
+            }
+        }
     )
 }
 

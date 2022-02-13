@@ -118,6 +118,19 @@ fun MainEditProduct(id: Int,viewModelProductos: ViewModelProductos,viewModelTipo
                         )
                     }
 
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
                 }
             )
 

@@ -24,18 +24,13 @@ class MainDragAndDrop : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            IntermodularTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    Greeting("Android")
-                }
-            }
+
         }
     }
 }
 
 @Composable
-fun Greeting(name: String) {
+fun MainFunDragAndDrop() {
     //Consulta BD
     var allEspecifications = remember {
         mutableStateListOf(
@@ -79,7 +74,5 @@ fun Greeting(name: String) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview17() {
-    IntermodularTheme {
-        Greeting("Android")
-    }
+
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,6 +25,7 @@ import sainero.dani.intermodular.DataClass.Extras
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.ui.theme.IntermodularTheme
+import java.lang.NumberFormatException
 
 class NewExtras : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,9 +67,12 @@ fun MainNewExtra(mainViewModelExtras: MainViewModelExtras) {
 @Composable
 private fun createContent(mainViewModelExtras: MainViewModelExtras, onValueChangeRefresh: (Boolean) -> Unit) {
 
+Column(
+    verticalArrangement = Arrangement.SpaceEvenly
+) {
 
     LazyColumn(
-        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
+        contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
     ) {
         mainViewModelExtras._tmpExtras.forEach { extra ->
             item {
@@ -82,7 +87,7 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras, onValueChang
                             .height(IntrinsicSize.Min),
                         horizontalArrangement = Arrangement.Start,
 
-                    ) {
+                        ) {
                         OutlinedTextField(
                             value =  selectedText,
                             modifier = Modifier.size(width = 200.dp, height = 55.dp),
@@ -102,8 +107,13 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras, onValueChang
                             modifier = Modifier.size(width = 90.dp, height = 55.dp),
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                             onValueChange = {
-                                selectedTextPrice = it
-                                extra.price = selectedTextPrice.toFloat()
+                                if (it.equals("")) {
+                                    selectedTextPrice = it
+                                    extra.price = 0f
+                                } else {
+                                    if (isFloat(it) || it.equals("")) selectedTextPrice = it
+                                    extra.price = selectedTextPrice.toFloat()
+                                }
                             },
                             placeholder = { Text(text = "0")},
                         )
@@ -126,52 +136,63 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras, onValueChang
                 }
             }
         }
-        item {
-            Spacer(modifier = Modifier.padding(6.dp))
+    }
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+    Spacer(modifier = Modifier.padding(6.dp))
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    mainViewModelExtras.addTmpExtras(Extras("",0f))
+                    onValueChangeRefresh(false)
+                    onValueChangeRefresh(true)
+                }
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(
-                        modifier = Modifier.fillMaxSize(),
-                        onClick = {
-                            mainViewModelExtras.addTmpExtras(Extras("",0f))
-                            onValueChangeRefresh(false)
-                            onValueChangeRefresh(true)
-                        }
-                    ) {
-                        Text(text = "Añadir Extra")
-                    }
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(
-                        onClick = {
-                            GlobalVariables.navController.navigate("${Destinations.ProductNewType.route}/cancel")
-
-                        }
-                    ) {
-                        Text(text = "Revertir cambio")
-                    }
-                    Button(
-                        onClick = {
-                            //Guardar cambios
-                            onValueChangeRefresh(false)
-                            onValueChangeRefresh(true)
-                            GlobalVariables.navController.navigate("${Destinations.ProductNewType.route}/edit")
-                        }
-                    ) {
-                        Text(text = "Guardar cambios")
-                    }
-                }
+                Text(text = "Añadir Extra")
             }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                onClick = {
+                    GlobalVariables.navController.navigate("${Destinations.ProductNewType.route}/cancel")
 
+                }
+            ) {
+                Text(text = "Revertir cambio")
+            }
+            Button(
+                onClick = {
+                    //Guardar cambios
+                    onValueChangeRefresh(false)
+                    onValueChangeRefresh(true)
+                    GlobalVariables.navController.navigate("${Destinations.ProductNewType.route}/edit")
+                }
+            ) {
+                Text(text = "Guardar cambios")
+            }
         }
     }
+}
+
+}
+
+//Validaciones
+private fun isFloat(text: String): Boolean {
+    try {
+        text.toFloat()
+    } catch (e: NumberFormatException) {
+        return false
+    }
+    return true
 }
 @Preview(showBackground = true)
 @Composable

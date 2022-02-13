@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
@@ -172,13 +173,18 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
                 ) {
                     Text(
                         text = "Nombre",
+                        modifier= Modifier.fillMaxWidth(0.2f)
                     )
                     Spacer(modifier = Modifier.padding(10.dp))
                     Text(
                         text = "DNI",
+                        modifier= Modifier.fillMaxWidth(0.4f)
                     )
                     Spacer(modifier = Modifier.padding(10.dp))
-                    Text(text = "Rol")
+                    Text(
+                        text = "Rol",
+                        modifier= Modifier.fillMaxWidth(0.8f)
+                    )
                 }
 
                 for (i in allUsers) {
@@ -192,11 +198,11 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
                                         navController.navigate("${Destinations.EditEmployee.route}/${i._id}")
                                     }
                             ) {
-                                    Text(text = i.name, modifier= Modifier.width(100.dp))
+                                    Text(text = i.name, modifier= Modifier.fillMaxWidth(0.2f))
                                     Spacer(modifier = Modifier.padding(10.dp))
-                                    Text(text = i.dni,modifier= Modifier.width(80.dp))
+                                    Text(text = i.dni,modifier= Modifier.fillMaxWidth(0.4f))
                                     Spacer(modifier = Modifier.padding(10.dp))
-                                    Text(text = i.rol,modifier= Modifier.width(100.dp))
+                                    Text(text = i.rol,modifier= Modifier.fillMaxWidth(0.8f))
                             }
                         }
                 }
@@ -285,7 +291,20 @@ fun DefaultAppBar(onSearchClicked: () -> Unit) {
             }
 
         },
-        backgroundColor = Color.Blue
+        backgroundColor = Color.Blue,
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    navController.popBackStack()
+                }
+            ) {
+                Icon(
+                    Icons.Filled.ArrowBack,
+                    contentDescription = "",
+                    tint = Color.White
+                )
+            }
+        }
     )
 }
 

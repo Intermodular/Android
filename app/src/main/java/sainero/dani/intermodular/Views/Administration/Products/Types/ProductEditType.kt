@@ -168,6 +168,19 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                         }
                     }
 
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
                 }
             )
 

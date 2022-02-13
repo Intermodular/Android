@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,11 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import sainero.dani.intermodular.DataClass.Extras
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelExtras
+import java.io.IOException
+import java.lang.Float.*
+import java.lang.NumberFormatException
+import java.util.regex.Pattern
 
 class Extras : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,11 +68,15 @@ fun MainExtras(mainViewModelExtras: MainViewModelExtras,idProduct: Int) {
 
 @Composable
 private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int, onValueChangeRefresh: (Boolean) -> Unit) {
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    val tmpText = remember { mutableStateOf("")}
 
 
     LazyColumn(
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {
+
         mainViewModelExtras._tmpExtras.forEach { extra ->
             item {
                 Spacer(modifier = Modifier.padding(5.dp))
@@ -91,16 +101,21 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                         )
 
                         Spacer(modifier = Modifier.padding(3.dp))
-                        var selectedTextPrice by remember { mutableStateOf("") }
+                        var selectedTextPrice by remember { mutableStateOf(extra.price.toString()) }
                         OutlinedTextField(
                             value =  selectedTextPrice,
                             modifier = Modifier.size(width = 90.dp, height = 55.dp),
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                             onValueChange = {
-                                selectedTextPrice = it
-                                extra.price = selectedText.toFloat()
+                                if (it.equals("")) {
+                                    selectedTextPrice = it
+                                    extra.price = 0f
+                                } else {
+                                    if (isFloat(it) || it.equals("")) selectedTextPrice = it
+                                    extra.price = selectedTextPrice.toFloat()
+                                }
                             },
-                            placeholder = { Text(text = extra.price.toString())},
+                            placeholder = { Text(text = "Precio")},
                         )
                         IconButton(
                             onClick = {
@@ -146,7 +161,10 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                 ) {
                     Button(
                         onClick = {
-                            navController.navigate("${Destinations.ProductEditType.route}/${idProduct}/cancel")
+
+                            navController.navigate("${Destinations.ProductEditType.route}/${idProduct}/cancel"){
+                                //popUpTo("${Destinations.Extras.route}/${idProduct}") { inclusive = true }
+                            }
 
                         }
                     ) {
@@ -167,6 +185,16 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
 
         }
     }
+}
+
+//Validaciones
+private fun isFloat(text: String): Boolean {
+    try {
+        text.toFloat()
+    } catch (e: NumberFormatException) {
+        return false
+    }
+    return true
 }
 
 @Preview(showBackground = true)

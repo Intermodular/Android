@@ -148,9 +148,23 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                         }
                     }
 
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
                 }
             )
         },
+
         content = {
             Spacer(modifier = Modifier.padding(10.dp))
             Column(

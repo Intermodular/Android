@@ -108,6 +108,19 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
 
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
                 }
             )
 

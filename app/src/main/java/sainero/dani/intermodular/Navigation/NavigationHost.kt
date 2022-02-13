@@ -13,6 +13,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import sainero.dani.intermodular.DataClass.Tipos
+import sainero.dani.intermodular.Utils.DragAndDrop.MainDragAndDrop
+import sainero.dani.intermodular.Utils.DragAndDrop.MainFunDragAndDrop
 import sainero.dani.intermodular.Views.*
 import sainero.dani.intermodular.Views.Administration.Employee.MainEditEmployee
 import sainero.dani.intermodular.Views.Administration.Employee.MainEmployeeManager
@@ -248,6 +250,9 @@ fun NavigationHost(
             requireNotNull(id)
             viewModelTipos.getTypesList()
             MainNewExtra(mainViewModelExtras)
+        }
+        composable(route = "lol") {
+            MainFunDragAndDrop()
         }
     }
 }
