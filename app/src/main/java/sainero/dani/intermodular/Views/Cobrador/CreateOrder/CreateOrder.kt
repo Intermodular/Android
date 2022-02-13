@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -572,9 +573,82 @@ private fun getAllFilterEspecifications(
 private fun order(onValueChangeEditOrder: (Boolean) -> Unit,mainViewModelCreateOrder: MainViewModelCreateOrder) {
     LazyColumn(
         content = {
+            item {
+
+                Row(
+                    //verticalArrangement = Arrangement.SpaceAround,
+                    //horizontalAlignment = Alignment.Start
+                    //horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 25.dp, bottom = 20.dp, end = 25.dp)
+                        .clickable {
+
+                        }
+                ) {
+                    Text(
+                        text = "Nombre",
+                        textAlign = TextAlign.Left,
+                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                        )
+                    Text(
+                        text = "Cantidad",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                    )
+                    Text(
+                        text = "Precio",
+                        textAlign = TextAlign.Right,
+                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                    )
+                        //Spacer(modifier = Modifier.padding(start = 55.dp, bottom = 20.dp))
+                }
+            }
             mainViewModelCreateOrder._lineasPedidos.forEach{
                 item {
-                    Text(text = it.producto.name.toString())
+                    Column(
+                        //verticalArrangement = Arrangement.SpaceAround,
+                        //horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row (
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 25.dp, bottom = 20.dp, end = 25.dp)
+                                .clickable {
+
+                                }
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    text = it.producto.name.toString(),
+                                    textAlign = TextAlign.Left,
+                                    modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                                )
+                            }
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = it.cantidad.toString(),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                                )
+                            }
+                            //Spacer(modifier = Modifier.padding(start = 50.dp, bottom = 20.dp))
+                            Column(
+                                horizontalAlignment = Alignment.End
+                            ) {
+                                Text(text = (it.cantidad * it.producto.price).toString(),
+                                textAlign = TextAlign.Right,
+                                modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
+                                )
+                            }
+                            //Spacer(modifier = Modifier.padding(start = 40.dp, bottom = 20.dp))
+                        }
+                    }
+
                 }
             }
             item {
