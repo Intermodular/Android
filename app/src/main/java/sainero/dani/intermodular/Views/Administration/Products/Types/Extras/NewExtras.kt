@@ -1,30 +1,31 @@
 package sainero.dani.intermodular.Views.Administration.Products.Types.Extras
 
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import sainero.dani.intermodular.DataClass.Extras
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
-import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.ViewModels.ViewModelExtras
+import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.ui.theme.IntermodularTheme
 
-class Extras : ComponentActivity() {
+class NewExtras : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -34,7 +35,7 @@ class Extras : ComponentActivity() {
 }
 
 @Composable
-fun MainExtras(mainViewModelExtras: MainViewModelExtras,idProduct: Int) {
+fun MainNewExtra(mainViewModelExtras: MainViewModelExtras) {
     val state = remember { mutableStateOf(0) }
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
@@ -55,13 +56,14 @@ fun MainExtras(mainViewModelExtras: MainViewModelExtras,idProduct: Int) {
             )
         },
         content = {
-            if (refresh)  createContent(mainViewModelExtras = mainViewModelExtras,idProduct, onValueChangeRefresh)
+            if (refresh)  createContent(mainViewModelExtras = mainViewModelExtras, onValueChangeRefresh)
         }
     )
 }
 
+
 @Composable
-private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int, onValueChangeRefresh: (Boolean) -> Unit) {
+private fun createContent(mainViewModelExtras: MainViewModelExtras, onValueChangeRefresh: (Boolean) -> Unit) {
 
 
     LazyColumn(
@@ -70,15 +72,16 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
         mainViewModelExtras._tmpExtras.forEach { extra ->
             item {
                 Spacer(modifier = Modifier.padding(5.dp))
-
                 Column(
                     verticalArrangement = Arrangement.Center
                 ) {
                     var selectedText by remember { mutableStateOf("") }
 
                     Row(
-                        modifier = Modifier.height(IntrinsicSize.Min),
-                        horizontalArrangement = Arrangement.Start
+                        modifier = Modifier
+                            .height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.Start,
+
                     ) {
                         OutlinedTextField(
                             value =  selectedText,
@@ -87,10 +90,12 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                                 selectedText = it
                                 extra.name = selectedText
                             },
-                            placeholder = { Text(text = extra.name)},
+                            placeholder = { Text(text = "Nombre")},
                         )
 
                         Spacer(modifier = Modifier.padding(3.dp))
+
+                        //Validar campos
                         var selectedTextPrice by remember { mutableStateOf("") }
                         OutlinedTextField(
                             value =  selectedTextPrice,
@@ -98,9 +103,9 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                             onValueChange = {
                                 selectedTextPrice = it
-                                extra.price = selectedText.toFloat()
+                                extra.price = selectedTextPrice.toFloat()
                             },
-                            placeholder = { Text(text = extra.price.toString())},
+                            placeholder = { Text(text = "0")},
                         )
                         IconButton(
                             onClick = {
@@ -146,7 +151,7 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                 ) {
                     Button(
                         onClick = {
-                            navController.navigate("${Destinations.ProductEditType.route}/${idProduct}/cancel")
+                            GlobalVariables.navController.navigate("${Destinations.ProductNewType.route}/cancel")
 
                         }
                     ) {
@@ -157,7 +162,7 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                             //Guardar cambios
                             onValueChangeRefresh(false)
                             onValueChangeRefresh(true)
-                            navController.navigate("${Destinations.ProductEditType.route}/${idProduct}/edit")
+                            GlobalVariables.navController.navigate("${Destinations.ProductNewType.route}/edit")
                         }
                     ) {
                         Text(text = "Guardar cambios")
@@ -168,9 +173,8 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview19() {
+fun DefaultPreview20() {
 
 }

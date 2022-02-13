@@ -30,4 +30,5 @@
     <string name="title_activity_table_manager">TableManager</string>
     <string name="title_activity_edit_table">EditTable</string>
     <string name="title_activity_new_table">NewTable</string>
+    <string name="title_activity_new_extras">NewExtras</string>
 </resources>

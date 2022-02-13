@@ -105,7 +105,9 @@ fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewMo
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    GlobalVariables.navController.navigate(Destinations.ProductNewType.route)
+                    navController.navigate("${Destinations.ProductNewType.route}/new")
+
+                    //navController.navigate(Destinations.ProductNewType.route)
                 }
             ) {
                 Text("+")
@@ -128,7 +130,7 @@ private fun filterContentByName(allTypes: List<Tipos>, filterName: String) {
                             .fillMaxWidth()
                             .padding(10.dp)
                             .clickable {
-                                navController.navigate("${Destinations.ProductEditType.route}/${i._id}")
+                                navController.navigate("${Destinations.ProductEditType.route}/${i._id}/new")
                             }
                     ) {
                         Text(text = i.name)

@@ -278,9 +278,6 @@ fun MainCreateOrder(
                     }
                 }
             }
-
-
-
         }
     )
 
@@ -321,6 +318,7 @@ private fun createProducts(
     ) {
         for (i in allProducts) {
             item {
+
                 Card(
                     backgroundColor = Color.Red,
                     modifier = Modifier
@@ -394,7 +392,6 @@ private fun createProducts(
 @Composable
 private fun createAllProductEspecifications(producto: Productos, selectedType: Tipos, onValueChangeInformationProduct: (Boolean) -> Unit,mainViewModelCreateOrder: MainViewModelCreateOrder) {
     var description = rememberSaveable { mutableStateOf("") }
-    var numExtra = rememberSaveable { mutableStateOf("0") }
     var textQuantity = rememberSaveable{ mutableStateOf("1") }
 
     LazyColumn(
@@ -482,6 +479,8 @@ private fun createAllProductEspecifications(producto: Productos, selectedType: T
                     }
 
                     selectedType.compatibleExtras.forEach {
+                        var numExtra = rememberSaveable { mutableStateOf("0") }
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
@@ -501,13 +500,13 @@ private fun createAllProductEspecifications(producto: Productos, selectedType: T
 
                             TextField(
                                 value = numExtra.value,
-                                onValueChange = {  },
+                                onValueChange = { numExtra.value = it },
                                 label = { Text(it.name) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(100.dp)
                                     .padding(PaddingValues(start = 20.dp, end = 20.dp)),
-                                enabled = false
+                                enabled = true
                                 )
 
                             IconButton(

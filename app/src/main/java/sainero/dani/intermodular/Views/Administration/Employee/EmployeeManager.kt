@@ -184,7 +184,7 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
                 for (i in allUsers) {
                     if (i.name.contains(filterName)) {
                             Row (
-                                horizontalArrangement = Arrangement.Start,
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(10.dp)
@@ -192,11 +192,11 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
                                         navController.navigate("${Destinations.EditEmployee.route}/${i._id}")
                                     }
                             ) {
-                                    Text(text = i.name)
+                                    Text(text = i.name, modifier= Modifier.width(100.dp))
                                     Spacer(modifier = Modifier.padding(10.dp))
-                                    Text(text = i.dni)
+                                    Text(text = i.dni,modifier= Modifier.width(80.dp))
                                     Spacer(modifier = Modifier.padding(10.dp))
-                                    Text(text = i.rol)
+                                    Text(text = i.rol,modifier= Modifier.width(100.dp))
                             }
                         }
                 }
