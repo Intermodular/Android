@@ -14,6 +14,11 @@
         android:theme="@style/Theme.Intermodular"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Views.Administration.Products.Types.Extras.NewExtras"
+            android:exported="false"
+            android:label="@string/title_activity_new_extras"
+            android:theme="@style/Theme.Intermodular.NoActionBar" />
+        <activity
             android:name=".Views.Administration.Zone.Table.NewTable"
             android:exported="false"
             android:label="@string/title_activity_new_table"

@@ -25,7 +25,9 @@ import sainero.dani.intermodular.DataClass.Extras
 import sainero.dani.intermodular.DataClass.Tipos
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
+import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainViewModelExtras
 import java.util.regex.Pattern
 
 class ProductNewTyp : ComponentActivity() {
@@ -38,7 +40,7 @@ class ProductNewTyp : ComponentActivity() {
 }
 
 @Composable
-fun MainProductNewType(viewModelTipos: ViewModelTipos) {
+fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras, stateView: String) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
 
@@ -53,10 +55,43 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos) {
     val textOfNameError: String = "El nombre no puede ser mayor a 14 carácteres"
 
     var (textImg, onValueChangeImg) = rememberSaveable { mutableStateOf("") }
-    var (textCompatibleExtras, onValueCompatibleExtras) = rememberSaveable { mutableStateOf("") }
+    var textCompatibleExtras: MutableList<Extras> = remember { mutableListOf(Extras("",0f)) }
 
+    val aplicateState = remember { mutableStateOf(true) }
 
+    //Control de acciones de la ventana
+    if (aplicateState.value) {
+        when (stateView){
+            "new" -> {
+                mainViewModelExtras._extras.clear()
+                mainViewModelExtras._tmpExtras.clear()
+                mainViewModelExtras.tmpType = Tipos(0,"","", arrayListOf())
+                //selectedType.compatibleExtras.forEach{ mainViewModelExtras.addExtras(it) }
+                mainViewModelExtras._tmpExtras = mainViewModelExtras._extras.toMutableList()
+                aplicateState.value = false
 
+            }
+            "edit" -> {
+                onValueChangeName(mainViewModelExtras.tmpType.name)
+                onValueChangeImg(mainViewModelExtras.tmpType.img)
+
+                mainViewModelExtras._extras = mainViewModelExtras._tmpExtras.toMutableList()
+                aplicateState.value = false
+            }
+            "cancel" -> {
+
+                onValueChangeName(mainViewModelExtras.tmpType.name)
+                onValueChangeImg(mainViewModelExtras.tmpType.img)
+
+                mainViewModelExtras._tmpExtras = mainViewModelExtras._extras.toMutableList()
+                aplicateState.value = false
+
+            }
+            else  ->{
+                aplicateState.value = false
+            }
+        }
+    }
 
 
     //Ventana
@@ -99,7 +134,15 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos) {
 
                 createRowList(text = "Img", value = textImg, onValueChange = onValueChangeImg)
 
-                dropDownMenu(text = "Extras", suggestions = allNamesOfExtras, idOfItem = 0, navigate = "")
+                dropDownMenu(
+                    text = "Extras",
+                    suggestions = allNamesOfExtras,
+                    idOfItem = 0,
+                    textName = textName,
+                    textImg = textImg,
+                    textCompatibleExtras = textCompatibleExtras,
+                    mainViewModelExtras = mainViewModelExtras
+                )
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
@@ -288,7 +331,15 @@ private fun confirmDeleteType(viewModelTipos: ViewModelTipos, id: Int) {
 
 
 @Composable
-private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int,navigate: String) {
+private fun dropDownMenu(
+    text: String,
+    suggestions: List<String>,
+    idOfItem: Int,
+    textName: String,
+    textImg: String,
+    textCompatibleExtras: MutableList<Extras>,
+    mainViewModelExtras: MainViewModelExtras
+) {
     Spacer(modifier = Modifier.padding(4.dp))
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(text) }
@@ -324,7 +375,9 @@ private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int,n
                     Icon(Icons.Default.Edit,"Edit ${text}",
                         Modifier.clickable{
                             editItem.value = true
-                            GlobalVariables.navController.navigate(navigate)
+                            mainViewModelExtras.tmpType = Tipos(0,textName,textImg,textCompatibleExtras )
+                            navController.navigate("${Destinations.NewExtras.route}/${idOfItem}")
+
 
                         })
                 }
@@ -335,12 +388,12 @@ private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int,n
                 modifier = Modifier
                     .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
             ) {
-                suggestions.forEach { label ->
+                mainViewModelExtras._extras.forEach { label ->
                     DropdownMenuItem(onClick = {
-                        selectedText = label
+                        selectedText = label.name
                         expanded = false
                     }) {
-                        Text(text = label)
+                        Text(text = label.name)
                     }
                 }
             }
