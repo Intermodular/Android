@@ -126,10 +126,10 @@ fun MainCreateOrder(
     var (editOrder,onValueChangeEditOrder) = remember { mutableStateOf(false)}
 
 
-    if (clearViewModel.value) {
+    if (mainViewModelCreateOrder.clearAllVariables) {
         mainViewModelCreateOrder._lineasPedidos.clear()
         mainViewModelCreateOrder._lineasExtras.clear()
-        clearViewModel.value = false
+        mainViewModelCreateOrder.clearAllVariables = false
     }
 
 
@@ -147,7 +147,8 @@ fun MainCreateOrder(
                 actions = {
                     IconButton(
                         onClick = {
-                            onValueChangeEditOrder(true)
+                            //onValueChangeEditOrder(true)
+                            navController.navigate("${Destinations.EditOrder.route}/${tableId}")
                         }
                     ) {
                         Icon(
@@ -220,65 +221,53 @@ fun MainCreateOrder(
 
         },
         content = {
-            //Crear filtro
-            if (editOrder) {
-                order(onValueChangeEditOrder,mainViewModelCreateOrder)
-            } else {
-                if (informationProduct) {
-                    createAllProductEspecifications(
-                        producto = selectedProduct,
-                        selectedType = selectedType.value,
-                        onValueChangeInformationProduct = onValueChangedInformationProduct,
-                        mainViewModelCreateOrder = mainViewModelCreateOrder
-                    )
-                } else {
-                    Column(
-                        verticalArrangement = Arrangement.SpaceAround
-                    ) {
-                        ScrollableTabRow(
-                            selectedTabIndex = state.value,
-                            divider = {
-                                /* Divider(
-                                     modifier = Modifier
-                                         .height(8.dp)
-                                         .fillMaxWidth()
-                                         .background(color = Color.Blue)
-                                 )*/
-                            },
-                            modifier = Modifier.wrapContentWidth(),
-                            edgePadding = 16.dp,
-                        ) {
-                            allTypesNames.forEachIndexed { index, title ->
-                                Tab(
-                                    text = { Text(title) },
-                                    selected = state.value == index,
-                                    onClick = {
-                                        state.value = index
-                                        nameOfSelectedType.value = title
-                                    }
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.padding(10.dp))
 
-                        createProducts(
-                            allProducts =
-                            aplicateProductsFilters(
-                                allProducts = allProducts,
-                                nameOfSelectedType = nameOfSelectedType.value,
-                                getAllFilterEspecifications(
-                                    isVegano = isCheckedVegano,
-                                    isVegetariano = isCheckedVegetariano,
-                                    isPescetariano = isCheckedPescetariano,
-                                    isSinGluten = isCheckedSinGluten,
-                                    isPicante = isCheckedPicante
-                                )
-                            ),
-                            onValueChangeInformationProduct = onValueChangedInformationProduct,
-                            onValueChangeSelectedProduct = onValueChangeSelectedProduct
+            Column(
+                verticalArrangement = Arrangement.SpaceAround
+            ) {
+                ScrollableTabRow(
+                    selectedTabIndex = state.value,
+                    divider = {
+                        /* Divider(
+                             modifier = Modifier
+                                 .height(8.dp)
+                                 .fillMaxWidth()
+                                 .background(color = Color.Blue)
+                         )*/
+                    },
+                    modifier = Modifier.wrapContentWidth(),
+                    edgePadding = 16.dp,
+                ) {
+                    allTypesNames.forEachIndexed { index, title ->
+                        Tab(
+                            text = { Text(title) },
+                            selected = state.value == index,
+                            onClick = {
+                                state.value = index
+                                nameOfSelectedType.value = title
+                            }
                         )
                     }
                 }
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                createProducts(
+                    allProducts =
+                    aplicateProductsFilters(
+                        allProducts = allProducts,
+                        nameOfSelectedType = nameOfSelectedType.value,
+                        getAllFilterEspecifications(
+                            isVegano = isCheckedVegano,
+                            isVegetariano = isCheckedVegetariano,
+                            isPescetariano = isCheckedPescetariano,
+                            isSinGluten = isCheckedSinGluten,
+                            isPicante = isCheckedPicante
+                        )
+                    ),
+                    onValueChangeInformationProduct = onValueChangedInformationProduct,
+                    onValueChangeSelectedProduct = onValueChangeSelectedProduct,
+                    selectedType = selectedType.value
+                )
             }
         }
     )
@@ -312,7 +301,9 @@ private fun aplicateEspecificationFilter(especification: String, allProducts: Mu
 private fun createProducts(
     allProducts: MutableList<Productos>,
     onValueChangeInformationProduct: (Boolean) -> Unit,
-    onValueChangeSelectedProduct: (Productos) -> Unit) {
+    onValueChangeSelectedProduct: (Productos) -> Unit,
+    selectedType: Tipos
+) {
     LazyVerticalGrid(
         cells = GridCells.Adaptive(minSize = 128.dp),
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
@@ -335,8 +326,10 @@ private fun createProducts(
                     Button(
                         onClick = {
                             //Producto seleccionado
-                            onValueChangeInformationProduct(true)
+                            //onValueChangeInformationProduct(true)
+
                             onValueChangeSelectedProduct(i)
+                            navController.navigate("${Destinations.CreateOrderLine.route}/${i._id}/${selectedType._id}")
 
                         },
                         modifier = Modifier.pointerInput(Unit){
@@ -391,228 +384,6 @@ private fun createProducts(
     }
 }
 
-@Composable
-private fun createAllProductEspecifications(producto: Productos, selectedType: Tipos, onValueChangeInformationProduct: (Boolean) -> Unit,mainViewModelCreateOrder: MainViewModelCreateOrder) {
-    var description = rememberSaveable { mutableStateOf("") }
-    var textQuantity = rememberSaveable{ mutableStateOf("1") }
-
-    LazyColumn(
-        content = {
-            item {
-                Column(
-                    verticalArrangement = Arrangement.Center
-                ) {
-
-                    Text(
-                        text = "Editar Producto",
-                        fontSize = 30.sp,
-                        modifier = Modifier
-                            .align(
-                                alignment = Alignment.CenterHorizontally
-                            )
-                    )
-                    Spacer(modifier = Modifier.padding(10.dp))
-                    Column(
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Box(
-                            modifier = Modifier.height(200.dp)
-                        ) {
-                            Image(
-                                painter =  rememberImagePainter(
-                                    data =  if (!producto.img.equals("")) "${producto.img}" else "https://www.chollosocial.com/media/data/2019/11/678gf34.png",
-                                    builder = {
-                                        //transformations(CircleCropTransformation())
-
-                                    }
-                                ),
-                                contentDescription ="Imágen del producto",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Fit
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier.height(50.dp)
-                        ) {
-                            Text(
-                                text = producto.name,
-                                fontSize = 20.sp,
-                                modifier = Modifier.fillMaxSize(),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                        ) {
-
-                            OutlinedTextField(
-                                value = textQuantity.value,
-                                onValueChange = {
-                                    textQuantity.value = it
-                                },
-                                placeholder = { Text("1") },
-                                label = {Text(text = "Cantidad:")},
-                                modifier = Modifier
-                                    .padding(start = 20.dp, end = 20.dp)
-                                    .fillMaxWidth(),
-                                keyboardOptions = KeyboardOptions.Default.copy(keyboardType =  KeyboardType.Number)
-                            )
-                        }
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                        ) {
-
-                            TextField(
-                                value = description.value,
-                                onValueChange = { description.value = it },
-                                label = { Text("Anotaciones") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(100.dp)
-                                    .padding(PaddingValues(start = 20.dp, end = 20.dp)),
-
-                            )
-                        }
-                    }
-
-                    selectedType.compatibleExtras.forEach {
-                        var numExtra = rememberSaveable { mutableStateOf("0") }
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 20.dp, bottom = 20.dp)
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    //Restar 1
-                                    if (numExtra.value.toInt() > 0){
-                                    numExtra.value = (numExtra.value.toInt() - 1).toString()
-                                    }
-
-
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.remove_circle_outline),
-                                    contentDescription = "Less icon",
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .padding(start = 20.dp)
-                                )
-                            }
-
-                            TextField(
-                                value = numExtra.value,
-                                onValueChange = { numExtra.value = it },
-                                label = { Text(it.name, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()) },
-                                modifier = Modifier
-                                    .width((LocalConfiguration.current.screenWidthDp / 2).dp)
-                                    .height(60.dp)
-                                    .padding(PaddingValues(start = 20.dp, end = 20.dp)),
-                                enabled = false,
-                                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
-                                )
-
-                            IconButton(
-                                onClick = {
-                                    //Sumar 1
-                                    if (numExtra.value.toInt() + 1 < 10){
-                                        numExtra.value = (numExtra.value.toInt() + 1).toString()
-                                    }
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.add_circle_outline),
-                                    contentDescription = "More icon",
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .padding(end = 20.dp)
-                                )
-                            }
-                        }
-                        val lineaExtra : LineaExtra = LineaExtra(it,numExtra.value.toInt())
-                        mainViewModelCreateOrder.addLineaExtras(lineaExtra)
-                    }
-                    Row(
-                        Modifier.fillMaxWidth().padding(end = 40.dp, start = 40.dp, bottom = 30.dp),
-
-                    ) {
-                        Row(
-                            Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 2),
-                            horizontalArrangement = Arrangement.Start
-                        ) {
-                            Button(
-                                onClick = {
-
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
-                                    contentColor = Color.Blue
-                                ),
-                                contentPadding = PaddingValues(
-                                    start = 10.dp,
-                                    top = 6.dp,
-                                    end = 10.dp,
-                                    bottom = 6.dp
-                                ),
-                                modifier = Modifier.width(100.dp).height(50.dp)
-                            ) {
-                                Text(text = "Cancelar")
-
-                            }
-                        }
-
-                        Row(
-                            Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 2),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            Button(
-                                onClick = {
-                                    var lineaDePedido = LineaPedido(producto = producto,
-                                        anotaciones = description.value,
-                                        cantidad = textQuantity.value.toInt(),
-                                        costeLinea = 0f,
-                                        lineasExtra = mainViewModelCreateOrder._lineasExtras
-                                    )
-                                    mainViewModelCreateOrder._lineasPedidos.remove(mainViewModelCreateOrder.pedidoEditar)
-                                    onValueChangeInformationProduct(false)
-                                    mainViewModelCreateOrder.addLineaPedido(
-                                        lineaDePedido
-                                    )
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
-                                    contentColor = Color.Blue
-                                ),
-                                contentPadding = PaddingValues(
-                                    start = 10.dp,
-                                    top = 6.dp,
-                                    end = 10.dp,
-                                    bottom = 6.dp
-                                ),
-                                modifier = Modifier.width(100.dp).height(50.dp)
-                            ) {
-                                Text(text = "Guardar")
-
-                            }
-                        }
-
-                    }
-
-                }
-            }
-        }
-    )
-}
-
 private fun getAllFilterEspecifications(
     isVegano: Boolean,
     isVegetariano: Boolean,
@@ -633,109 +404,7 @@ private fun getAllFilterEspecifications(
     return  especifications
 }
 
-@Composable
-private fun order(onValueChangeEditOrder: (Boolean) -> Unit,mainViewModelCreateOrder: MainViewModelCreateOrder) {
-    LazyColumn(
-        content = {
-            item {
 
-                Row(
-                    //verticalArrangement = Arrangement.SpaceAround,
-                    //horizontalAlignment = Alignment.Start
-                    //horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 25.dp, bottom = 20.dp, end = 25.dp)
-                        .clickable {
-
-                        }
-                ) {
-                    Text(
-                        text = "Nombre",
-                        textAlign = TextAlign.Left,
-                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
-                        )
-                    Text(
-                        text = "Cantidad",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
-                    )
-                    Text(
-                        text = "Precio",
-                        textAlign = TextAlign.Right,
-                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
-                    )
-                        //Spacer(modifier = Modifier.padding(start = 55.dp, bottom = 20.dp))
-                }
-            }
-            mainViewModelCreateOrder._lineasPedidos.forEach{
-                item {
-                    Column(
-                        //verticalArrangement = Arrangement.SpaceAround,
-                        //horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row (
-                            horizontalArrangement = Arrangement.Start,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 25.dp, bottom = 20.dp, end = 25.dp)
-                                .clickable {
-                                    mainViewModelCreateOrder.pedidoEditar = it
-
-                                    navController.navigate(Destinations.CreateOrder.route)
-                                }
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                Text(
-                                    text = it.producto.name.toString(),
-                                    textAlign = TextAlign.Left,
-                                    modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
-                                )
-                            }
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(text = it.cantidad.toString(),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
-                                )
-                            }
-                            //Spacer(modifier = Modifier.padding(start = 50.dp, bottom = 20.dp))
-                            Column(
-                                horizontalAlignment = Alignment.End
-                            ) {
-                                //val priceExtras = it.lineasExtra.forEach()
-                                //val result = (it.cantidad * it.producto.price) + it.lineasExtra.get(0).extra.price * it.lineasExtra.get(0).cantidad)
-                                Text(text = ((it.cantidad * it.producto.price) + it.lineasExtra.get(0).extra.price).toString(),
-                                textAlign = TextAlign.Right,
-                                modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
-                                )
-                            }
-                            //Spacer(modifier = Modifier.padding(start = 40.dp, bottom = 20.dp))
-                        }
-                    }
-
-                }
-            }
-            item {
-                Button(
-                    onClick = {
-                        //enviara
-                        onValueChangeEditOrder(false)
-                    }
-                ) {
-                    Text(text = "Enviar")
-                }
-            }
-        }
-    )
-
-    //Toast.makeText(LocalContext.current,"Text",Toast.LENGTH_LONG).show()
-
-
-}
 @Composable
 private fun LabelledCheckbox(labelText: String,isCheckedValue: Boolean,onValueChangeCheked: (Boolean) -> Unit) {
     Row(modifier = Modifier.padding(8.dp)) {

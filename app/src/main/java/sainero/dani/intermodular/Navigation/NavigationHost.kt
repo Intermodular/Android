@@ -42,7 +42,10 @@ import sainero.dani.intermodular.Views.Administration.Zone.MainZoneManager
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainEditTable
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainNewTable
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainTableManager
+import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainCreateOrderLine
+import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainEditOrder
 import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainViewModelCreateOrder
+import sainero.dani.intermodular.Views.Cobrador.MainProductInformation
 
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
@@ -78,7 +81,7 @@ fun NavigationHost(
         composable(route = Destinations.AccessToTables.route) {
             viewModelMesas.getMesaList()
             viewModelZonas.getZoneList()
-            MainAccessToTables(viewModelMesas = viewModelMesas, viewModelZonas = viewModelZonas)
+            MainAccessToTables(viewModelMesas = viewModelMesas, viewModelZonas = viewModelZonas,mainViewModelCreateOrder = mainViewModelCreateOrder)
         }
         
         composable(route = Destinations.EmployeeManager.route) {
@@ -96,18 +99,7 @@ fun NavigationHost(
             MainZoneManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelZonas = viewModelZonas)
         }
         
-        composable(
-            route = Destinations.CreateOrder.route + "/{tableId}",
-            arguments = listOf(navArgument("tableId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getInt("tableId")
-            requireNotNull(id,{"La id de la mesa no puede ser nula"})
 
-            viewModelMesas.getMesaList()
-            viewModelProductos.getProductList()
-            viewModelTipos.getTypesList()
-            MainCreateOrder(id, viewModelProductos, viewModelTipos, viewModelMesas,mainViewModelCreateOrder)
-        }
 
         composable(
             route = "${Destinations.EditEmployee.route}/{employeeId}",
@@ -251,6 +243,88 @@ fun NavigationHost(
             viewModelTipos.getTypesList()
             MainNewExtra(mainViewModelExtras)
         }
+
+
+        composable(
+            route = "${Destinations.NewExtras.route}/{productId}",
+            arguments = listOf(navArgument("productId"){type = NavType.IntType})
+        ){
+            val id = it.arguments?.getInt("productId")
+            requireNotNull(id)
+            viewModelTipos.getTypesList()
+            MainNewExtra(mainViewModelExtras)
+        }
+
+        composable(
+            route = "${Destinations.EditOrder.route}/{tableId}",
+            arguments = listOf(navArgument("tableId"){type = NavType.IntType})
+
+        ){
+            val id = it.arguments?.getInt("tableId")
+            requireNotNull(id)
+            MainEditOrder(
+                mainViewModelCreateOrder = mainViewModelCreateOrder,
+                tableId = id
+            )
+        }
+
+        composable(
+            route = "${Destinations.CreateOrderLine.route}/{productId}/{typeId}",
+            arguments = listOf(
+                navArgument("productId"){type = NavType.IntType},
+                navArgument("typeId"){type = NavType.IntType}
+            )
+
+        ){
+            val productId = it.arguments?.getInt("productId")
+            val typeId = it.arguments?.getInt("typeId")
+
+            requireNotNull(productId)
+            requireNotNull(typeId)
+
+            MainCreateOrderLine(
+                mainViewModelCreateOrder = mainViewModelCreateOrder,
+                viewModelProductos = viewModelProductos,
+                viewModelTipos = viewModelTipos,
+                productId = productId,
+                typeId = typeId
+            )
+        }
+
+        composable(
+            route = Destinations.CreateOrder.route + "/{tableId}",
+            arguments = listOf(navArgument("tableId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("tableId")
+            requireNotNull(id,{"La id de la mesa no puede ser nula"})
+
+            viewModelMesas.getMesaList()
+            viewModelProductos.getProductList()
+            viewModelTipos.getTypesList()
+            MainCreateOrder(
+                tableId = id,
+                viewModelProductos = viewModelProductos,
+                viewModelTipos = viewModelTipos,
+                viewModelMesas = viewModelMesas,
+                mainViewModelCreateOrder = mainViewModelCreateOrder
+            )
+        }
+
+
+        composable(
+            route = Destinations.ProductInformation.route + "/{productId}",
+            arguments = listOf(navArgument("productId") { type = NavType.IntType })
+        ) {
+            val id = it.arguments?.getInt("productId")
+            requireNotNull(id,{"El producto no puede ser nulo"})
+
+            viewModelProductos.getProductList()
+            MainProductInformation(
+                viewModelProductos = viewModelProductos,
+                productId = id
+            )
+        }
+
         composable(route = "lol") {
             MainFunDragAndDrop()
         }

@@ -94,9 +94,9 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                 .padding(20.dp)
                     //Tests
                 .clickable {
-                     navController.navigate("${Destinations.MainAdministrationActivity.route}")
+                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
+                    navController.navigate("${Destinations.ProductInformation.route}/${0}")
 
-                    //navController.navigate("lol")
                 }
         )
         Column(

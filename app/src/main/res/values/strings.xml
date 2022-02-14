@@ -31,4 +31,7 @@
     <string name="title_activity_edit_table">EditTable</string>
     <string name="title_activity_new_table">NewTable</string>
     <string name="title_activity_new_extras">NewExtras</string>
+    <string name="title_activity_edit_order">EditOrder</string>
+    <string name="title_activity_create_order_line">CreateOrderLine</string>
+    <string name="title_activity_product_information">ProductInformation</string>
 </resources>

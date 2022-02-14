@@ -27,4 +27,9 @@ sealed class Destinations (
     object  NewTable: Destinations("Administration.Zone.NewTable")
     object  Extras: Destinations("Administration.Products.Types.Extras")
     object  NewExtras: Destinations("Administration.Products.Types.NewExtras")
+    object  EditOrder: Destinations("Cobrador.CreateOrder.EditOrder")
+    object  CreateOrderLine: Destinations("Cobrador.CreateOrder.CreateOrderLine")
+    object  ProductInformation: Destinations("Cobrador.ProductInformation")
+
+
 }

@@ -52,6 +52,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
+import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainViewModelCreateOrder
 
 @ExperimentalFoundationApi
 
@@ -67,7 +68,7 @@ class AccessToTables : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModelZonas) {
+fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModelZonas, mainViewModelCreateOrder: MainViewModelCreateOrder) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     var scaffoldStateFilter = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
 
@@ -273,7 +274,8 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
                             nºMesasFilter = nºMesa,
                             zoneFilter = textSelectedZone.value,
                             stateFilter = textState.value,
-                            dinersFilter = nºComensales
+                            dinersFilter = nºComensales,
+                            mainViewModelCreateOrder = mainViewModelCreateOrder
                         )
 
 
@@ -377,7 +379,7 @@ private fun createRowList(text: String, value: String, onValueChange: (String) -
 
 @ExperimentalFoundationApi
 @Composable
-private fun filterByAllFilters(allTables: List<Mesas>, nºMesasFilter: String,zoneFilter: String, stateFilter: String, dinersFilter: String) {
+private fun filterByAllFilters(allTables: List<Mesas>, nºMesasFilter: String,zoneFilter: String, stateFilter: String, dinersFilter: String,mainViewModelCreateOrder : MainViewModelCreateOrder) {
 
     //Obtener todas las mesas (Luego le vamos restando las que no cumplan la condición)
     val allFilterTables: MutableList<Mesas> = mutableListOf()
@@ -416,12 +418,12 @@ private fun filterByAllFilters(allTables: List<Mesas>, nºMesasFilter: String,zo
         if(!dinersFilter.equals("")) listOfAllFilterTables = allFilterTables.sortedBy {it.numChair}
         else listOfAllFilterTables = allFilterTables
     }
-    createTables(allFilterTables = listOfAllFilterTables)
+    createTables(allFilterTables = listOfAllFilterTables,mainViewModelCreateOrder = mainViewModelCreateOrder)
 }
 
 @ExperimentalFoundationApi
 @Composable
-private fun createTables(allFilterTables: List<Mesas>) {
+private fun createTables(allFilterTables: List<Mesas>, mainViewModelCreateOrder: MainViewModelCreateOrder) {
     var showMenu by remember { mutableStateOf(false) }
 
     LazyVerticalGrid(
@@ -442,6 +444,7 @@ private fun createTables(allFilterTables: List<Mesas>) {
                 Box(Modifier.padding(10.dp)) {
                     Button(
                         onClick = {
+                            mainViewModelCreateOrder.clearAllVariables = true
                             navController.navigate(Destinations.CreateOrder.route + "/${i._id}")
                         },
                         modifier = Modifier,
