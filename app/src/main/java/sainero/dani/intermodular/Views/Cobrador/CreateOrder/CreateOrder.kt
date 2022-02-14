@@ -57,6 +57,7 @@ import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
+import sainero.dani.intermodular.ViewModels.ViewModelPedidos
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
 import sainero.dani.intermodular.Views.Administration.Employee.ToastDemo
@@ -76,11 +77,219 @@ class CreateOrder : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
+fun MainCreateOrderWithOrder(
+    tableId: Int,
+    viewModelProductos: ViewModelProductos,
+    viewModelTipos: ViewModelTipos,
+    viewModelMesas: ViewModelMesas,
+    viewModelPedidos: ViewModelPedidos,
+    mainViewModelCreateOrder: MainViewModelCreateOrder
+) {
+    //Busquedas BD
+    val allTypes = viewModelTipos.typeListResponse
+    var allProducts = viewModelProductos.productListResponse
+    var allTypesNames: MutableList<String> = mutableListOf()
+    allTypes.forEach { allTypesNames.add(it.name) }
+    var allTables = viewModelMesas.mesasListResponse
+    var selectedTable: Mesas = Mesas(0,"",0,"",0)
+    allTables.forEach { if (it._id.equals(tableId)) selectedTable = it }
+
+
+    //Filtros
+    val (isCheckedVegano,onValueChangeVegano) = remember { mutableStateOf(false) }
+    val (isCheckedVegetariano,onValueChangeVegetariano) = remember { mutableStateOf(false) }
+    val (isCheckedPescetariano,onValueChangePescetariano) = remember { mutableStateOf(false) }
+    val (isCheckedSinGluten,onValueChangeSinGluten) = remember { mutableStateOf(false) }
+    val (isCheckedPicante,onValueChangePicante) = remember { mutableStateOf(false) }
+    var lisOfFilterEspecifications: MutableList<String> = remember { mutableListOf()}
+
+    //Variables de extra
+    val (informationProduct,onValueChangedInformationProduct) = remember { mutableStateOf(false) }
+    val (selectedProduct,onValueChangeSelectedProduct) = remember { mutableStateOf(Productos(0,"","", arrayListOf(),0f, arrayListOf(),"",0))}
+
+
+
+
+    //Variables de ayuda
+    var state = remember { mutableStateOf(0)}
+    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
+    var nameOfSelectedType = remember { mutableStateOf(allTypesNames[0])}
+    var selectedType = remember { mutableStateOf(Tipos(0,"","", arrayListOf()))}
+    allTypes.forEach { if (it.name.equals(nameOfSelectedType.value)) selectedType.value = it }
+
+    if (mainViewModelCreateOrder.clearAllVariables) {
+        mainViewModelCreateOrder._lineasPedidos.clear()
+        mainViewModelCreateOrder._lineasExtras.clear()
+        mainViewModelCreateOrder.pedido = getOrder(
+            mainViewModelCreateOrder = mainViewModelCreateOrder,
+            tableId = tableId,
+            viewModelPedidos = viewModelPedidos
+        )
+        mainViewModelCreateOrder.clearAllVariables = false
+    }
+/*
+    if (mainViewModelCreateOrder.getOrder) {
+        viewModelPedidos.orderListResponse.forEach {
+            if (it.idMesa.equals(tableId)) {
+                mainViewModelCreateOrder._lineasPedidos = it.lineasPedido
+                mainViewModelCreateOrder.pedido = Pedidos(it._id,tableId,mainViewModelCreateOrder._lineasPedidos.toMutableList())
+            }
+        }
+        mainViewModelCreateOrder.getOrder = false
+    }*/
+
+
+    mainViewModelCreateOrder._lineasPedidos = mainViewModelCreateOrder.pedido!!.lineasPedido.toMutableList()
+
+    val scope = rememberCoroutineScope()
+
+
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "Mesa número ${selectedTable.number}")
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            navController.navigate("${Destinations.EditOrder.route}/${tableId}")
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.edit_note) ,
+                            contentDescription = "Eliminar pedido",
+                            tint = Color.White
+                        )
+                    }
+                },
+                navigationIcon = {
+
+                    IconButton(
+                        onClick = {
+                            scope.launch { scaffoldState.drawerState.open() }
+                        }
+                    ) {
+                        Icon(Icons.Filled.Menu, contentDescription = "")
+                    }
+                }
+            )
+        },
+        drawerContent = {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(55.dp)
+                        .background(MaterialTheme.colors.primary),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Filtros",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                }
+                Spacer(modifier = Modifier.padding(10.dp))
+                LabelledCheckbox(
+                    labelText = "Vegano",
+                    isCheckedValue = isCheckedVegano,
+                    onValueChangeCheked = onValueChangeVegano
+                )
+                LabelledCheckbox(
+                    labelText = "Vegetariano",
+                    isCheckedValue = isCheckedVegetariano,
+                    onValueChangeCheked = onValueChangeVegetariano
+                )
+                LabelledCheckbox(
+                    labelText = "Pescetariano",
+                    isCheckedValue = isCheckedPescetariano,
+                    onValueChangeCheked = onValueChangePescetariano
+                )
+                LabelledCheckbox(
+                    labelText = "Sin Gluten",
+                    isCheckedValue = isCheckedSinGluten,
+                    onValueChangeCheked = onValueChangeSinGluten
+                )
+                LabelledCheckbox(
+                    labelText = "Picante",
+                    isCheckedValue = isCheckedPicante,
+                    onValueChangeCheked = onValueChangePicante
+                )
+            }
+
+        },
+        content = {
+
+            Column(
+                verticalArrangement = Arrangement.SpaceAround
+            ) {
+                ScrollableTabRow(
+                    selectedTabIndex = state.value,
+                    divider = {
+                        /* Divider(
+                             modifier = Modifier
+                                 .height(8.dp)
+                                 .fillMaxWidth()
+                                 .background(color = Color.Blue)
+                         )*/
+                    },
+                    modifier = Modifier.wrapContentWidth(),
+                    edgePadding = 16.dp,
+                ) {
+                    allTypesNames.forEachIndexed { index, title ->
+                        Tab(
+                            text = { Text(title) },
+                            selected = state.value == index,
+                            onClick = {
+                                state.value = index
+                                nameOfSelectedType.value = title
+                            }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                createProducts(
+                    allProducts =
+                    aplicateProductsFilters(
+                        allProducts = allProducts,
+                        nameOfSelectedType = nameOfSelectedType.value,
+                        getAllFilterEspecifications(
+                            isVegano = isCheckedVegano,
+                            isVegetariano = isCheckedVegetariano,
+                            isPescetariano = isCheckedPescetariano,
+                            isSinGluten = isCheckedSinGluten,
+                            isPicante = isCheckedPicante
+                        )
+                    ),
+                    onValueChangeInformationProduct = onValueChangedInformationProduct,
+                    onValueChangeSelectedProduct = onValueChangeSelectedProduct,
+                    selectedType = selectedType.value,
+                    tableId = tableId
+                )
+            }
+        }
+    )
+}
+
+
+@ExperimentalFoundationApi
+@Composable
 fun MainCreateOrder(
     tableId: Int,
     viewModelProductos: ViewModelProductos,
     viewModelTipos: ViewModelTipos,
     viewModelMesas: ViewModelMesas,
+    viewModelPedidos: ViewModelPedidos,
     mainViewModelCreateOrder: MainViewModelCreateOrder
 ) {
 
@@ -92,6 +301,7 @@ fun MainCreateOrder(
     var allTables = viewModelMesas.mesasListResponse
     var selectedTable: Mesas = Mesas(0,"",0,"",0)
     allTables.forEach { if (it._id.equals(tableId)) selectedTable = it }
+
 
     //Filtros
     val (isCheckedVegano,onValueChangeVegano) = remember { mutableStateOf(false) }
@@ -109,10 +319,7 @@ fun MainCreateOrder(
     //Variables de pedido
     val Pedidos: Pedidos = Pedidos(0,0, arrayListOf())
     val lineasPedido: MutableList<LineaPedido> = remember { mutableListOf() }
-    val lineaPedido : LineaPedido
-    lineasPedido.forEach{
 
-    }
 
 
 
@@ -129,9 +336,9 @@ fun MainCreateOrder(
     if (mainViewModelCreateOrder.clearAllVariables) {
         mainViewModelCreateOrder._lineasPedidos.clear()
         mainViewModelCreateOrder._lineasExtras.clear()
+        mainViewModelCreateOrder.pedido = null
         mainViewModelCreateOrder.clearAllVariables = false
     }
-
 
     val scope = rememberCoroutineScope()
 
@@ -266,7 +473,8 @@ fun MainCreateOrder(
                     ),
                     onValueChangeInformationProduct = onValueChangedInformationProduct,
                     onValueChangeSelectedProduct = onValueChangeSelectedProduct,
-                    selectedType = selectedType.value
+                    selectedType = selectedType.value,
+                    tableId = tableId
                 )
             }
         }
@@ -302,7 +510,8 @@ private fun createProducts(
     allProducts: MutableList<Productos>,
     onValueChangeInformationProduct: (Boolean) -> Unit,
     onValueChangeSelectedProduct: (Productos) -> Unit,
-    selectedType: Tipos
+    selectedType: Tipos,
+    tableId: Int
 ) {
     LazyVerticalGrid(
         cells = GridCells.Adaptive(minSize = 128.dp),
@@ -326,10 +535,8 @@ private fun createProducts(
                     Button(
                         onClick = {
                             //Producto seleccionado
-                            //onValueChangeInformationProduct(true)
 
-                            onValueChangeSelectedProduct(i)
-                            navController.navigate("${Destinations.CreateOrderLine.route}/${i._id}/${selectedType._id}")
+                            navController.navigate("${Destinations.CreateOrderLine.route}/${i._id}/${selectedType._id}/${tableId}")
 
                         },
                         modifier = Modifier.pointerInput(Unit){
@@ -425,6 +632,21 @@ private fun LabelledCheckbox(labelText: String,isCheckedValue: Boolean,onValueCh
         )
         Spacer(modifier = Modifier.padding(2.dp))
     }
+}
+
+private fun getOrder(
+    viewModelPedidos: ViewModelPedidos,
+    tableId: Int,
+    mainViewModelCreateOrder: MainViewModelCreateOrder
+): Pedidos {
+
+    viewModelPedidos.orderListResponse.forEach {
+        if (it.idMesa.equals(tableId)) {
+            mainViewModelCreateOrder._lineasPedidos = it.lineasPedido
+            return Pedidos(it._id,tableId,mainViewModelCreateOrder._lineasPedidos.toMutableList())
+        }
+    }
+    return Pedidos(0,tableId,mainViewModelCreateOrder._lineasPedidos)
 }
 
 @Preview(showBackground = true)

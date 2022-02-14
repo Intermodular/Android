@@ -12,14 +12,15 @@ import sainero.dani.intermodular.DataClass.Productos
 class MainViewModelCreateOrder : ViewModel() {
 
 
-    var pedido: Pedidos = Pedidos(0,0, arrayListOf())
-
+    var pedido: Pedidos? = null
+    var editOrder = true
 
 
     var clearAllVariables = true
+    var getOrder = true
 
     private val _lineaPedido: LineaPedido = LineaPedido(lineasExtra = arrayListOf(),costeLinea = 0f,cantidad = 0,anotaciones = "",producto = Productos(_id = 0,type = "",price = 0f,especifications = arrayListOf(),stock = 0,img = "",ingredients = arrayListOf(),name = ""))
-    val _lineasPedidos: MutableList<LineaPedido> = mutableListOf()
+    var _lineasPedidos: MutableList<LineaPedido> = mutableListOf()
     private val _lineaExtras = ""
 
 

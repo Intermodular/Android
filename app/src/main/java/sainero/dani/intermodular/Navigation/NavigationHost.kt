@@ -24,7 +24,6 @@ import sainero.dani.intermodular.Views.Administration.Products.MainEditProduct
 import sainero.dani.intermodular.Views.Administration.Products.MainNewProduct
 import sainero.dani.intermodular.Views.Administration.Products.MainProductManager
 import sainero.dani.intermodular.Views.Cobrador.MainAccessToTables
-import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainCreateOrder
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.ViewModels.*
@@ -42,9 +41,7 @@ import sainero.dani.intermodular.Views.Administration.Zone.MainZoneManager
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainEditTable
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainNewTable
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainTableManager
-import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainCreateOrderLine
-import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainEditOrder
-import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainViewModelCreateOrder
+import sainero.dani.intermodular.Views.Cobrador.CreateOrder.*
 import sainero.dani.intermodular.Views.Cobrador.MainProductInformation
 
 @ExperimentalComposeUiApi
@@ -264,30 +261,36 @@ fun NavigationHost(
             requireNotNull(id)
             MainEditOrder(
                 mainViewModelCreateOrder = mainViewModelCreateOrder,
-                tableId = id
+                tableId = id,
+                viemModelPedidos = viewModelPedidos
             )
         }
 
         composable(
-            route = "${Destinations.CreateOrderLine.route}/{productId}/{typeId}",
+            route = "${Destinations.CreateOrderLine.route}/{productId}/{typeId}/{tableId}",
             arguments = listOf(
                 navArgument("productId"){type = NavType.IntType},
-                navArgument("typeId"){type = NavType.IntType}
+                navArgument("typeId"){type = NavType.IntType},
+                navArgument("tableId"){type = NavType.IntType}
             )
 
         ){
             val productId = it.arguments?.getInt("productId")
             val typeId = it.arguments?.getInt("typeId")
+            val tableId = it.arguments?.getInt("tableId")
 
             requireNotNull(productId)
             requireNotNull(typeId)
+            requireNotNull(tableId)
 
             MainCreateOrderLine(
                 mainViewModelCreateOrder = mainViewModelCreateOrder,
                 viewModelProductos = viewModelProductos,
                 viewModelTipos = viewModelTipos,
                 productId = productId,
-                typeId = typeId
+                typeId = typeId,
+                tableId = tableId,
+                viewModelPedidos = viewModelPedidos
             )
         }
 
@@ -306,10 +309,30 @@ fun NavigationHost(
                 viewModelProductos = viewModelProductos,
                 viewModelTipos = viewModelTipos,
                 viewModelMesas = viewModelMesas,
+                viewModelPedidos = viewModelPedidos,
                 mainViewModelCreateOrder = mainViewModelCreateOrder
             )
         }
 
+        composable(
+            route = Destinations.CreateOrderWithOrder.route + "/{tableId}",
+            arguments = listOf(navArgument("tableId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("tableId")
+            requireNotNull(id,{"La id de la mesa no puede ser nula"})
+
+            viewModelMesas.getMesaList()
+            viewModelProductos.getProductList()
+            viewModelTipos.getTypesList()
+            MainCreateOrderWithOrder(
+                tableId = id,
+                viewModelProductos = viewModelProductos,
+                viewModelTipos = viewModelTipos,
+                viewModelMesas = viewModelMesas,
+                viewModelPedidos = viewModelPedidos,
+                mainViewModelCreateOrder = mainViewModelCreateOrder
+            )
+        }
 
         composable(
             route = Destinations.ProductInformation.route + "/{productId}",

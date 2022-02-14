@@ -11,6 +11,7 @@ sealed class Destinations (
     object  ProductTypeManager: Destinations("Administration.Products.Types.ProductTypeManager")
     object  ZoneManager: Destinations("Administration.ZoneManager")
     object  CreateOrder: Destinations("Cobrador.CreateOrder")
+    object  CreateOrderWithOrder: Destinations("Cobrador.CreateOrder(Order)")
     object  EditEmployee: Destinations("Administration.Employee.EditEmployee")
     object  ProductManager: Destinations("Administration.Products.ProductManager")
     object  EditProduct:  Destinations("Administration.Products.EditProduct")

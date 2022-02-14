@@ -445,7 +445,16 @@ private fun createTables(allFilterTables: List<Mesas>, mainViewModelCreateOrder:
                     Button(
                         onClick = {
                             mainViewModelCreateOrder.clearAllVariables = true
-                            navController.navigate(Destinations.CreateOrder.route + "/${i._id}")
+                           // mainViewModelCreateOrder.getOrder = true
+
+                            if (i.state.equals("Ocupada")) {
+                                mainViewModelCreateOrder.editOrder = true
+                                navController.navigate(Destinations.CreateOrderWithOrder.route + "/${i._id}")
+                            }
+                            else {
+                                mainViewModelCreateOrder.editOrder = false
+                                navController.navigate(Destinations.CreateOrder.route + "/${i._id}")
+                            }
                         },
                         modifier = Modifier,
 

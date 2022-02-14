@@ -38,8 +38,8 @@ class MainActivity : ComponentActivity() {
             viewModelExtras.getExtrasList()
             viewModelMesas.getMesaList()
             viewModelTipos.getTypesList()
+            viewModelPedidos.getOrderList()
 
-            //viewModelPedidos
 
             NavigationHost(
                 mainViewModelSearchBar,

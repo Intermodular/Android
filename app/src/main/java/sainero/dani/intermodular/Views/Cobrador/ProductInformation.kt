@@ -138,6 +138,7 @@ private fun createIngredientes(product: Productos) {
             modifier = Modifier.fillMaxSize(),
             textAlign = TextAlign.Center
         )
+        //Spacer(modifier = Modifier.padding(20.dp))
         LazyColumn(
             contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
             content = {

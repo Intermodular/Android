@@ -48,7 +48,7 @@ class ViewModelPedidos: ViewModel() {
 
     //Métodos post
     var newOrder: Pedidos by mutableStateOf (Pedidos(_id = 0,idMesa = 0,lineasPedido = arrayListOf()))
-    fun uploadProduct(order: Pedidos) {
+    fun uploadOrder(order: Pedidos) {
         viewModelScope.launch {
             val apiService = ApiServiceOrder.getInstance()
 
@@ -65,7 +65,7 @@ class ViewModelPedidos: ViewModel() {
     }
 
     var editOrder: Pedidos by mutableStateOf (Pedidos(_id = 0,idMesa = 0,lineasPedido = arrayListOf()))
-    fun editProduct(order: Pedidos) {
+    fun editOrder(order: Pedidos) {
         viewModelScope.launch {
             val apiService = ApiServiceOrder.getInstance()
             try {

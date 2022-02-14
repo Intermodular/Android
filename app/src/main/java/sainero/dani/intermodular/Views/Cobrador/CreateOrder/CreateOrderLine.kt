@@ -27,13 +27,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import sainero.dani.intermodular.DataClass.LineaExtra
-import sainero.dani.intermodular.DataClass.LineaPedido
-import sainero.dani.intermodular.DataClass.Productos
-import sainero.dani.intermodular.DataClass.Tipos
+import sainero.dani.intermodular.DataClass.*
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import sainero.dani.intermodular.ViewModels.ViewModelPedidos
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
 
@@ -51,8 +49,10 @@ fun MainCreateOrderLine(
     mainViewModelCreateOrder: MainViewModelCreateOrder,
     viewModelProductos: ViewModelProductos,
     viewModelTipos: ViewModelTipos,
+    viewModelPedidos: ViewModelPedidos,
     productId: Int,
-    typeId: Int
+    typeId: Int,
+    tableId: Int
 ) {
     //Variables de ayuda
     val expanded = remember { mutableStateOf(false)}
@@ -289,15 +289,29 @@ fun MainCreateOrderLine(
                                 ) {
                                     Button(
                                         onClick = {
-                                            var lineaDePedido = LineaPedido(producto = product,
+                                            var lineaDePedido = LineaPedido(
+                                                producto = product,
                                                 anotaciones = description.value,
                                                 cantidad = textQuantity.value.toInt(),
                                                 costeLinea = 0f,
-                                                lineasExtra = mainViewModelCreateOrder._lineasExtras
+                                                lineasExtra = mainViewModelCreateOrder._lineasExtras.toMutableList()
                                             )
-                                            mainViewModelCreateOrder._lineasPedidos.remove(mainViewModelCreateOrder.pedidoEditar)
                                             mainViewModelCreateOrder.addLineaPedido(lineaDePedido)
+
+                                            mainViewModelCreateOrder._lineasPedidos.remove(mainViewModelCreateOrder.pedidoEditar)
+                                            mainViewModelCreateOrder.pedidoEditar.lineasExtra.forEach{ mainViewModelCreateOrder._lineasExtras.remove(it)}
+
+
+                                            if (mainViewModelCreateOrder.editOrder) {
+                                                mainViewModelCreateOrder.pedido = Pedidos(mainViewModelCreateOrder.pedido!!._id,idMesa = tableId,lineasPedido = mainViewModelCreateOrder._lineasPedidos.toMutableList())
+                                                //viewModelPedidos.editOrder(mainViewModelCreateOrder.pedido!!)
+                                            }
+                                            else {
+                                                mainViewModelCreateOrder.pedido = Pedidos(_id = 0,idMesa = tableId, mainViewModelCreateOrder._lineasPedidos.toMutableList())
+                                            }
+
                                             navController.popBackStack()
+
                                         },
                                         colors = ButtonDefaults.buttonColors(
                                             backgroundColor = Color.White,

@@ -6,13 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import sainero.dani.intermodular.DataClass.Pedidos
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import sainero.dani.intermodular.ViewModels.ViewModelPedidos
 import sainero.dani.intermodular.Views.Cobrador.CreateOrder.ui.theme.IntermodularTheme
 
 class EditOrder : ComponentActivity() {
@@ -32,8 +32,12 @@ class EditOrder : ComponentActivity() {
 }
 
 @Composable
-fun MainEditOrder(mainViewModelCreateOrder: MainViewModelCreateOrder, tableId: Int) {
-    //mainViewModelCreateOrder.pedido = Pedidos(0,tableId,mainViewModelCreateOrder._lineasPedidos)
+fun MainEditOrder(
+    mainViewModelCreateOrder: MainViewModelCreateOrder,
+    tableId: Int,
+    viemModelPedidos: ViewModelPedidos
+) {
+
     LazyColumn(
         content = {
             item {
@@ -81,7 +85,7 @@ fun MainEditOrder(mainViewModelCreateOrder: MainViewModelCreateOrder, tableId: I
                                 .clickable {
                                     mainViewModelCreateOrder.pedidoEditar = it
 
-                                    GlobalVariables.navController.navigate(Destinations.CreateOrder.route)
+                                    //navController.navigate(Destinations.CreateOrder.route)
                                 }
                         ) {
                             Column(
@@ -121,11 +125,50 @@ fun MainEditOrder(mainViewModelCreateOrder: MainViewModelCreateOrder, tableId: I
             item {
                 Button(
                     onClick = {
-                        //enviara
+                        //Enviar a la BD
+                        viemModelPedidos.getOrderList()
 
-                    }
+                        mainViewModelCreateOrder.pedido =
+                            Pedidos(
+                            _id = mainViewModelCreateOrder.pedido!!._id,
+                            idMesa = tableId,
+                            lineasPedido = mainViewModelCreateOrder._lineasPedidos
+                        )
+
+
+                        if (mainViewModelCreateOrder.editOrder) {
+                            viemModelPedidos.editOrder(mainViewModelCreateOrder.pedido!!)
+                        }
+                        else {
+                            viemModelPedidos.uploadOrder(mainViewModelCreateOrder.pedido!!)
+                            mainViewModelCreateOrder.editOrder = true
+                        }
+
+                        navController.popBackStack()
+
+
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            PaddingValues(
+                                start = 20.dp,
+                                end = 20.dp
+                            )
+                        ),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.White,
+                        contentColor = Color.Blue
+                    ),
+                    contentPadding = PaddingValues(
+                        start = 10.dp,
+                        top = 6.dp,
+                        end = 10.dp,
+                        bottom = 6.dp
+                    ),
+
                 ) {
-                    Text(text = "Enviar")
+                    Text(text = "Enviar pedido a cocina")
                 }
             }
         }
