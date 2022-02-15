@@ -41,12 +41,11 @@ class Especifications : ComponentActivity() {
 }
 
 @Composable
-fun MainEspecifications(id: Int, viewModelProductos: ViewModelProductos) {
-// val compatibleExtras: MutableList<Any>  = arrayListOf(Extras(1,""), 1f)        }
+fun MainEspecifications(id: Int, viewModelProductos: ViewModelProductos, mainViewModelEspecifications: MainViewModelEspecifications) {
 
     //Consulta BD
     var selectedProduct = remember {viewModelProductos.product}
-    var myEspecifications: MutableList<String> = remember { selectedProduct.especifications }
+    var myEspecifications: MutableList<String> = remember { mainViewModelEspecifications._especifications }
     var allEspecifications = remember {
         mutableStateListOf(
             "Vegano",
@@ -77,7 +76,13 @@ fun MainEspecifications(id: Int, viewModelProductos: ViewModelProductos) {
                     color = Color.White
                 )
             }
-            createEspecifications(allEspecifications,myEspecifications,id, viewModelProductos,selectedProduct)
+            createEspecifications(
+                allEspecifications = allEspecifications,
+                suggestions = myEspecifications,
+                id = id,
+                viewModelProductos = viewModelProductos,
+                product = selectedProduct,
+                mainViewModelEspecifications = mainViewModelEspecifications)
         }
     }
 }
@@ -90,7 +95,14 @@ fun MainEspecifications(id: Int, viewModelProductos: ViewModelProductos) {
 
 
 @Composable
-private fun createEspecifications(allEspecifications: MutableList<String>,suggestions: MutableList<String>, id: Int, viewModelProductos: ViewModelProductos, product: Productos) {
+private fun createEspecifications(
+    allEspecifications: MutableList<String>,
+    suggestions: MutableList<String>,
+    id: Int,
+    viewModelProductos: ViewModelProductos,
+    product: Productos,
+    mainViewModelEspecifications: MainViewModelEspecifications
+) {
 
     suggestions.forEach{
         allEspecifications.remove(it)
@@ -171,9 +183,10 @@ private fun createEspecifications(allEspecifications: MutableList<String>,sugges
 
                 Button(
                     onClick = {
-                        navController.navigate("${Destinations.EditProduct.route}/${id}"){
+                        mainViewModelEspecifications.especificationsState = "Cancel"
+                        //mainViewModelEspecifications._especifications = mainViewModelEspecifications._tmpEspecifications
 
-                        }
+                        navController.popBackStack()
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.White,
@@ -195,9 +208,11 @@ private fun createEspecifications(allEspecifications: MutableList<String>,sugges
                 Button(
                     onClick = {
                         //Guardar los cambios en la BD
-                        product.especifications = suggestions
-                        viewModelProductos.editProduct(product = product)
-                        navController.navigate("${Destinations.EditProduct.route}/${id}")
+
+                        mainViewModelEspecifications._tmpEspecifications = suggestions
+                        mainViewModelEspecifications.especificationsState = "Edit"
+                        navController.popBackStack()
+
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.White,

@@ -40,7 +40,7 @@ class ProductNewTyp : ComponentActivity() {
 }
 
 @Composable
-fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras, stateView: String) {
+fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
 
@@ -61,8 +61,8 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
 
     //Control de acciones de la ventana
     if (aplicateState.value) {
-        when (stateView){
-            "new" -> {
+        when (mainViewModelExtras.extrasState){
+            "New" -> {
                 mainViewModelExtras._extras.clear()
                 mainViewModelExtras._tmpExtras.clear()
                 mainViewModelExtras.tmpType = Tipos(0,"","", arrayListOf())
@@ -71,14 +71,14 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
                 aplicateState.value = false
 
             }
-            "edit" -> {
+            "Edit" -> {
                 onValueChangeName(mainViewModelExtras.tmpType.name)
                 onValueChangeImg(mainViewModelExtras.tmpType.img)
 
                 mainViewModelExtras._extras = mainViewModelExtras._tmpExtras.toMutableList()
                 aplicateState.value = false
             }
-            "cancel" -> {
+            "Cancel" -> {
 
                 onValueChangeName(mainViewModelExtras.tmpType.name)
                 onValueChangeImg(mainViewModelExtras.tmpType.img)
@@ -194,8 +194,9 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
 
                     Button(
                         onClick = {
-                            newType = Tipos(0,textName,textImg,allExtras )
-
+                            newType = Tipos(0,textName,textImg,mainViewModelExtras._extras )
+                            viewModelTipos.uploadType(newType)
+                            navController.popBackStack()
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,

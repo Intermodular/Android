@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import sainero.dani.intermodular.DataClass.Extras
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.ui.theme.IntermodularTheme
 import java.lang.NumberFormatException
 
@@ -80,7 +81,7 @@ Column(
                 Column(
                     verticalArrangement = Arrangement.Center
                 ) {
-                    var selectedText by remember { mutableStateOf("") }
+                    var selectedText by remember { mutableStateOf(extra.name) }
 
                     Row(
                         modifier = Modifier
@@ -101,7 +102,7 @@ Column(
                         Spacer(modifier = Modifier.padding(3.dp))
 
                         //Validar campos
-                        var selectedTextPrice by remember { mutableStateOf("") }
+                        var selectedTextPrice by remember { mutableStateOf(extra.price.toString()) }
                         OutlinedTextField(
                             value =  selectedTextPrice,
                             modifier = Modifier.size(width = 90.dp, height = 55.dp),
@@ -163,7 +164,9 @@ Column(
         ) {
             Button(
                 onClick = {
-                    GlobalVariables.navController.navigate("${Destinations.ProductNewType.route}/cancel")
+                    mainViewModelExtras.extrasState = "Cancel"
+                    navController.popBackStack()
+                       //navController.navigate("${Destinations.ProductNewType.route}/cancel")
 
                 }
             ) {
@@ -174,7 +177,9 @@ Column(
                     //Guardar cambios
                     onValueChangeRefresh(false)
                     onValueChangeRefresh(true)
-                    GlobalVariables.navController.navigate("${Destinations.ProductNewType.route}/edit")
+                    mainViewModelExtras.extrasState = "Edit"
+                    navController.popBackStack()
+                    //navController.navigate("${Destinations.ProductNewType.route}/edit")
                 }
             ) {
                 Text(text = "Guardar cambios")

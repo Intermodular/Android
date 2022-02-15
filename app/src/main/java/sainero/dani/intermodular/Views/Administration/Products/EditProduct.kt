@@ -66,6 +66,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
 import sainero.dani.intermodular.Views.Administration.Employee.ToastDemo
+import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 import java.io.File
 import java.util.function.ToDoubleBiFunction
 import java.util.regex.Pattern
@@ -82,7 +83,7 @@ class EditProduct : ComponentActivity() {
 }
 
 @Composable
-fun MainEditProduct(id: Int,viewModelProductos: ViewModelProductos,viewModelTipos : ViewModelTipos) {
+fun MainEditProduct(id: Int,viewModelProductos: ViewModelProductos,viewModelTipos : ViewModelTipos, mainViewModelEspecifications: MainViewModelEspecifications) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
 
@@ -116,13 +117,42 @@ fun MainEditProduct(id: Int,viewModelProductos: ViewModelProductos,viewModelTipo
 
 
 
-    especification = selectedProduct.especifications
     var (textImg, onValueChangeImg) = rememberSaveable{mutableStateOf(selectedProduct.img)}
 
     var (textStock, onValueChangeStock) = rememberSaveable{mutableStateOf(selectedProduct.stock.toString())}
     var (stockError,stockErrorChange) = remember { mutableStateOf(false) }
     val stockOfNameError: String = "Debe ser un número entero"
 
+    //Variables de ayuda
+    val aplicateState = remember { mutableStateOf(true) }
+
+
+    if (aplicateState.value) {
+        when (mainViewModelEspecifications.especificationsState){
+            "New" -> {
+                mainViewModelEspecifications._especifications.clear()
+                mainViewModelEspecifications._tmpEspecifications.clear()
+                selectedProduct.especifications.forEach{ mainViewModelEspecifications.addExtras(it) }
+                mainViewModelEspecifications._tmpEspecifications = mainViewModelEspecifications._especifications.toMutableList()
+                aplicateState.value = false
+
+            }
+            "Edit" -> {
+
+                mainViewModelEspecifications._especifications = mainViewModelEspecifications._tmpEspecifications.toMutableList()
+                aplicateState.value = false
+            }
+            "Cancel" -> {
+                mainViewModelEspecifications._especifications = mainViewModelEspecifications._tmpEspecifications.toMutableList()
+                aplicateState.value = false
+
+            }
+            else  ->{
+                aplicateState.value = false
+            }
+        }
+    }
+    especification = mainViewModelEspecifications._especifications.toMutableList()
 
 
     Scaffold(
@@ -220,7 +250,7 @@ fun MainEditProduct(id: Int,viewModelProductos: ViewModelProductos,viewModelTipo
                         textType.value = selectedDropDownMenu("Tipo",allTypesNames)
                     }
                     item {
-                        dropDownMenu("Ingredientes",ingredientes,id,"${Destinations.Ingredient.route}/${id}")
+                        dropDownMenu("Ingredientes",ingredientes,id,"${Destinations.Ingredient.route}/${id}",mainViewModelEspecifications)
                     }
                     item {
                         createRowListWithErrorMesaje(
@@ -237,7 +267,7 @@ fun MainEditProduct(id: Int,viewModelProductos: ViewModelProductos,viewModelTipo
                     }
 
                     item {
-                        dropDownMenu("Especificaciones",especification,id,"${Destinations.Especifications.route}/${id}")
+                        dropDownMenu("Especificaciones",especification,id,"${Destinations.Especifications.route}/${id}",mainViewModelEspecifications)
                     }
 
                     item {
@@ -296,8 +326,17 @@ fun MainEditProduct(id: Int,viewModelProductos: ViewModelProductos,viewModelTipo
                             Button(
                                 onClick = {
                                     //Guardar los cambios en la BD
-                                    val product: Productos = Productos(id,textName,textType.value,ingredientes,textCost.toFloat(),especifications = especification,textImg,textStock.toInt())
-                                    viewModelProductos.editProduct(product = product)
+                                    val updateProduct: Productos = Productos(
+                                        _id = id,
+                                        name = textName,
+                                        type =  textType.value,
+                                        ingredients = ingredientes,
+                                        price =  textCost.toFloat(),
+                                        especifications = mainViewModelEspecifications._especifications,
+                                        img = textImg,
+                                        stock =  textStock.toInt()
+                                    )
+                                    viewModelProductos.editProduct(product = updateProduct)
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     backgroundColor = Color.White,
@@ -387,7 +426,7 @@ private fun selectedDropDownMenu(text: String,suggestions: List<String>): String
 }
 
 @Composable
-private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int,navigate: String) {
+private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int,navigate: String,mainViewModelEspecifications: MainViewModelEspecifications) {
     Spacer(modifier = Modifier.padding(4.dp))
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(text) }

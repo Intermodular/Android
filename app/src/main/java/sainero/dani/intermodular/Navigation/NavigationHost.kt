@@ -28,6 +28,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.ViewModels.*
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainEspecifications
+import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainIngredient
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainExtras
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainNewExtra
@@ -58,7 +59,8 @@ fun NavigationHost(
     viewModelTipos: ViewModelTipos,
     viewModelZonas: ViewModelZonas,
     mainViewModelCreateOrder: MainViewModelCreateOrder,
-    mainViewModelExtras: MainViewModelExtras
+    mainViewModelExtras: MainViewModelExtras,
+    mainViewModelEspecifications: MainViewModelEspecifications
 ){
     navController = rememberNavController()
 
@@ -88,7 +90,7 @@ fun NavigationHost(
         
         composable(route = Destinations.ProductTypeManager.route) {
             viewModelTipos.getTypesList()
-            MainProductTypeManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelTipos = viewModelTipos)
+            MainProductTypeManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelTipos = viewModelTipos, mainViewModelExtras = mainViewModelExtras)
         }
         
         composable(route = Destinations.ZoneManager.route) {
@@ -113,7 +115,7 @@ fun NavigationHost(
         composable(route = Destinations.ProductManager.route) {
             viewModelProductos.getProductList()
             viewModelTipos.getTypesList()
-            MainProductManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelProductos = viewModelProductos)
+            MainProductManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelProductos = viewModelProductos, mainViewModelEspecifications = mainViewModelEspecifications)
         }
 
         composable(
@@ -127,7 +129,8 @@ fun NavigationHost(
             MainEditProduct(
                 id = id,
                 viewModelProductos =  viewModelProductos,
-                viewModelTipos = viewModelTipos
+                viewModelTipos = viewModelTipos,
+                mainViewModelEspecifications = mainViewModelEspecifications
             )
         }
 
@@ -165,19 +168,16 @@ fun NavigationHost(
         }
 
         composable(
-            route = "${Destinations.ProductEditType.route}/{typeId}/{stateView}",
+            route = "${Destinations.ProductEditType.route}/{typeId}",
             arguments = listOf(
                 navArgument("typeId"){type = NavType.IntType},
-                navArgument("stateView"){type = NavType.StringType}
             )
         ) {
             val id = it.arguments?.getInt("typeId")
-            val stateView = it.arguments?.getString("stateView")
             requireNotNull(id)
-            requireNotNull(stateView)
             viewModelTipos.getTypesList()
             viewModelExtras.getExtrasList()
-            MainProductEditType(id = id,viewModelTipos = viewModelTipos,mainViewModelExtras = mainViewModelExtras, stateView = stateView)
+            MainProductEditType(id = id,viewModelTipos = viewModelTipos,mainViewModelExtras = mainViewModelExtras)
         }
 
 
@@ -189,16 +189,16 @@ fun NavigationHost(
             requireNotNull(id)
             viewModelProductos.getProductById(id)
             viewModelProductos.getProductList()
-            MainEspecifications(id = id, viewModelProductos)
+            MainEspecifications(
+                id = id,
+                viewModelProductos, mainViewModelEspecifications = mainViewModelEspecifications
+            )
         }
 
         composable(
-            route = "${Destinations.ProductNewType.route}/{stateView}",
-            arguments = listOf(navArgument("stateView"){type = NavType.StringType})
+            route = "${Destinations.ProductNewType.route}",
         ) {
-            val stateView = it.arguments?.getString("stateView")
-            requireNotNull(stateView)
-            MainProductNewType(viewModelTipos =  viewModelTipos, mainViewModelExtras= mainViewModelExtras,stateView = stateView)
+            MainProductNewType(viewModelTipos =  viewModelTipos, mainViewModelExtras= mainViewModelExtras)
         }
 
         composable(route = Destinations.TableManager.route){

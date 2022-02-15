@@ -11,9 +11,12 @@ import sainero.dani.intermodular.DataClass.Tipos
 class MainViewModelExtras : ViewModel() {
 
     var _extras: MutableList<Extras> = mutableListOf()
+    var extrasState = "New"
+
     var _tmpExtras: MutableList<Extras> = mutableListOf()
 
     var tmpType: Tipos = Tipos(0,"","", arrayListOf())
+
 
     fun addTmpExtras(newValue: Extras) {
         _tmpExtras.add(newValue)

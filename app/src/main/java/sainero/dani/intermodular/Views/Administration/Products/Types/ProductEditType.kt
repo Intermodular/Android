@@ -47,7 +47,7 @@ class ProductEditType : ComponentActivity() {
 }
 
 @Composable
-fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras, stateView: String) {
+fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras) {
     //Posible consulta en la Base de datos ¿? (but is ok)
     var selectedType: Tipos = Tipos(_id = id,"","", arrayListOf())
     viewModelTipos.typeListResponse.forEach{ if (it._id.equals(id))  selectedType = it }
@@ -57,8 +57,8 @@ fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, mainViewModelExt
     var extrasCompatibles: MutableList<Extras> = mutableListOf()
 
 if (aplicateState.value) {
-    when (stateView){
-        "new" -> {
+    when (mainViewModelExtras.extrasState){
+        "New" -> {
             mainViewModelExtras._extras.clear()
             mainViewModelExtras._tmpExtras.clear()
             selectedType.compatibleExtras.forEach{ mainViewModelExtras.addExtras(it) }
@@ -66,12 +66,12 @@ if (aplicateState.value) {
             aplicateState.value = false
 
         }
-        "edit" -> {
+        "Edit" -> {
 
             mainViewModelExtras._extras = mainViewModelExtras._tmpExtras.toMutableList()
             aplicateState.value = false
         }
-        "cancel" -> {
+        "Cancel" -> {
             mainViewModelExtras._tmpExtras = mainViewModelExtras._extras.toMutableList()
             aplicateState.value = false
 
@@ -259,9 +259,8 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                     Button(
                         onClick = {
 
-                            //Modificar el eleemnto padre¿?
-                            //selectedType = Tipos(id,textName,textImg,textCompatibleExtras)
-                            viewModelTipos.editType(selectedType)
+                            var updateType: Tipos = Tipos(id,textName,textImg,mainviewModelExtras._extras)
+                            viewModelTipos.editType(updateType)
 
                         },
                         colors = ButtonDefaults.buttonColors(

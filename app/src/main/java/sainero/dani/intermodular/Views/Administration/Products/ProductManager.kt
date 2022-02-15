@@ -42,6 +42,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
+import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 
 
 @ExperimentalFoundationApi
@@ -56,7 +57,11 @@ class ProductManager : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainProductManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelProductos: ViewModelProductos) {
+fun MainProductManager(
+    mainViewModelSearchBar: MainViewModelSearchBar,
+    viewModelProductos: ViewModelProductos,
+    mainViewModelEspecifications: MainViewModelEspecifications
+) {
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
@@ -102,7 +107,8 @@ fun MainProductManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelP
 
                 filterContentByName(
                     allProducts = allProducts,
-                    filterName = filter
+                    filterName = filter,
+                    mainViewModelEspecifications = mainViewModelEspecifications
                 )
 
 
@@ -169,7 +175,7 @@ private fun creteProductList(listProducts: MutableList<Productos>) {
 }
 
 @Composable
-private fun filterContentByName(allProducts: List<Productos>, filterName: String) {
+private fun filterContentByName(allProducts: List<Productos>, filterName: String, mainViewModelEspecifications: MainViewModelEspecifications) {
     LazyColumn(
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {
@@ -182,6 +188,7 @@ private fun filterContentByName(allProducts: List<Productos>, filterName: String
                         .fillMaxWidth()
                         .height(90.dp)
                         .clickable {
+                            mainViewModelEspecifications.especificationsState = "New"
                             navController.navigate("${Destinations.EditProduct.route}/${i._id}")
                         },
                         shape = RoundedCornerShape(8.dp),

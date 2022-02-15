@@ -39,6 +39,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
+import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainViewModelExtras
 
 @ExperimentalFoundationApi
 
@@ -55,7 +56,7 @@ class ProductTypeAdministration : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelTipos: ViewModelTipos) {
+fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras) {
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
@@ -106,14 +107,16 @@ fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewMo
             if (aplicateFilter.value) {
                 filterContentByName(
                     allTypes = allTypes,
-                    filterName = filter
+                    filterName = filter,
+                    mainViewModelExtras = mainViewModelExtras
                 )
             }
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate("${Destinations.ProductNewType.route}/new")
+                    mainViewModelExtras.extrasState = "New"
+                    navController.navigate("${Destinations.ProductNewType.route}")
 
                     //navController.navigate(Destinations.ProductNewType.route)
                 }
@@ -126,29 +129,20 @@ fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewMo
 
 
 @Composable
-private fun filterContentByName(allTypes: List<Tipos>, filterName: String) {
+private fun filterContentByName(allTypes: List<Tipos>, filterName: String,mainViewModelExtras: MainViewModelExtras) {
     LazyColumn(
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {
         for (i in allTypes) {
             if (i.name.contains(filterName)) {
                 item {
-                   /* Row (
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .clickable {
-                                navController.navigate("${Destinations.ProductEditType.route}/${i._id}/new")
-                            }
-                    ) {
-                        Text(text = i.name)
-                    }*/
                     Card(modifier = Modifier
                         .padding(8.dp, 4.dp)
                         .fillMaxWidth()
                         .height(90.dp)
                         .clickable {
-                            navController.navigate("${Destinations.ProductEditType.route}/${i._id}/new")
+                            mainViewModelExtras.extrasState = "New"
+                            navController.navigate("${Destinations.ProductEditType.route}/${i._id}")
                         },
                         shape = RoundedCornerShape(8.dp),
                         elevation = 4.dp,

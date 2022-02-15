@@ -9,6 +9,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import sainero.dani.intermodular.ViewModels.*
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
+import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainViewModelExtras
 import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainViewModelCreateOrder
 
@@ -26,6 +27,7 @@ class MainActivity : ComponentActivity() {
     private val viewModelZonas by viewModels<ViewModelZonas>()
     private val mainViewModelCreateOrder by viewModels<MainViewModelCreateOrder>()
     private val mainViewModelModelExtras by viewModels<MainViewModelExtras>()
+    private val mainViewModelEspecifications by viewModels<MainViewModelEspecifications>()
 
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +54,8 @@ class MainActivity : ComponentActivity() {
                 viewModelTipos,
                 viewModelZonas,
                 mainViewModelCreateOrder,
-                mainViewModelModelExtras
+                mainViewModelModelExtras,
+                mainViewModelEspecifications
             )
         }
     }

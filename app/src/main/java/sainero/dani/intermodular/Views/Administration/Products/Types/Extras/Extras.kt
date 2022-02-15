@@ -161,10 +161,12 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                 ) {
                     Button(
                         onClick = {
-
-                            navController.navigate("${Destinations.ProductEditType.route}/${idProduct}/cancel"){
+                            mainViewModelExtras.extrasState = "Cancel"
+                            navController.popBackStack()
+/*
+                            navController.navigate("${Destinations.ProductEditType.route}/${idProduct}"){
                                 //popUpTo("${Destinations.Extras.route}/${idProduct}") { inclusive = true }
-                            }
+                            }*/
 
                         }
                     ) {
@@ -175,7 +177,9 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                             //Guardar cambios
                             onValueChangeRefresh(false)
                             onValueChangeRefresh(true)
-                            navController.navigate("${Destinations.ProductEditType.route}/${idProduct}/edit")
+                            mainViewModelExtras.extrasState = "Edit"
+                            navController.popBackStack()
+                            //navController.navigate("${Destinations.ProductEditType.route}/${idProduct}")
                         }
                     ) {
                         Text(text = "Guardar cambios")
