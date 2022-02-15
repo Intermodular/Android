@@ -145,8 +145,6 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
                     numericTextBoard = false
                 )
 
-                createRowList(text = "Img", value = textImg, onValueChange = onValueChangeImg)
-
                 dropDownMenu(
                     text = "Extras",
                     suggestions = allNamesOfExtras,
@@ -156,6 +154,8 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
                     textCompatibleExtras = textCompatibleExtras,
                     mainViewModelExtras = mainViewModelExtras
                 )
+                createRowList(text = "Img", value = textImg, onValueChange = onValueChangeImg)
+
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(

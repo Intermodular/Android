@@ -87,6 +87,9 @@ dependencies {
 
     // Accompanist(Glide) to fetch images from the internet
     implementation "dev.chrisbanes.accompanist:accompanist-glide:0.6.2"
+    implementation 'androidx.camera:camera-core:1.1.0-alpha03'
+    implementation 'androidx.camera:camera-lifecycle:1.1.0-alpha03'
+    implementation 'androidx.camera:camera-view:1.0.0-alpha23'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

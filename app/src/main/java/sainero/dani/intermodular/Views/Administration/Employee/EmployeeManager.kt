@@ -4,12 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -27,15 +25,20 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
+import coil.size.Scale
+import coil.transform.CircleCropTransformation
 import kotlinx.coroutines.launch
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
@@ -132,14 +135,14 @@ fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewMode
 
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxSize()/*
                         .border(
                             width = 3.dp,
                             brush = Brush.horizontalGradient(
                                 listOf(Color.Yellow, Color.Blue, Color.Red)
                             ),
                             shape = RectangleShape
-                        )
+                        )*/
                 ) {
                     aplicateFilter.value = true
                     if (aplicateFilter.value)  filterContentByName(allUsers = allUsers, filterName = filter)
@@ -162,7 +165,7 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
 
 
         item {
-            Column(
+           /* Column(
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 Row (
@@ -185,11 +188,11 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
                         text = "Rol",
                         modifier= Modifier.fillMaxWidth(0.8f)
                     )
-                }
+                }*/
 
                 for (i in allUsers) {
                     if (i.name.contains(filterName)) {
-                            Row (
+                            /*Row (
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -203,8 +206,61 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
                                     Text(text = i.dni,modifier= Modifier.fillMaxWidth(0.4f))
                                     Spacer(modifier = Modifier.padding(10.dp))
                                     Text(text = i.rol,modifier= Modifier.fillMaxWidth(0.8f))
+                            }*/
+
+                        Card(
+                            modifier = Modifier
+                            .padding(8.dp, 4.dp)
+                            .fillMaxWidth()
+                            .height(90.dp)
+                            .clickable {
+                                navController.navigate("${Destinations.EditEmployee.route}/${i._id}")
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            elevation = 4.dp,
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .fillMaxSize(),
+                            ) {
+                                Image(
+                                    painter = rememberImagePainter(
+                                        data = if (i.rol.equals("Administrador")) R.drawable.administrador else R.drawable.empleado,
+                                        builder = {
+                                            scale(Scale.FILL)
+                                            //placeholder(R.drawable.notification_action_background)
+                                            transformations(CircleCropTransformation())
+                                        },
+                                    ),
+                                    contentDescription = "Imágen del empleado ${i.name}",
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .weight(0.2f),
+                                )
+                                Spacer(modifier = Modifier.padding(5.dp))
+                                Column(
+                                    modifier = Modifier
+                                        .padding(4.dp)
+                                        .fillMaxHeight()
+                                        .weight(0.8f),
+                                    verticalArrangement = Arrangement.Center,
+                                ) {
+                                    Text(
+                                        text = "${i.name}",
+                                        style = MaterialTheme.typography.subtitle1,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                    Text(
+                                        text = i.dni,
+                                        style = MaterialTheme.typography.caption,
+                                        modifier = Modifier
+                                            .padding(4.dp),
+                                    )
+                                }
                             }
                         }
+                    }
                 }
             }
 
@@ -212,7 +268,6 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
 
     }
 
-}
 
 
 
@@ -279,13 +334,6 @@ fun DefaultAppBar(onSearchClicked: () -> Unit) {
 
                         }) {
                         Text(text = "Gestionar todas las nóminas")
-                    }
-                    Divider()
-                    DropdownMenuItem(
-                        onClick = {
-                            expanded.value = false
-                        }) {
-                        Text(text = "Gestionar nomina del empleado seleccionado")
                     }
                 }
             }

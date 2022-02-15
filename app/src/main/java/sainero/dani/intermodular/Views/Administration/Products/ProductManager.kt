@@ -5,11 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -20,11 +22,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberImagePainter
+import coil.size.Scale
+import coil.transform.CircleCropTransformation
 import kotlinx.coroutines.launch
 import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.DataClass.Users
@@ -170,18 +177,56 @@ private fun filterContentByName(allProducts: List<Productos>, filterName: String
         for (i in allProducts) {
             if (i.name.contains(filterName)) {
                 item {
-                    Row (
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .clickable {
-                                navController.navigate("${Destinations.EditProduct.route}/${i._id}")
-                            }
+                    Card(modifier = Modifier
+                        .padding(8.dp, 4.dp)
+                        .fillMaxWidth()
+                        .height(90.dp)
+                        .clickable {
+                            navController.navigate("${Destinations.EditProduct.route}/${i._id}")
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp,
                     ) {
-
-                        Text(text = i.name)
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.type)
+                        Row(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .fillMaxSize(),
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = i.img,
+                                    builder = {
+                                        scale(Scale.FILL)
+                                        //placeholder(R.drawable.notification_action_background)
+                                        transformations(CircleCropTransformation())
+                                    },
+                                ),
+                                contentDescription = "Imágen producto ${i.name}",
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(0.2f),
+                            )
+                            Spacer(modifier = Modifier.padding(5.dp))
+                            Column(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .fillMaxHeight()
+                                    .weight(0.8f),
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    text = "${i.name} (${i.price}€)",
+                                    style = MaterialTheme.typography.subtitle1,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                                Text(
+                                    text = i.type,
+                                    style = MaterialTheme.typography.caption,
+                                    modifier = Modifier
+                                        .padding(4.dp),
+                                )
+                            }
+                        }
                     }
                 }
             }

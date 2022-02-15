@@ -3,9 +3,11 @@ package sainero.dani.intermodular.Views.Administration.Zone.Table
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -18,12 +20,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
+import coil.size.Scale
+import coil.transform.CircleCropTransformation
 import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.SearchWidgetState
@@ -118,6 +125,7 @@ fun filtercontentbyname(allMesas: List<Mesas>, filterName: String){
         for (i in allMesas) {
             if (i.zone.contains(filterName)) {
                 item {
+                    /*
                     Row (
                         Modifier
                             .fillMaxWidth()
@@ -133,6 +141,58 @@ fun filtercontentbyname(allMesas: List<Mesas>, filterName: String){
                         Text(text = i.state.toString())
                         Spacer(modifier = Modifier.padding(10.dp))
                         Text(text = i.number.toString())
+                    }*/
+
+                    Card(modifier = Modifier
+                        .padding(8.dp, 4.dp)
+                        .fillMaxWidth()
+                        .height(90.dp)
+                        .clickable {
+                            navController.navigate("${Destinations.EditProduct.route}/${i._id}")
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .fillMaxSize(),
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = R.drawable.default_admin_img,
+                                    builder = {
+                                        scale(Scale.FILL)
+                                        //placeholder(R.drawable.notification_action_background)
+                                        transformations(CircleCropTransformation())
+                                    },
+                                ),
+                                contentDescription = "Imágen mesa ${i.number}",
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(0.2f),
+                            )
+                            Spacer(modifier = Modifier.padding(5.dp))
+                            Column(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .fillMaxHeight()
+                                    .weight(0.8f),
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    text = "Mesa ${i.number}",
+                                    style = MaterialTheme.typography.subtitle1,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                                Text(
+                                    text = "${i.zone} (${i.numChair})",
+                                    style = MaterialTheme.typography.caption,
+                                    modifier = Modifier
+                                        .padding(4.dp),
+                                )
+                            }
+                        }
                     }
                 }
             }

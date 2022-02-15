@@ -205,9 +205,20 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                     numericTextBoard = false
                 )
 
-                createRowList(text = "Img", value = textImg, onValueChange = onValueChangeImg)
+                dropDownMenu(
+                    text = "Extras",
+                    suggestions = allNamesOfExtras,
+                    idOfItem = id,
+                    onChangeEditExtras = onChangeEditExtras,
+                    mainviewModelExtras = mainviewModelExtras,
+                    selectedType = selectedType
+                )
+                createRowList(
+                    text = "Img",
+                    value = textImg,
+                    onValueChange = onValueChangeImg
+                )
 
-                dropDownMenu(text = "Extras", suggestions = allNamesOfExtras, idOfItem = id,onChangeEditExtras = onChangeEditExtras, mainviewModelExtras = mainviewModelExtras,selectedType = selectedType)
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(

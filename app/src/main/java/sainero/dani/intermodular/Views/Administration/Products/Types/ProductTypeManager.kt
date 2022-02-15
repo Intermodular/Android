@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -19,13 +21,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
+import coil.size.Scale
+import coil.transform.CircleCropTransformation
 import sainero.dani.intermodular.DataClass.Extras
 import sainero.dani.intermodular.DataClass.Tipos
 import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
@@ -126,7 +133,7 @@ private fun filterContentByName(allTypes: List<Tipos>, filterName: String) {
         for (i in allTypes) {
             if (i.name.contains(filterName)) {
                 item {
-                    Row (
+                   /* Row (
                         Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
@@ -135,6 +142,57 @@ private fun filterContentByName(allTypes: List<Tipos>, filterName: String) {
                             }
                     ) {
                         Text(text = i.name)
+                    }*/
+                    Card(modifier = Modifier
+                        .padding(8.dp, 4.dp)
+                        .fillMaxWidth()
+                        .height(90.dp)
+                        .clickable {
+                            navController.navigate("${Destinations.ProductEditType.route}/${i._id}/new")
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .fillMaxSize(),
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = i.img,
+                                    builder = {
+                                        scale(Scale.FILL)
+                                        //placeholder(R.drawable.notification_action_background)
+                                        transformations(CircleCropTransformation())
+                                    },
+                                ),
+                                contentDescription = "Imágen del tipo ${i.name}",
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(0.2f),
+                            )
+                            Spacer(modifier = Modifier.padding(5.dp))
+                            Column(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .fillMaxHeight()
+                                    .weight(0.8f),
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    text = "${i.name}",
+                                    style = MaterialTheme.typography.subtitle1,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                                Text(
+                                    text = "Número de extras: ${i.compatibleExtras.size}",
+                                    style = MaterialTheme.typography.caption,
+                                    modifier = Modifier
+                                        .padding(4.dp),
+                                )
+                            }
+                        }
                     }
                 }
             }
