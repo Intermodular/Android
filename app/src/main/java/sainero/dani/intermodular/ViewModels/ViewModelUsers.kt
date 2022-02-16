@@ -1,6 +1,7 @@
 package sainero.dani.intermodular.ViewModels
 
 import android.util.Log
+import androidx.compose.animation.core.animateIntSizeAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -70,8 +71,10 @@ class ViewModelUsers: ViewModel() {
 
             try {
                 val response = apiService.editUser(user)
-                if (response.isSuccessful)
+                apiService.getUsers()
+                if (response.isSuccessful) {
                     editUser.add(response.body()!!)
+                }
                 else
                     Log.d("Error: edit user","Error: edit user")
             } catch (e: Exception) {

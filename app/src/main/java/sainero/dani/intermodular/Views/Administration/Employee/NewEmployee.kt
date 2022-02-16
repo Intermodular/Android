@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.toSize
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import java.util.regex.Pattern
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
@@ -78,7 +80,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
     var (userError,userErrorChange) = remember { mutableStateOf(false) }
     val nameOfUserError: String = "El usuario no puede estar vacio ni contener caracteres especiales"
 
-    var (textPasswordUser, onValueChangePasswordUser) = rememberSaveable { mutableStateOf("") }
+    var textPasswordUser = rememberSaveable { mutableStateOf("1234") }
 
     var textRolUser = rememberSaveable { mutableListOf("Administrador","Empleado")}
 
@@ -243,7 +245,6 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                         textTelUser = ""
                                         textFnacUser = ""
                                         textUserUser = ""
-                                        textPasswordUser
                                         textEmailUser = ""
 
                                     },
@@ -280,12 +281,13 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                                 phoneNumber =  textTelUser,
                                                 fnac =  textFnacUser,
                                                 user =  textUserUser,
-                                                password =  textPasswordUser,
+                                                password =  textPasswordUser.value,
                                                 rol =  textRolUser.get(0),
                                                 email =  textEmailUser,
                                                 newUser = true
                                             )
                                             viewModelUsers.uploadUser(newEmployee)
+                                            navController.popBackStack()
                                         } else {
                                             showToast.value = true
                                             toastMessage.value = "Debes de rellenar los campos correctamente"
@@ -312,6 +314,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                     Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                                     Text(text = "Guardar cambios", fontSize = 15.sp)
                                 }
+                                Spacer(modifier = Modifier.padding(10.dp))
 
 
                             }
@@ -326,60 +329,6 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
         ToastDemo(toastMessage.value)
     }
 }
-/*
-@Composable
-private fun dropDownMenu(text: String,suggestions: List<String>) {
-    Spacer(modifier = Modifier.padding(4.dp))
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(suggestions[1]) }
-    var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
-    var editItem = remember{ mutableStateOf(false)}
-
-    val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column() {
-
-            OutlinedTextField(
-                value = selectedText,
-                onValueChange = { selectedText = it },
-                enabled = false,
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-                    .onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size.toSize()
-                    },
-                trailingIcon = {
-                    Icon(icon, "arrowExpanded",
-                        Modifier.clickable { expanded = !expanded })
-                }
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
-            ) {
-                suggestions.forEach { label ->
-                    DropdownMenuItem(onClick = {
-                        selectedText = label
-                        expanded = false
-                    }) {
-                        Text(text = label)
-                    }
-                }
-            }
-        }
-    }
-}
-*/
 
 //Validaciones
 private fun isValidDni(text: String) = Pattern.compile("^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$",Pattern.CASE_INSENSITIVE).matcher(text).find()
@@ -400,6 +349,6 @@ fun DefaultPreview13() {
 
 
 @Composable
-fun ToastDemo(message: String) {
+private fun ToastDemo(message: String) {
     Toast.makeText(LocalContext.current,message,Toast.LENGTH_SHORT).show()
 }

@@ -21,6 +21,7 @@ import sainero.dani.intermodular.Navigation.Destinations
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -32,13 +33,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.*
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import java.util.regex.Pattern
 
 @ExperimentalFoundationApi
@@ -58,6 +64,18 @@ class Login : ComponentActivity() {
 
 @Composable
 fun LoginMain(viewModelUsers: ViewModelUsers) {
+    var (currentTime,onValueChangeCurrentTime) = remember { mutableStateOf(false) }
+
+    val current = LocalContext.current
+
+    LaunchedEffect(key1 = currentTime) {
+        if(currentTime) {
+            delay(200L)
+            viewModelUsers.getUserList()
+            Toast.makeText(current,"Contraseña actualizada", Toast.LENGTH_SHORT).show()
+
+        }
+    }
 
     //API
     val coroutineScope = rememberCoroutineScope()
@@ -69,11 +87,13 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
 
     //Utils
     var hidden by remember { mutableStateOf(true) }
-    val showDialog = remember { mutableStateOf(false) }
+    val showAlertDialog = remember { mutableStateOf(false) }
+    val (showNewPassword,onValueChangeNewPassword) = remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val context = LocalContext.current
-
     var nameError by remember { mutableStateOf(false) }
+    var correctUser = remember { mutableStateOf(false)}
+    var selectedUser by remember { mutableStateOf(Users(0,"","","","","","","","","",false)) }
 
 
 
@@ -92,7 +112,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                 .height(300.dp)
                 .width(500.dp)
                 .padding(20.dp)
-                    //Tests
+                //Tests
                 .clickable {
                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
                     navController.navigate("${Destinations.MainAdministrationActivity.route}")
@@ -120,7 +140,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                     .padding(start = 50.dp, end = 50.dp)
                     .fillMaxWidth()
                     .onKeyEvent {
-                        if(it.nativeKeyEvent.keyCode.equals(KEYCODE_ENTER)) {
+                        if (it.nativeKeyEvent.keyCode.equals(KEYCODE_ENTER)) {
                             focusRequester.requestFocus()
                             true
                         }
@@ -170,7 +190,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
                     .onKeyEvent {
-                        if(it.nativeKeyEvent.keyCode.equals(KEYCODE_ENTER)) {
+                        if (it.nativeKeyEvent.keyCode.equals(KEYCODE_ENTER)) {
                             //Ejecutar botón¿?
 
                         }
@@ -181,16 +201,25 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
             Spacer(modifier = Modifier.padding(10.dp))
             Button(
                 onClick = {
-                        viewModelUsers.userListResponse.forEach{
+                    correctUser.value = false
+                    viewModelUsers.getUserList()
+                    viewModelUsers.userListResponse.forEach{
 
-                        if (it.user.equals(textUser) && it.password.equals(textPassword))
-                            if (it.rol.equals("Administrador"))
-                                showDialog.value = true
-                            else
-                                navController.navigate(Destinations.AccessToTables.route)
+                        if (it.user.equals(textUser) && it.password.equals(textPassword)) {
+                            correctUser.value = true
+                            if (it.newUser) {
+                                onValueChangeNewPassword(true)
+                                selectedUser = it
+                            } else {
+                                if (it.rol.equals("Administrador"))
+                                    showAlertDialog.value = true
+                                else
+                                    navController.navigate(Destinations.AccessToTables.route)
+                            }
+                        }
+
                     }
-
-                    Toast.makeText(context, "El usuario o la contraseña son incorrectos",Toast.LENGTH_SHORT).show()
+                    if (!correctUser.value) Toast.makeText(context, "El usuario o la contraseña son incorrectos",Toast.LENGTH_SHORT).show()
                 },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.White,
@@ -220,8 +249,17 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
         }
 
         //Llamar al Dialogo
-        if (showDialog.value) {
+        if (showAlertDialog.value) {
             adminAlertDestination()
+        }//Llamar al Dialogo
+        if (showNewPassword) {
+            viewModelUsers.getUserList()
+            newPassword(
+                onValueChangeNewPassword =onValueChangeNewPassword,
+                onValueChangeCurrentTime = onValueChangeCurrentTime,
+                viewModelUsers = viewModelUsers,
+                user = selectedUser
+            )
         }
 
     }
@@ -231,12 +269,125 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
 //Validaciones
 private fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 
+@Composable
+private fun newPassword(
+    onValueChangeNewPassword: (Boolean) -> Unit,
+    onValueChangeCurrentTime: (Boolean) -> Unit,
+    viewModelUsers: ViewModelUsers,
+    user: Users
+) {
+    val value = remember { mutableStateOf("")}
+    val error = remember{ mutableStateOf(false)}
+    Dialog(
+        onDismissRequest = {
+            onValueChangeNewPassword(false)
+        },
+        properties = DialogProperties(
 
+        ),
+        content = {
+            Column(
+                verticalArrangement = Arrangement.SpaceAround,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.7f),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Escribe tu nueva contraseña",
+                        fontSize = 25.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    OutlinedTextField(
+                        value = value.value,
+                        onValueChange = {
+                            value.value = it
+                            //Patrones de validación de contraseña
+                        },
+                        placeholder = { Text(text = "Nueva contraseña") },
+                        label = { Text(text = "Contraseña") },
+                        isError = error.value,
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                        modifier = Modifier
+                            .padding(start = 20.dp, end = 20.dp)
+                    )
+                    val assistiveElementText = if (error.value) "La contraseña no es válida" else  "*Obligatorio"
+                    val assistiveElementColor = if (error.value) {
+                        MaterialTheme.colors.error
+                    } else {
+                        MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                    }
+                    Text(
+                        text = assistiveElementText,
+                        color = assistiveElementColor,
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier.padding(start = 10.dp, end = 20.dp)
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    Button(
+                        onClick = {
+                            val updateUser = Users(
+                                _id = user._id,
+                                user = user.user,
+                                name = user.name,
+                                dni = user.dni,
+                                email = user.email,
+                                fnac = user.fnac,
+                                newUser = false, //true: se volvería a repetir
+                                password = value.value,
+                                phoneNumber = user.phoneNumber,
+                                rol = user.rol,
+                                surname = user.surname
+                            )
+
+                            viewModelUsers.editUser(user = updateUser)
+                            onValueChangeNewPassword(false)
+                            onValueChangeCurrentTime(true)
+
+
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.White,
+                            contentColor = Color.Blue
+                        ),
+                        contentPadding = PaddingValues(
+                            start = 20.dp,
+                            top = 12.dp,
+                            end = 20.dp,
+                            bottom = 12.dp
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 50.dp, end = 50.dp)
+
+
+                    ) {
+                        Text(text = "Modificar Contraseña", fontSize = 18.sp, textAlign = TextAlign.Center)
+                    }
+                }
+            }
+        }
+    )
+}
 
 @Composable
 private fun adminAlertDestination() {
     MaterialTheme {
-        val globalVariables = GlobalVariables()
 
         Column {
             AlertDialog(

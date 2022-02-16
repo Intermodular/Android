@@ -25,7 +25,6 @@ import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
-import sainero.dani.intermodular.Views.Administration.Employee.ToastDemo
 import java.util.regex.Pattern
 
 class MainActivity : ComponentActivity() {
