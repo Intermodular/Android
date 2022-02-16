@@ -27,9 +27,16 @@ import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
+import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
+import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainViewModelIngredients
 import java.util.regex.Pattern
+import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
+import sainero.dani.intermodular.ViewsItems.createRowList
+import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
+
 
 @ExperimentalFoundationApi
 class NewProduct : ComponentActivity() {
@@ -42,7 +49,12 @@ class NewProduct : ComponentActivity() {
 }
 
 @Composable
-fun MainNewProduct(viewModelProductos: ViewModelProductos,viewModelTipos: ViewModelTipos) {
+fun MainNewProduct(
+    viewModelProductos: ViewModelProductos,
+    viewModelTipos: ViewModelTipos,
+    mainViewModelEspecifications: MainViewModelEspecifications,
+    mainViewModelIngredients: MainViewModelIngredients
+) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
 
@@ -57,18 +69,65 @@ fun MainNewProduct(viewModelProductos: ViewModelProductos,viewModelTipos: ViewMo
     val nameOfNameError: String = "El nombre no puede contener caracteres especiales ni ser mayor de 20"
 
     var textType = rememberSaveable{mutableStateOf(allTypesNames[0])}
+
     var ingredientes: MutableList<String> = mutableListOf()
+    var especification: MutableList<String> = mutableListOf()
 
     var (textCost, onValueChangeCost) = rememberSaveable{ mutableStateOf("0") }
     var (costError,costErrorChange) = remember { mutableStateOf(false) }
     val costOfNameError: String = "El número debe de estar sin ','"
 
-    var especification: MutableList<String> = mutableListOf()
     var (textImg, onValueChangeImg) = rememberSaveable{ mutableStateOf("") }
 
     var (textStock, onValueChangeStock) = rememberSaveable{ mutableStateOf("0") }
     var (stockError,stockErrorChange) = remember { mutableStateOf(false) }
     val stockOfNameError: String = "Debe ser un número entero"
+
+    val aplicateState = remember { mutableStateOf(true) }
+
+    if (aplicateState.value) {
+        when (mainViewModelEspecifications.especificationsState){
+            "New" -> {
+                mainViewModelEspecifications._especifications.clear()
+                mainViewModelEspecifications._tmpEspecifications.clear()
+                //selectedProduct.especifications.forEach{ mainViewModelEspecifications.addExtras(it) }
+                mainViewModelEspecifications._tmpEspecifications = mainViewModelEspecifications._especifications.toMutableList()
+            }
+            "Edit" -> {
+                mainViewModelEspecifications._especifications = mainViewModelEspecifications._tmpEspecifications.toMutableList()
+            }
+            "Cancel" -> {
+                mainViewModelEspecifications._especifications = mainViewModelEspecifications._tmpEspecifications.toMutableList()
+            }
+            else  ->{
+            }
+        }
+
+        when (mainViewModelIngredients.ingredientsState){
+            "New" -> {
+                mainViewModelIngredients._ingredients.clear()
+                mainViewModelIngredients._tmpIngredients.clear()
+                mainViewModelIngredients.newsValuesIngredients.clear()
+                mainViewModelIngredients._tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
+            }
+            "Edit" -> {
+                mainViewModelIngredients.newsValuesIngredients.clear()
+                mainViewModelIngredients._ingredients = mainViewModelIngredients._tmpIngredients.toMutableList()
+            }
+            "Cancel" -> {
+                mainViewModelIngredients.newsValuesIngredients.clear()
+                mainViewModelIngredients._tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
+            }
+            else  ->{
+                mainViewModelIngredients.newsValuesIngredients.clear()
+                mainViewModelIngredients._tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
+
+            }
+        }
+        aplicateState.value = false
+    }
+    especification = mainViewModelEspecifications._especifications.toMutableList()
+    ingredientes = mainViewModelIngredients._ingredients.toMutableList()
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -116,11 +175,15 @@ fun MainNewProduct(viewModelProductos: ViewModelProductos,viewModelTipos: ViewMo
                     changeError = nameErrorChange,
                     error = nameError,
                     mandatory = true,
-                    numericTextBoard = false
+                    KeyboardType = KeyboardType.Text
                 )
 
                 textType.value = selectedDropDownMenu("Tipo",allTypesNames)
-                dropDownMenu("Ingredientes",ingredientes,0,"${Destinations.Ingredient.route}/${0}")
+                dropDownMenuWithNavigation(
+                    text = "Ingredientes",
+                    suggestions = mainViewModelIngredients._ingredients,
+                    navigate = "${Destinations.Ingredient.route}/${0}"
+                )
 
                 createRowListWithErrorMesaje(
                     text = "Coste",
@@ -131,12 +194,16 @@ fun MainNewProduct(viewModelProductos: ViewModelProductos,viewModelTipos: ViewMo
                     changeError = costErrorChange,
                     error = costError,
                     mandatory = true,
-                    numericTextBoard = true
+                    KeyboardType = KeyboardType.Number
                 )
 
+                dropDownMenuWithNavigation(
+                    text = "Especificaciones",
+                    suggestions = mainViewModelEspecifications._especifications,
+                    navigate = "${Destinations.Especifications.route}/${0}"
+                )
 
-                dropDownMenu("Especificaciones",especification,0,"${Destinations.Especifications.route}/${0}")
-                createRowList("Imágen",textImg,onValueChangeImg)
+                createRowList("Imágen",textImg,onValueChangeImg, enable = true,KeyboardType = KeyboardType.Text)
 
                 createRowListWithErrorMesaje(
                     text = "Stock",
@@ -147,7 +214,7 @@ fun MainNewProduct(viewModelProductos: ViewModelProductos,viewModelTipos: ViewMo
                     changeError = stockErrorChange,
                     error = stockError,
                     mandatory = false,
-                    numericTextBoard = true
+                    KeyboardType = KeyboardType.Number
                 )
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
@@ -195,7 +262,7 @@ fun MainNewProduct(viewModelProductos: ViewModelProductos,viewModelTipos: ViewMo
                                     type = textType.value,
                                     ingredients = ingredientes,
                                     price = textCost.toFloat(),
-                                    especifications = especification,
+                                    especifications = mainViewModelEspecifications._especifications,
                                     img = textImg,
                                     stock = textStock.toInt()
                                 )
@@ -206,11 +273,12 @@ fun MainNewProduct(viewModelProductos: ViewModelProductos,viewModelTipos: ViewMo
                                 type = textType.value,
                                 ingredients = ingredientes,
                                 price = 0f,
-                                especifications = especification,
+                                especifications = mainViewModelEspecifications._especifications,
                                 img = textImg,
                                 stock = textStock.toInt()
                             )
                             viewModelProductos.uploadProduct(product = product)
+                            navController.popBackStack()
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -241,80 +309,6 @@ fun MainNewProduct(viewModelProductos: ViewModelProductos,viewModelTipos: ViewMo
     )
 }
 
-@Composable
-private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit) {
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        OutlinedTextField(
-            value = value,
-            onValueChange = {
-                onValueChange(it)
-            },
-            placeholder = { Text(text) },
-            label = { Text(text = text) },
-            modifier = Modifier
-                .padding(start = 10.dp, end = 20.dp)
-        )
-    }
-}
-
-
-@Composable
-private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int,navigate: String) {
-    Spacer(modifier = Modifier.padding(4.dp))
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(text) }
-    var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
-    var editItem = remember{ mutableStateOf(false)}
-
-    val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column() {
-
-            OutlinedTextField(
-                value = selectedText,
-                onValueChange = { selectedText = it },
-                enabled = false,
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-                    .onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size.toSize()
-                    },
-                trailingIcon = {
-                    Icon(icon, "arrowExpanded",
-                        Modifier.clickable { expanded = !expanded })
-                }
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
-            ) {
-                suggestions.forEach { label ->
-                    DropdownMenuItem(onClick = {
-                        selectedText = label
-                        expanded = false
-                    }) {
-                        Text(text = label)
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun selectedDropDownMenu(text: String,suggestions: List<String>): String {
@@ -371,55 +365,7 @@ private fun selectedDropDownMenu(text: String,suggestions: List<String>): String
 }
 
 
-@Composable
-private fun createRowListWithErrorMesaje(
-    text: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    validateError: (String) -> Boolean,
-    errorMesaje: String,
-    changeError: (Boolean) -> Unit,
-    error: Boolean,
-    mandatory: Boolean,
-    numericTextBoard : Boolean
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column(
-            verticalArrangement = Arrangement.SpaceAround,
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = {
-                    onValueChange(it)
-                    changeError(!validateError(it))
-                },
-                placeholder = { Text(text) },
-                label = { Text(text = text) },
-                isError = error,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (numericTextBoard) KeyboardType.Number else KeyboardType.Text),
 
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-            )
-            val assistiveElementText = if (error) errorMesaje else if (mandatory) "*Obligatorio" else ""
-            val assistiveElementColor = if (error) {
-                MaterialTheme.colors.error
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            }
-            Text(
-                text = assistiveElementText,
-                color = assistiveElementColor,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = 10.dp, end = 20.dp)
-            )
-        }
-    }
-}
 
 
 //Validaciones

@@ -21,4 +21,8 @@ class MainViewModelSearchBar : ViewModel() {
         _searchTextState.value = newValue
     }
 
+    fun clearSearchBar() {
+        _searchTextState.value = ""
+        _searchWidgetState.value = SearchWidgetState.CLOSED
+    }
 }

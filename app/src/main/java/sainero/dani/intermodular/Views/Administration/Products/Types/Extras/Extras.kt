@@ -101,7 +101,9 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                         )
 
                         Spacer(modifier = Modifier.padding(3.dp))
+
                         var selectedTextPrice by remember { mutableStateOf(extra.price.toString()) }
+
                         OutlinedTextField(
                             value =  selectedTextPrice,
                             modifier = Modifier.size(width = 90.dp, height = 55.dp),
@@ -170,7 +172,7 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
 
                         }
                     ) {
-                        Text(text = "Revertir cambio")
+                        Text(text = "Revertir cambios")
                     }
                     Button(
                         onClick = {

@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,8 @@ import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import java.util.regex.Pattern
+import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
+import sainero.dani.intermodular.ViewsItems.dropDownMenu
 
 
 @ExperimentalFoundationApi
@@ -134,7 +137,8 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 errorMesaje = nameOfDniError,
                                 changeError = dniErrorChange,
                                 error = dniError,
-                                mandatory = true
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Text
                             )
                         }
                         item {
@@ -146,7 +150,8 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 errorMesaje = nameOfNameError,
                                 changeError = nameErrorChange,
                                 error = nameError,
-                                mandatory = true
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Text
 
                             )
                         }
@@ -160,13 +165,12 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 errorMesaje = nameOfsurnameError,
                                 changeError = surnameErrorChange,
                                 error = surnameError,
-                                mandatory = true
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Text
 
                             )
                         }
                         item {
-
-                            // No obligatorio
 
                             createRowListWithErrorMesaje(
                                 text = "Phone Number",
@@ -176,7 +180,8 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 errorMesaje = nameOfTelError,
                                 changeError = telErrorChange,
                                 error = telError,
-                                mandatory = false
+                                mandatory = false,
+                                KeyboardType = KeyboardType.Phone
                             )
                          }
                         item{
@@ -189,7 +194,8 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 errorMesaje = nameOfFnacError,
                                 changeError = fNacErrorChange,
                                 error = fNacError,
-                                mandatory = false
+                                mandatory = false,
+                                KeyboardType = KeyboardType.Text
                             )
                         }
                         item {
@@ -201,7 +207,8 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 errorMesaje = nameOfUserError,
                                 changeError = userErrorChange,
                                 error = userError,
-                                mandatory = true
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Text
                             )
 
                         }
@@ -214,7 +221,8 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 errorMesaje = nameOfEmailError,
                                 changeError = emailErrorChange,
                                 error = emailError,
-                                mandatory = true
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Text
                             )
                         }
                         item {
@@ -318,81 +326,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
         ToastDemo(toastMessage.value)
     }
 }
-
-
-@Composable
-private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit) {
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column(
-            verticalArrangement = Arrangement.SpaceAround,
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = {
-                    onValueChange(it)
-                },
-                placeholder = { Text(text) },
-                label = { Text(text = text) },
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-            )
-
-        }
-    }
-}
-
-@Composable
-private fun createRowListWithErrorMesaje(
-    text: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    validateError: (String) -> Boolean,
-    errorMesaje: String,
-    changeError: (Boolean) -> Unit,
-    error: Boolean,
-    mandatory: Boolean
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column(
-            verticalArrangement = Arrangement.SpaceAround,
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = {
-                    onValueChange(it)
-                    changeError(!validateError(it))
-                },
-                placeholder = { Text(text) },
-                label = { Text(text = text) },
-                isError = error,
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-            )
-            val assistiveElementText = if (error) errorMesaje else if (mandatory) "*Obligatorio" else ""
-            val assistiveElementColor = if (error) {
-                MaterialTheme.colors.error
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            }
-            Text(
-                text = assistiveElementText,
-                color = assistiveElementColor,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = 10.dp, end = 20.dp)
-            )
-        }
-    }
-}
-
+/*
 @Composable
 private fun dropDownMenu(text: String,suggestions: List<String>) {
     Spacer(modifier = Modifier.padding(4.dp))
@@ -445,7 +379,7 @@ private fun dropDownMenu(text: String,suggestions: List<String>) {
         }
     }
 }
-
+*/
 
 //Validaciones
 private fun isValidDni(text: String) = Pattern.compile("^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$",Pattern.CASE_INSENSITIVE).matcher(text).find()

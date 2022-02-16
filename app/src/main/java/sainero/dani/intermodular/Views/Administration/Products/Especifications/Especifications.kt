@@ -184,7 +184,6 @@ private fun createEspecifications(
                 Button(
                     onClick = {
                         mainViewModelEspecifications.especificationsState = "Cancel"
-                        //mainViewModelEspecifications._especifications = mainViewModelEspecifications._tmpEspecifications
 
                         navController.popBackStack()
                     },

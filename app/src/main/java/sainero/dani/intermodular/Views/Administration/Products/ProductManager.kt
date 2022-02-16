@@ -43,6 +43,7 @@ import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
+import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainViewModelIngredients
 
 
 @ExperimentalFoundationApi
@@ -60,14 +61,18 @@ class ProductManager : ComponentActivity() {
 fun MainProductManager(
     mainViewModelSearchBar: MainViewModelSearchBar,
     viewModelProductos: ViewModelProductos,
-    mainViewModelEspecifications: MainViewModelEspecifications
+    mainViewModelEspecifications: MainViewModelEspecifications,
+    mainViewModelIngredients: MainViewModelIngredients
 ) {
 
-    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false) }
-    var allProducts: List<Productos> = viewModelProductos.productListResponse
-    val scope = rememberCoroutineScope()
+    var clearSearchBar = remember { mutableStateOf(true) }
+    if (clearSearchBar.value) {
+        mainViewModelSearchBar.clearSearchBar()
+        clearSearchBar.value = false
+    }
 
+    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
+    var allProducts: List<Productos> = viewModelProductos.productListResponse
 
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState
     val searchTextState by mainViewModelSearchBar.searchTextState
@@ -78,12 +83,14 @@ fun MainProductManager(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-
                 MainAppBar(
                     searchWidgetState = searchWidgetState,
                     searchTextState = searchTextState,
                     onTextChange = {
                         mainViewModelSearchBar.updateSearchTextState(newValue = it)
+                        aplicateFilter.value = false
+                        filter = it
+                        aplicateFilter.value = true
                     },
                     onCloseClicked = {
                         mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
@@ -108,16 +115,16 @@ fun MainProductManager(
                 filterContentByName(
                     allProducts = allProducts,
                     filterName = filter,
-                    mainViewModelEspecifications = mainViewModelEspecifications
+                    mainViewModelEspecifications = mainViewModelEspecifications,
+                    mainViewModelIngredients = mainViewModelIngredients
                 )
-
-
             }
         },
-
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+                    mainViewModelEspecifications.especificationsState = "New"
+                    mainViewModelIngredients.ingredientsState = "New"
                     navController.navigate(Destinations.NewProduct.route)
                 }
             ) {
@@ -152,30 +159,14 @@ private fun MainAppBar(
     }
 }
 
-@Composable
-@ExperimentalFoundationApi
-private fun creteProductList(listProducts: MutableList<Productos>) {
-    LazyColumn(
-        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
-    ){
-        for( i in listProducts) {
-            item {
-                Row (
-                    Modifier
-                        .padding(10.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            GlobalVariables.navController.navigate("${Destinations.EditProduct.route}/${i._id}")
-                        }) {
-                    Text(text = i.name)
-                }
-            }
-        }
-    }
-}
 
 @Composable
-private fun filterContentByName(allProducts: List<Productos>, filterName: String, mainViewModelEspecifications: MainViewModelEspecifications) {
+private fun filterContentByName(
+    allProducts: List<Productos>,
+    filterName: String,
+    mainViewModelEspecifications: MainViewModelEspecifications,
+    mainViewModelIngredients: MainViewModelIngredients
+) {
     LazyColumn(
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {
@@ -189,6 +180,7 @@ private fun filterContentByName(allProducts: List<Productos>, filterName: String
                         .height(90.dp)
                         .clickable {
                             mainViewModelEspecifications.especificationsState = "New"
+                            mainViewModelIngredients.ingredientsState = "New"
                             navController.navigate("${Destinations.EditProduct.route}/${i._id}")
                         },
                         shape = RoundedCornerShape(8.dp),
@@ -380,7 +372,8 @@ private fun SearchAppBar(
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Transparent,
                 cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
-            ))
+            )
+        )
     }
 }
 

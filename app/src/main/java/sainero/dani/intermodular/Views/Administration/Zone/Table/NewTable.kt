@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,6 +24,9 @@ import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.Views.Administration.Zone.Table.ui.theme.IntermodularTheme
+import sainero.dani.intermodular.ViewsItems.createRowList
+import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
+
 
 class NewTable : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,8 +45,8 @@ fun MainNewTable(viewModelMesas: ViewModelMesas){
     //Textos
     var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf("") }
     var (textNºsillas, onValueChangeNºsillas) = rememberSaveable{ mutableStateOf("") }
-    var (textNumero, onValueChangeNumero) = rememberSaveable{ mutableStateOf("") }
-    var (textEstado, onValueChangeEstado) = rememberSaveable{ mutableStateOf("") }
+    var (textNumber, onValueChangeNumber) = rememberSaveable{ mutableStateOf("") }
+    var (textState, onValueChangeState) = rememberSaveable{ mutableStateOf("") }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -80,10 +84,13 @@ fun MainNewTable(viewModelMesas: ViewModelMesas){
                     .fillMaxWidth()
             ) {
 
-                sainero.dani.intermodular.Views.Administration.Zone.Table.createRowList(text = "Nombre", value = textName, onValueChange = onValueChangeName, false, true)
-                sainero.dani.intermodular.Views.Administration.Zone.Table.createRowList(text = "NºSillas", value = textNºsillas, onValueChange = onValueChangeNºsillas, true,true)
-                sainero.dani.intermodular.Views.Administration.Zone.Table.createRowList(text = "Estado", value = textEstado, onValueChange = onValueChangeEstado, false, true)
-                sainero.dani.intermodular.Views.Administration.Zone.Table.createRowList(text = "Numero", value = textNumero, onValueChange = onValueChangeNumero, true, true)
+
+                createRowList(text = "Nombre", value = textName, onValueChange = onValueChangeName,enable = true, KeyboardType.Text)
+                createRowList(text = "NºSillas", value = textNºsillas, onValueChange = onValueChangeNºsillas,enable = true, KeyboardType.Number)
+                createRowList(text = "Estado", value = textState, onValueChange = onValueChangeState,enable =  true, KeyboardType.Text)
+                createRowList(text = "Numero", value = textNumber, onValueChange = onValueChangeNumber,enable =  true, KeyboardType.Number)
+
+
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -120,10 +127,10 @@ fun MainNewTable(viewModelMesas: ViewModelMesas){
                         onClick = {
                             //Guardar mesa en la BD
                             val mesa: Mesas
-                            if (textNºsillas.equals("") || textNumero.equals(""))
-                                mesa = Mesas(0,textName,0,textEstado,0)
+                            if (textNºsillas.equals("") || textNumber.equals(""))
+                                mesa = Mesas(0,textName,0,textState,0)
                             else
-                                mesa = Mesas(0,textName,textNºsillas.toInt(),textEstado,textNumero.toInt())
+                                mesa = Mesas(0,textName,textNºsillas.toInt(),textState,textNumber.toInt())
                             viewModelMesas.uploadMesa(mesa)
                         },
                         colors = ButtonDefaults.buttonColors(

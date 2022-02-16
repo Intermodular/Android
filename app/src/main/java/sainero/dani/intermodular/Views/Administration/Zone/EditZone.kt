@@ -27,6 +27,9 @@ import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.ui.theme.IntermodularTheme
+import sainero.dani.intermodular.ViewsItems.createRowList
+import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
+
 import java.util.regex.Pattern
 
 class EditZone : ComponentActivity() {
@@ -111,7 +114,7 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                     changeError = nameErrorChange,
                     error = nameError,
                     mandatory = true,
-                    numericTextBoard = false
+                    KeyboardType = KeyboardType.Text
 
                 )
 
@@ -119,7 +122,8 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                     text = "NºMesas",
                     value = textNºmesas,
                     onValueChange = onValueChangeNºmesas,
-                    enable = false
+                    enable = false,
+                    KeyboardType = KeyboardType.Number
                 )
 
 
@@ -195,81 +199,6 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
     )
 }
 
-
-
-
-@Composable
-private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit, enable: Boolean) {
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        OutlinedTextField(
-            value = value,
-
-            enabled = enable,
-            onValueChange = {
-                onValueChange(it)
-            },
-            placeholder = { Text(text) },
-            label = { Text(text = text) },
-            modifier = Modifier
-                .padding(start = 10.dp, end = 20.dp)
-        )
-    }
-}
-
-@Composable
-private fun createRowListWithErrorMesaje(
-    text: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    validateError: (String) -> Boolean,
-    errorMesaje: String,
-    changeError: (Boolean) -> Unit,
-    error: Boolean,
-    mandatory: Boolean,
-    numericTextBoard : Boolean
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column(
-            verticalArrangement = Arrangement.SpaceAround,
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = {
-                    onValueChange(it)
-                    changeError(!validateError(it))
-                },
-                placeholder = { Text(text) },
-                label = { Text(text = text) },
-                isError = error,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (numericTextBoard) KeyboardType.Number else KeyboardType.Text),
-
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-            )
-            val assistiveElementText = if (error) errorMesaje else if (mandatory) "*Obligatorio" else ""
-            val assistiveElementColor = if (error) {
-                MaterialTheme.colors.error
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            }
-            Text(
-                text = assistiveElementText,
-                color = assistiveElementColor,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = 10.dp, end = 20.dp)
-            )
-        }
-    }
-}
 
 
 //Validaciones

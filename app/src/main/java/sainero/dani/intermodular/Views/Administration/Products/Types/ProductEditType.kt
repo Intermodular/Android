@@ -36,6 +36,10 @@ import sainero.dani.intermodular.ViewModels.ViewModelTipos
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainViewModelExtras
 import java.util.regex.Pattern
+import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
+import sainero.dani.intermodular.ViewsItems.createRowList
+import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
+
 
 class ProductEditType : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +51,11 @@ class ProductEditType : ComponentActivity() {
 }
 
 @Composable
-fun MainProductEditType(id: Int,viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras) {
+fun MainProductEditType(
+    id: Int,
+    viewModelTipos: ViewModelTipos,
+    mainViewModelExtras: MainViewModelExtras
+) {
     //Posible consulta en la Base de datos ¿? (but is ok)
     var selectedType: Tipos = Tipos(_id = id,"","", arrayListOf())
     viewModelTipos.typeListResponse.forEach{ if (it._id.equals(id))  selectedType = it }
@@ -80,20 +88,16 @@ if (aplicateState.value) {
             aplicateState.value = false
         }
     }
+
 }
 
-
-
-
-
-
-    editType(id = id, viewModelTipos = viewModelTipos,onChangeEditExtras = onChangeEditExtras,selectedType = selectedType,mainviewModelExtras = mainViewModelExtras)
+    editType(id = id, viewModelTipos = viewModelTipos,onChangeEditExtras = onChangeEditExtras,selectedType = selectedType,mainViewModelExtras = mainViewModelExtras)
 
 }
 
 
 @Composable
-private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras: (Boolean) -> Unit, selectedType: Tipos,mainviewModelExtras: MainViewModelExtras) {
+private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras: (Boolean) -> Unit, selectedType: Tipos,mainViewModelExtras: MainViewModelExtras) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
@@ -106,7 +110,7 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
     //Text
 
     var allNamesOfExtras: MutableList<String> = mutableListOf()
-    selectedType.compatibleExtras.forEach{allNamesOfExtras.add(it.name)}
+    //selectedType.compatibleExtras.forEach{allNamesOfExtras.add(it.name)}
 
     var (textName, onValueChangeName) = rememberSaveable { mutableStateOf(selectedType.name) }
     var (nameError,nameErrorChange) = remember { mutableStateOf(false) }
@@ -202,21 +206,22 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                     changeError = nameErrorChange,
                     error = nameError,
                     mandatory = true,
-                    numericTextBoard = false
+                    KeyboardType = KeyboardType.Text
                 )
 
-                dropDownMenu(
+                mainViewModelExtras._extras.forEach{allNamesOfExtras.add(it.name)}
+                dropDownMenuWithNavigation(
                     text = "Extras",
                     suggestions = allNamesOfExtras,
-                    idOfItem = id,
-                    onChangeEditExtras = onChangeEditExtras,
-                    mainviewModelExtras = mainviewModelExtras,
-                    selectedType = selectedType
+                    navigate = "${Destinations.Extras.route}/${id}",
                 )
+
                 createRowList(
                     text = "Img",
                     value = textImg,
-                    onValueChange = onValueChangeImg
+                    onValueChange = onValueChangeImg,
+                    enable = true,
+                    KeyboardType = KeyboardType.Text
                 )
 
 
@@ -259,7 +264,7 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                     Button(
                         onClick = {
 
-                            var updateType: Tipos = Tipos(id,textName,textImg,mainviewModelExtras._extras)
+                            var updateType: Tipos = Tipos(id,textName,textImg,mainViewModelExtras._extras)
                             viewModelTipos.editType(updateType)
 
                         },
@@ -288,78 +293,6 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                 }
             }
         })
-}
-
-
-@Composable
-private fun createRowListWithErrorMesaje(
-    text: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    validateError: (String) -> Boolean,
-    errorMesaje: String,
-    changeError: (Boolean) -> Unit,
-    error: Boolean,
-    mandatory: Boolean,
-    numericTextBoard : Boolean
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column(
-            verticalArrangement = Arrangement.SpaceAround,
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = {
-                    onValueChange(it)
-                    changeError(!validateError(it))
-                },
-                placeholder = { Text(text) },
-                label = { Text(text = text) },
-                isError = error,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (numericTextBoard) KeyboardType.Number else KeyboardType.Text),
-
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-            )
-            val assistiveElementText = if (error) errorMesaje else if (mandatory) "*Obligatorio" else ""
-            val assistiveElementColor = if (error) {
-                MaterialTheme.colors.error
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            }
-            Text(
-                text = assistiveElementText,
-                color = assistiveElementColor,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = 10.dp, end = 20.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit) {
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        OutlinedTextField(
-            value = value,
-            onValueChange = {
-                onValueChange(it)
-            },
-            placeholder = { Text(text) },
-            label = { Text(text = text) },
-            modifier = Modifier
-                .padding(start = 10.dp, end = 20.dp)
-        )
-    }
 }
 
 @Composable
@@ -408,67 +341,6 @@ private fun confirmDeleteType(viewModelTipos: ViewModelTipos, id: Int) {
     }
 }
 
-
-@Composable
-private fun dropDownMenu(text: String,suggestions: List<String>, idOfItem: Int, onChangeEditExtras: (Boolean) -> Unit, mainviewModelExtras: MainViewModelExtras,selectedType: Tipos) {
-    Spacer(modifier = Modifier.padding(4.dp))
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(text) }
-    var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
-    var editItem = remember{ mutableStateOf(false)}
-
-    val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column() {
-
-            OutlinedTextField(
-                value = selectedText,
-                onValueChange = { selectedText = it },
-                enabled = false,
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-                    .onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size.toSize()
-                    },
-                trailingIcon = {
-                    Icon(icon, "arrowExpanded",
-                        Modifier.clickable { expanded = !expanded })
-                },
-                leadingIcon = {
-                    Icon(Icons.Default.Edit,"Edit ${text}",
-                        Modifier.clickable{
-                            editItem.value = true
-
-                            navController.navigate("${Destinations.Extras.route}/${idOfItem}")
-                        })
-                }
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
-            ) {
-                mainviewModelExtras._extras.forEach { label ->
-                    DropdownMenuItem(onClick = {
-                        selectedText = label.name
-                        expanded = false
-                    }) {
-                        Text(text = label.name)
-                    }
-                }
-            }
-        }
-    }
-}
 
 //Validaciones
 private fun isValidNameOfType(text: String) = Pattern.compile("^[^)(]{1,14}$", Pattern.CASE_INSENSITIVE).matcher(text).find()

@@ -29,6 +29,8 @@ import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.Views.Administration.Zone.Table.ui.theme.IntermodularTheme
+import sainero.dani.intermodular.ViewsItems.createRowList
+import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 
 class EditTable : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,10 +110,10 @@ fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
                     .fillMaxWidth()
             ) {
 
-                createRowList(text = "Nombre", value = textZone, onValueChange = onValueChangeZone,false, true)
-                createRowList(text = "NºSillas", value = textNºsillas, onValueChange = onValueChangeNºsillas,true, true)
-                createRowList(text = "Estado", value = textState, onValueChange = onValueChangeState, false,true)
-                createRowList(text = "Numero", value = textNumber, onValueChange = onValueChangeNumber, true,true)
+                createRowList(text = "Nombre", value = textZone, onValueChange = onValueChangeZone,enable = true, KeyboardType.Text)
+                createRowList(text = "NºSillas", value = textNºsillas, onValueChange = onValueChangeNºsillas,enable = true, KeyboardType.Number)
+                createRowList(text = "Estado", value = textState, onValueChange = onValueChangeState,enable =  true,KeyboardType.Text)
+                createRowList(text = "Numero", value = textNumber, onValueChange = onValueChangeNumber,enable =  true,KeyboardType.Number)
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
@@ -185,31 +187,6 @@ fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
 
         }
     )
-}
-
-
-@Composable
-fun createRowList(text: String, value: String, onValueChange: (String) -> Unit, numeric : Boolean, enable: Boolean) {
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        OutlinedTextField(
-            value = value,
-            enabled = enable,
-            onValueChange = {
-                onValueChange(it)
-            },
-            placeholder = { Text(text) },
-            label = { Text(text = text) },
-            modifier = Modifier
-                .padding(start = 10.dp, end = 20.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (numeric) KeyboardType.Number else KeyboardType.Text)
-        )
-
-    }
 }
 
 @Composable

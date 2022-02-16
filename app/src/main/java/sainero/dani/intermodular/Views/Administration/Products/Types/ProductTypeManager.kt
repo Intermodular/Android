@@ -58,10 +58,13 @@ class ProductTypeAdministration : ComponentActivity() {
 @Composable
 fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras) {
 
-    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    var clearSearchBar = remember { mutableStateOf(true) }
+    if (clearSearchBar.value) {
+        mainViewModelSearchBar.clearSearchBar()
+        clearSearchBar.value = false
+    }
 
+    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
 
     //Consulta BD
     var allTypes = viewModelTipos.typeListResponse
@@ -97,12 +100,9 @@ fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewMo
                 onSearchTriggered = {
                     mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
                 }
-
             )
-
         },
         content = {
-
             aplicateFilter.value = true
             if (aplicateFilter.value) {
                 filterContentByName(
@@ -117,8 +117,6 @@ fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewMo
                 onClick = {
                     mainViewModelExtras.extrasState = "New"
                     navController.navigate("${Destinations.ProductNewType.route}")
-
-                    //navController.navigate(Destinations.ProductNewType.route)
                 }
             ) {
                 Text("+")
@@ -222,8 +220,6 @@ private fun MainAppBar(
 
 @Composable
 private fun DefaultAppBar(onSearchClicked: () -> Unit) {
-    val expanded = remember { mutableStateOf(false)}
-
     TopAppBar(
         title = {
             Text(text = "Lista de Tipos",color = Color.White)

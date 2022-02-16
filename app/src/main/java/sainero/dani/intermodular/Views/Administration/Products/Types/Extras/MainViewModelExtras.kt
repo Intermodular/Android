@@ -14,7 +14,6 @@ class MainViewModelExtras : ViewModel() {
     var extrasState = "New"
 
     var _tmpExtras: MutableList<Extras> = mutableListOf()
-
     var tmpType: Tipos = Tipos(0,"","", arrayListOf())
 
 

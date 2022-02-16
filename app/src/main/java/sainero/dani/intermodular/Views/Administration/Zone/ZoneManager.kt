@@ -59,9 +59,14 @@ class ZoneAdministration : ComponentActivity() {
 @Composable
 fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelZonas: ViewModelZonas) {
 
+    var clearSearchBar = remember { mutableStateOf(true) }
+    if (clearSearchBar.value) {
+        mainViewModelSearchBar.clearSearchBar()
+        clearSearchBar.value = false
+    }
+
+
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     //Consulta BD
     var allZones: List<Zonas> = viewModelZonas.zonesListResponse
@@ -96,21 +101,15 @@ fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelZona
                 onSearchTriggered = {
                     mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
                 }
-
             )
-
         },
         content = {
-
             aplicateFilter.value = true
             if (aplicateFilter.value) {
-
                 filterContentByName(
                     allZones = allZones,
                     filterName = filter
                 )
-
-
             }
         },
         floatingActionButton = {
@@ -130,23 +129,9 @@ private fun filterContentByName(allZones: List<Zonas>, filterName: String) {
     LazyColumn(
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {
-
         for (i in allZones) {
             if (i.name.contains(filterName)) {
                 item {
-                    /*Row (
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .clickable {
-                                GlobalVariables.navController.navigate("${Destinations.EditZone.route}/${i._id}")
-                            }
-                    ) {
-                        Text(text = i.name)
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.nºTables.toString())
-                    }*/
-
                     Card(modifier = Modifier
                         .padding(8.dp, 4.dp)
                         .fillMaxWidth()
@@ -303,7 +288,7 @@ private fun SearchAppBar(
             .fillMaxWidth()
             .height(56.dp),
         elevation = AppBarDefaults.TopAppBarElevation,
-        color = Color.Blue//MaterialTheme.colors.primary
+        color = Color.Blue
     ) {
         TextField(modifier = Modifier
             .fillMaxWidth(),
@@ -374,7 +359,6 @@ private fun SearchAppBar(
 @Composable
 fun DefaultPreview5() {
     IntermodularTheme {
-
         //MainZoneManager(mainViewModelSearchBar = "")
     }
 }

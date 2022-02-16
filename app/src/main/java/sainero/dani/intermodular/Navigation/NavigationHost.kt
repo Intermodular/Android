@@ -30,6 +30,7 @@ import sainero.dani.intermodular.ViewModels.*
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainIngredient
+import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainViewModelIngredients
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainExtras
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainNewExtra
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainViewModelExtras
@@ -60,7 +61,8 @@ fun NavigationHost(
     viewModelZonas: ViewModelZonas,
     mainViewModelCreateOrder: MainViewModelCreateOrder,
     mainViewModelExtras: MainViewModelExtras,
-    mainViewModelEspecifications: MainViewModelEspecifications
+    mainViewModelEspecifications: MainViewModelEspecifications,
+    mainViewModelIngredients: MainViewModelIngredients
 ){
     navController = rememberNavController()
 
@@ -115,7 +117,12 @@ fun NavigationHost(
         composable(route = Destinations.ProductManager.route) {
             viewModelProductos.getProductList()
             viewModelTipos.getTypesList()
-            MainProductManager(mainViewModelSearchBar = mainViewModelSearchBar, viewModelProductos = viewModelProductos, mainViewModelEspecifications = mainViewModelEspecifications)
+            MainProductManager(
+                mainViewModelSearchBar = mainViewModelSearchBar,
+                viewModelProductos = viewModelProductos,
+                mainViewModelEspecifications = mainViewModelEspecifications,
+                mainViewModelIngredients = mainViewModelIngredients
+            )
         }
 
         composable(
@@ -130,7 +137,8 @@ fun NavigationHost(
                 id = id,
                 viewModelProductos =  viewModelProductos,
                 viewModelTipos = viewModelTipos,
-                mainViewModelEspecifications = mainViewModelEspecifications
+                mainViewModelEspecifications = mainViewModelEspecifications,
+                mainViewModelIngredients = mainViewModelIngredients
             )
         }
 
@@ -140,7 +148,12 @@ fun NavigationHost(
 
         composable(route = Destinations.NewProduct.route) {
             viewModelTipos.getTypesList()
-            MainNewProduct(viewModelProductos,viewModelTipos)
+            MainNewProduct(
+                viewModelProductos = viewModelProductos,
+                viewModelTipos = viewModelTipos,
+                mainViewModelEspecifications = mainViewModelEspecifications,
+                mainViewModelIngredients = mainViewModelIngredients
+            )
         }
 
         composable(
@@ -150,7 +163,11 @@ fun NavigationHost(
             val id = it.arguments?.getInt("productId")
             requireNotNull(id)
             viewModelProductos.getProductList()
-            MainIngredient(_id = id, viewModelProductos)
+            MainIngredient(
+                _id = id,
+                viewModelProductos = viewModelProductos,
+                mainViewModelIngredients = mainViewModelIngredients
+            )
         }
 
         composable(

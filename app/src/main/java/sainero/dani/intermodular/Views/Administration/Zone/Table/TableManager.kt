@@ -48,10 +48,15 @@ class TableManager : ComponentActivity() {
 }
 
 @Composable
-fun MainTableManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelMesas: ViewModelMesas){
+fun MainTableManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelMesas: ViewModelMesas) {
+
+    var clearSearchBar = remember { mutableStateOf(true) }
+    if (clearSearchBar.value) {
+        mainViewModelSearchBar.clearSearchBar()
+        clearSearchBar.value = false
+    }
+
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     //Consulta BD
     var allMesas: List<Mesas> = viewModelMesas.mesasListResponse
@@ -86,21 +91,15 @@ fun MainTableManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelMes
                 onSearchTriggered = {
                     mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
                 }
-
             )
-
         },
         content = {
-
             aplicateFilter.value = true
             if (aplicateFilter.value) {
-
                 filtercontentbyname(
                     allMesas = allMesas,
                     filterName = filter
                 )
-
-
             }
         },
         floatingActionButton = {
@@ -121,28 +120,9 @@ fun filtercontentbyname(allMesas: List<Mesas>, filterName: String){
     LazyColumn(
         contentPadding = PaddingValues(start = 30.dp , end = 30.dp)
     ) {
-
         for (i in allMesas) {
             if (i.zone.contains(filterName)) {
                 item {
-                    /*
-                    Row (
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .clickable {
-                                navController.navigate("${Destinations.EditTable.route}/${i._id}")
-                            }
-                    ) {
-                        Text(text = i.zone)
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.numChair.toString())
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.state.toString())
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Text(text = i.number.toString())
-                    }*/
-
                     Card(modifier = Modifier
                         .padding(8.dp, 4.dp)
                         .fillMaxWidth()
@@ -227,8 +207,6 @@ private fun MainAppBar(
 
 @Composable
 private fun DefaultAppBar(onSearchClicked: () -> Unit) {
-    val expanded = remember { mutableStateOf(false)}
-
     TopAppBar(
         title = {
             Text(text = "Lista de Mesa",color = Color.White)

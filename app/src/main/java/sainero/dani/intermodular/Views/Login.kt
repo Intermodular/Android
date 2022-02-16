@@ -95,8 +95,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                     //Tests
                 .clickable {
                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
-                    navController.navigate("${Destinations.ProductManager.route}")
-                    //navController.navigate("${Destinations.ProductInformation.route}/${0}")
+                    navController.navigate("${Destinations.MainAdministrationActivity.route}")
 
                 }
         )

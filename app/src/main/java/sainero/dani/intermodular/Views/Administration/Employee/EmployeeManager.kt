@@ -59,26 +59,23 @@ class EmployeeManager : ComponentActivity() {
 
 @ExperimentalComposeUiApi
 @Composable
-fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewModelUsers: ViewModelUsers) {
+fun MainEmployeeManager(
+    mainViewModelSearchBar: MainViewModelSearchBar,
+    viewModelUsers: ViewModelUsers
+) {
+
+
+    var clearSearchBar = remember { mutableStateOf(true) }
+    if (clearSearchBar.value) {
+        mainViewModelSearchBar.clearSearchBar()
+        clearSearchBar.value = false
+    }
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    var selectedUser: Users = Users(0,"","","","","","","","admin","",newUser = false)
-    var visible by remember { mutableStateOf(true) }
-    val density = LocalDensity.current
-    val context = LocalContext.current
-
-    val expanded = remember { mutableStateOf(false)}
-    val result = remember { mutableStateOf("") }
-    val textState = remember { mutableStateOf(TextFieldValue("")) }
-    var showClearButton by remember { mutableStateOf(false) }
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusRequester = remember { FocusRequester() }
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState
     val searchTextState by mainViewModelSearchBar.searchTextState
-
     val aplicateFilter = remember { mutableStateOf(false) }
     var filter: String = ""
-
     var allUsers: List<Users> = viewModelUsers.userListResponse
 
 
@@ -90,12 +87,8 @@ fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewMode
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Scaffold(
-
             scaffoldState = scaffoldState,
-
-
             topBar = {
-
                 MainAppBar(
                     searchWidgetState = searchWidgetState,
                     searchTextState = searchTextState,
@@ -116,10 +109,7 @@ fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewMode
                     onSearchTriggered = {
                         mainViewModelSearchBar.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
                     }
-
                 )
-
-
             },
             floatingActionButton = {
                 FloatingActionButton(
@@ -131,28 +121,15 @@ fun MainEmployeeManager(mainViewModelSearchBar: MainViewModelSearchBar, viewMode
                 }
             },
             content = {
-
-
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()/*
-                        .border(
-                            width = 3.dp,
-                            brush = Brush.horizontalGradient(
-                                listOf(Color.Yellow, Color.Blue, Color.Red)
-                            ),
-                            shape = RectangleShape
-                        )*/
+                        .fillMaxSize()
                 ) {
                     aplicateFilter.value = true
                     if (aplicateFilter.value)  filterContentByName(allUsers = allUsers, filterName = filter)
                 }
-
-
             }
-
         )
-
     }
 }
 
@@ -162,111 +139,67 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
 
     ) {
-
-
         item {
-           /* Column(
-                verticalArrangement = Arrangement.SpaceAround
-            ) {
-                Row (
-                    horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                ) {
-                    Text(
-                        text = "Nombre",
-                        modifier= Modifier.fillMaxWidth(0.2f)
-                    )
-                    Spacer(modifier = Modifier.padding(10.dp))
-                    Text(
-                        text = "DNI",
-                        modifier= Modifier.fillMaxWidth(0.4f)
-                    )
-                    Spacer(modifier = Modifier.padding(10.dp))
-                    Text(
-                        text = "Rol",
-                        modifier= Modifier.fillMaxWidth(0.8f)
-                    )
-                }*/
+            for (i in allUsers) {
+                if (i.name.contains(filterName)) {
 
-                for (i in allUsers) {
-                    if (i.name.contains(filterName)) {
-                            /*Row (
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp)
-                                    .clickable {
-                                        navController.navigate("${Destinations.EditEmployee.route}/${i._id}")
-                                    }
-                            ) {
-                                    Text(text = i.name, modifier= Modifier.fillMaxWidth(0.2f))
-                                    Spacer(modifier = Modifier.padding(10.dp))
-                                    Text(text = i.dni,modifier= Modifier.fillMaxWidth(0.4f))
-                                    Spacer(modifier = Modifier.padding(10.dp))
-                                    Text(text = i.rol,modifier= Modifier.fillMaxWidth(0.8f))
-                            }*/
-
-                        Card(
-                            modifier = Modifier
+                    Card(
+                        modifier = Modifier
                             .padding(8.dp, 4.dp)
                             .fillMaxWidth()
                             .height(90.dp)
                             .clickable {
                                 navController.navigate("${Destinations.EditEmployee.route}/${i._id}")
                             },
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = 4.dp,
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .fillMaxSize(),
                         ) {
-                            Row(
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = if (i.rol.equals("Administrador")) R.drawable.administrador else R.drawable.empleado,
+                                    builder = {
+                                        scale(Scale.FILL)
+                                        //placeholder(R.drawable.notification_action_background)
+                                        transformations(CircleCropTransformation())
+                                    },
+                                ),
+                                contentDescription = "Imágen del empleado ${i.name}",
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(0.2f),
+                            )
+                            Spacer(modifier = Modifier.padding(5.dp))
+                            Column(
                                 modifier = Modifier
                                     .padding(4.dp)
-                                    .fillMaxSize(),
+                                    .fillMaxHeight()
+                                    .weight(0.8f),
+                                verticalArrangement = Arrangement.Center,
                             ) {
-                                Image(
-                                    painter = rememberImagePainter(
-                                        data = if (i.rol.equals("Administrador")) R.drawable.administrador else R.drawable.empleado,
-                                        builder = {
-                                            scale(Scale.FILL)
-                                            //placeholder(R.drawable.notification_action_background)
-                                            transformations(CircleCropTransformation())
-                                        },
-                                    ),
-                                    contentDescription = "Imágen del empleado ${i.name}",
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .weight(0.2f),
+                                Text(
+                                    text = "${i.name}",
+                                    style = MaterialTheme.typography.subtitle1,
+                                    fontWeight = FontWeight.Bold,
                                 )
-                                Spacer(modifier = Modifier.padding(5.dp))
-                                Column(
+                                Text(
+                                    text = i.dni,
+                                    style = MaterialTheme.typography.caption,
                                     modifier = Modifier
-                                        .padding(4.dp)
-                                        .fillMaxHeight()
-                                        .weight(0.8f),
-                                    verticalArrangement = Arrangement.Center,
-                                ) {
-                                    Text(
-                                        text = "${i.name}",
-                                        style = MaterialTheme.typography.subtitle1,
-                                        fontWeight = FontWeight.Bold,
-                                    )
-                                    Text(
-                                        text = i.dni,
-                                        style = MaterialTheme.typography.caption,
-                                        modifier = Modifier
-                                            .padding(4.dp),
-                                    )
-                                }
+                                        .padding(4.dp),
+                                )
                             }
                         }
                     }
                 }
             }
-
         }
-
     }
+}
 
 
 

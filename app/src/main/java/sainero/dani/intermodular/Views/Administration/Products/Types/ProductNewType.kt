@@ -29,6 +29,9 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainViewModelExtras
 import java.util.regex.Pattern
+import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
+import sainero.dani.intermodular.ViewsItems.createRowList
+import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
 
 class ProductNewTyp : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -142,19 +145,34 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
                     changeError = nameErrorChange,
                     error = nameError,
                     mandatory = true,
-                    numericTextBoard = false
+                    KeyboardType = KeyboardType.Text
                 )
 
                 dropDownMenu(
                     text = "Extras",
                     suggestions = allNamesOfExtras,
-                    idOfItem = 0,
                     textName = textName,
                     textImg = textImg,
                     textCompatibleExtras = textCompatibleExtras,
-                    mainViewModelExtras = mainViewModelExtras
+                    mainViewModelExtras = mainViewModelExtras,
+                    navigation = "${Destinations.NewExtras.route}/${0}"
                 )
-                createRowList(text = "Img", value = textImg, onValueChange = onValueChangeImg)
+
+                /*
+                mainViewModelExtras._extras.forEach{allNamesOfExtras.add(it.name)}
+                dropDownMenuWithNavigation(
+                    text = "Extras",
+                    suggestions = allNamesOfExtras,
+                    navigate = "${Destinations.Extras.route}/${0}",
+                )*/
+
+                createRowList(
+                    text = "Img",
+                    value = textImg,
+                    onValueChange = onValueChangeImg,
+                    enable = true,
+                    KeyboardType = KeyboardType.Text
+                )
 
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -222,125 +240,8 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
 
                 }
             }
-        })
-}
-
-
-@Composable
-private fun createRowListWithErrorMesaje(
-    text: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    validateError: (String) -> Boolean,
-    errorMesaje: String,
-    changeError: (Boolean) -> Unit,
-    error: Boolean,
-    mandatory: Boolean,
-    numericTextBoard : Boolean
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column(
-            verticalArrangement = Arrangement.SpaceAround,
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = {
-                    onValueChange(it)
-                    changeError(!validateError(it))
-                },
-                placeholder = { Text(text) },
-                label = { Text(text = text) },
-                isError = error,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (numericTextBoard) KeyboardType.Number else KeyboardType.Text),
-
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-            )
-            val assistiveElementText = if (error) errorMesaje else if (mandatory) "*Obligatorio" else ""
-            val assistiveElementColor = if (error) {
-                MaterialTheme.colors.error
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            }
-            Text(
-                text = assistiveElementText,
-                color = assistiveElementColor,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = 10.dp, end = 20.dp)
-            )
         }
-    }
-}
-
-@Composable
-private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit) {
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        OutlinedTextField(
-            value = value,
-            onValueChange = {
-                onValueChange(it)
-            },
-            placeholder = { Text(text) },
-            label = { Text(text = text) },
-            modifier = Modifier
-                .padding(start = 10.dp, end = 20.dp)
-        )
-    }
-}
-
-@Composable
-private fun confirmDeleteType(viewModelTipos: ViewModelTipos, id: Int) {
-    MaterialTheme {
-
-        Column {
-            AlertDialog(
-                onDismissRequest = {
-                },
-                title = {
-                    Text(text = "¿Seguro que desea eliminar el tipo seleccionado?")
-                },
-                text = {
-                    Text("No podrás volver a recuperarlo")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            viewModelTipos.deleteType(id)
-                            GlobalVariables.navController.navigate(Destinations.ProductTypeManager.route)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        ),
-                    ) {
-                        Text("Aceptar")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            GlobalVariables.navController.navigate("${Destinations.ProductEditType.route}/${id}")
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text("Cancelar")
-                    }
-                }
-            )
-        }
-    }
+    )
 }
 
 
@@ -348,11 +249,11 @@ private fun confirmDeleteType(viewModelTipos: ViewModelTipos, id: Int) {
 private fun dropDownMenu(
     text: String,
     suggestions: List<String>,
-    idOfItem: Int,
     textName: String,
     textImg: String,
     textCompatibleExtras: MutableList<Extras>,
-    mainViewModelExtras: MainViewModelExtras
+    mainViewModelExtras: MainViewModelExtras,
+    navigation: String
 ) {
     Spacer(modifier = Modifier.padding(4.dp))
     var expanded by remember { mutableStateOf(false) }
@@ -390,9 +291,7 @@ private fun dropDownMenu(
                         Modifier.clickable{
                             editItem.value = true
                             mainViewModelExtras.tmpType = Tipos(0,textName,textImg,textCompatibleExtras )
-                            navController.navigate("${Destinations.NewExtras.route}/${idOfItem}")
-
-
+                            navController.navigate(navigation)
                         })
                 }
             )
@@ -402,12 +301,12 @@ private fun dropDownMenu(
                 modifier = Modifier
                     .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
             ) {
-                mainViewModelExtras._extras.forEach { label ->
+                suggestions.forEach { label ->
                     DropdownMenuItem(onClick = {
-                        selectedText = label.name
+                        selectedText = label
                         expanded = false
                     }) {
-                        Text(text = label.name)
+                        Text(text = label)
                     }
                 }
             }

@@ -32,7 +32,8 @@ import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Views.Administration.ui.theme.IntermodularTheme
 import java.util.regex.Pattern
-
+import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
+import sainero.dani.intermodular.ViewsItems.dropDownMenu
 
 @ExperimentalFoundationApi
 class EditEmployee : ComponentActivity() {
@@ -184,7 +185,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 changeError = dniErrorChange,
                                 error = dniError,
                                 mandatory = true,
-                                numericTextBoard = false
+                                KeyboardType = KeyboardType.Text
                             )
                         }
                         item {
@@ -197,7 +198,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 changeError = nameErrorChange,
                                 error = nameError,
                                 mandatory = true,
-                                numericTextBoard = false
+                                KeyboardType = KeyboardType.Text
                             )
                         }
                         item {
@@ -210,7 +211,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 changeError = surnameErrorChange,
                                 error = surnameError,
                                 mandatory = true,
-                                numericTextBoard = false
+                                KeyboardType = KeyboardType.Text
                             )
                         }
                         item {
@@ -223,7 +224,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 changeError = telErrorChange,
                                 error = telError,
                                 mandatory = false,
-                                numericTextBoard = false
+                                KeyboardType = KeyboardType.Phone
                             )
                         }
                         item {
@@ -236,7 +237,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 changeError = fNacErrorChange,
                                 error = fNacError,
                                 mandatory = false,
-                                numericTextBoard = false
+                                KeyboardType = KeyboardType.Text
                             )
                         }
                         item {
@@ -250,7 +251,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 changeError = userErrorChange,
                                 error = userError,
                                 mandatory = true,
-                                numericTextBoard = false
+                                KeyboardType = KeyboardType.Text
                             )
                         }
                         item {
@@ -263,7 +264,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 changeError = emailErrorChange,
                                 error = emailError,
                                 mandatory = true,
-                                numericTextBoard = false
+                                KeyboardType = KeyboardType.Text
                             )
                         }
                         item {
@@ -375,30 +376,6 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
 }
 
-
-@Composable
-private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit) {
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        OutlinedTextField(
-            value = value,
-            onValueChange = {
-                onValueChange(it)
-            },
-            placeholder = { Text(text) },
-            label = { Text(text = text) },
-            modifier = Modifier
-                .padding(start = 10.dp, end = 20.dp)
-        )
-    }
-}
-
-
-
 @Composable
 private fun confirmDeleteUser(viewModelUsers: ViewModelUsers,id: Int) {
     MaterialTheme {
@@ -441,111 +418,6 @@ private fun confirmDeleteUser(viewModelUsers: ViewModelUsers,id: Int) {
                     }
                 }
             )
-        }
-    }
-}
-
-
-@Composable
-private fun createRowListWithErrorMesaje(
-    text: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    validateError: (String) -> Boolean,
-    errorMesaje: String,
-    changeError: (Boolean) -> Unit,
-    error: Boolean,
-    mandatory: Boolean,
-    numericTextBoard : Boolean
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column(
-            verticalArrangement = Arrangement.SpaceAround,
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = {
-                    onValueChange(it)
-                    changeError(!validateError(it))
-                },
-                placeholder = { Text(text) },
-                label = { Text(text = text) },
-                isError = error,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (numericTextBoard) KeyboardType.Number else KeyboardType.Text),
-
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-            )
-            val assistiveElementText = if (error) errorMesaje else if (mandatory) "*Obligatorio" else ""
-            val assistiveElementColor = if (error) {
-                MaterialTheme.colors.error
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            }
-            Text(
-                text = assistiveElementText,
-                color = assistiveElementColor,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = 10.dp, end = 20.dp)
-            )
-        }
-    }
-}
-
-
-@Composable
-private fun dropDownMenu(text: String,suggestions: List<String>) {
-    Spacer(modifier = Modifier.padding(4.dp))
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(suggestions[0]) }
-    var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
-    var editItem = remember{ mutableStateOf(false)}
-
-    val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column() {
-
-            OutlinedTextField(
-                value = selectedText,
-                onValueChange = { selectedText = it },
-                enabled = false,
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-                    .onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size.toSize()
-                    },
-                trailingIcon = {
-                    Icon(icon, "arrowExpanded",
-                        Modifier.clickable { expanded = !expanded })
-                }
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
-            ) {
-                suggestions.forEach { label ->
-                    DropdownMenuItem(onClick = {
-                        selectedText = label
-                        expanded = false
-                    }) {
-                        Text(text = label)
-                    }
-                }
-            }
         }
     }
 }
