@@ -272,7 +272,17 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
 
                                 Button(
                                     onClick = {
-                                        if (!dniError) {
+
+                                        if (checkAllValidations(
+                                                textDni = textDniUser,
+                                                textName = textNameUser,
+                                                textSurname = textSurnameUser,
+                                                textPhoneNumber = textTelUser,
+                                                textDateOfBirth = textFnacUser,
+                                                textEmail = textEmailUser,
+                                                textUser = textUserUser
+                                            )
+                                        ) {
                                             val newEmployee: Users = Users(
                                                 _id = 0,
                                                 name =  textNameUser,
@@ -288,10 +298,14 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                             )
                                             viewModelUsers.uploadUser(newEmployee)
                                             navController.popBackStack()
-                                        } else {
-                                            showToast.value = true
-                                            toastMessage.value = "Debes de rellenar los campos correctamente"
                                         }
+                                        else {
+                                            showToast.value = true
+                                            toastMessage.value = "Debes de rellenar todos los campos correctamente"
+                                        }
+
+
+
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = Color.White,
@@ -327,18 +341,40 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
     )
     if(showToast.value) {
         ToastDemo(toastMessage.value)
+        showToast.value = false
     }
 }
 
 //Validaciones
-private fun isValidDni(text: String) = Pattern.compile("^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$",Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidName(text: String) = Pattern.compile("^[a-zA-Z]+$",Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidSurname(text: String) = Pattern.compile("^[a-zA-Z]+$",Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidPhoneNumber(text: String) = Pattern.compile("^(([+][0-9]{2}?)?[0-9]{9})?$",Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidDateOfBirth(text: String) = Pattern.compile("^([0-9]{1,2}[-/][0-9]{1,2}[-/][0-9]{1,4})?$",Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$",Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidEmail(text: String) = Pattern.compile("^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$",Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun isValidDni(text: String) = Pattern.compile("^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun isValidName(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun isValidSurname(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun isValidPhoneNumber(text: String) = Pattern.compile("^(([+][0-9]{2}?)?[0-9]{9})?$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun isValidDateOfBirth(text: String) = Pattern.compile("^([0-9]{1,2}[-/][0-9]{1,2}[-/][0-9]{1,4})?\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun isValidEmail(text: String) = Pattern.compile("^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 
+private fun checkAllValidations(
+    textDni: String,
+    textName: String,
+    textSurname:String,
+    textPhoneNumber: String,
+    textDateOfBirth: String,
+    textUser: String,
+    textEmail: String
+): Boolean {
+    if (
+        !isValidDni(text = textDni) ||
+        !isValidName(text = textName) ||
+        !isValidSurname(text = textSurname) ||
+        !isValidPhoneNumber(text = textPhoneNumber) ||
+        !isValidDateOfBirth(text = textDateOfBirth) ||
+        !isValidUser(text = textUser) ||
+        !isValidEmail(text = textEmail)
+    )  return false
+
+    return  true
+}
 
 
 @Preview(showBackground = true)

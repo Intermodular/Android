@@ -158,7 +158,7 @@ fun MainCreateOrderWithOrder(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.edit_note) ,
+                            painter = painterResource(id = R.drawable.logo_eros) ,
                             contentDescription = "Eliminar pedido",
                             tint = Color.White
                         )
@@ -358,7 +358,7 @@ fun MainCreateOrder(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.edit_note) ,
+                            painter = painterResource(id = R.drawable.logo_eros) ,
                             contentDescription = "Eliminar pedido",
                             tint = Color.White
                         )

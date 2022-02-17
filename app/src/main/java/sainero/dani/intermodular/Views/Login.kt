@@ -70,7 +70,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
 
     LaunchedEffect(key1 = currentTime) {
         if(currentTime) {
-            delay(200L)
+            delay(300L)
             viewModelUsers.getUserList()
             Toast.makeText(current,"Contraseña actualizada", Toast.LENGTH_SHORT).show()
 
@@ -420,7 +420,7 @@ private fun adminAlertDestination() {
     }
 }
 
-
+//Contraseña 8 caracteres y solo caracteres alfanumeriscos y "_"
 
 
 @Preview

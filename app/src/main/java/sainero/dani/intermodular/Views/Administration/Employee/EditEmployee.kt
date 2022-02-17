@@ -1,6 +1,7 @@
 package sainero.dani.intermodular.Views.Administration.Employee
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,7 +56,12 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     val expanded = remember { mutableStateOf(false)}
     val result = remember { mutableStateOf("") }
     var deleteUser = remember { mutableStateOf(false)}
+    var showToast = remember { mutableStateOf(false)}
 
+    if (showToast.value) {
+        Toast.makeText(LocalContext.current,"Debes de rellenar todos los campos correctamente",Toast.LENGTH_SHORT).show()
+        showToast.value = false
+    }
     //Posible consulta en la Base de datos ¿? (but is ok)
     viewModelUsers.getUserById(id)
 
@@ -305,19 +312,34 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
                                 Button(
                                     onClick = {
-                                        selectedUser = Users(
-                                            _id = id,
-                                            dni = textDniUser,
-                                            name =  textNameUser,
-                                            surname =  textSurnameUser,
-                                            fnac =  textFnacUser,
-                                            user =  textUserUser,
-                                            password =  textPasswordUser,
-                                            rol =  textRolUser.get(0),
-                                            email =  textEmailUser,
-                                            newUser = false,
-                                            phoneNumber = textPhoneNumberUser )
-                                        viewModelUsers.editUser(selectedUser)
+                                        if (checkAllValidations(
+                                                textDni = textDniUser,
+                                                textName = textNameUser,
+                                                textSurname = textSurnameUser,
+                                                textPhoneNumber = textPhoneNumberUser,
+                                                textDateOfBirth = textFnacUser,
+                                                textEmail = textEmailUser,
+                                                textUser = textUserUser
+                                                )
+                                        ) {
+                                            selectedUser = Users(
+                                                _id = id,
+                                                dni = textDniUser,
+                                                name =  textNameUser,
+                                                surname =  textSurnameUser,
+                                                fnac =  textFnacUser,
+                                                user =  textUserUser,
+                                                password =  textPasswordUser,
+                                                rol =  textRolUser.get(0),
+                                                email =  textEmailUser,
+                                                newUser = false,
+                                                phoneNumber = textPhoneNumberUser )
+                                            viewModelUsers.editUser(selectedUser)
+                                        }
+                                        else {
+                                            showToast.value = true
+                                        }
+
 
                                     },
                                     colors = ButtonDefaults.buttonColors(
@@ -422,15 +444,38 @@ private fun confirmDeleteUser(viewModelUsers: ViewModelUsers,id: Int) {
     }
 }
 
+
+
 //Validaciones
 private fun isValidDni(text: String) = Pattern.compile("^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 private fun isValidName(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 private fun isValidSurname(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidPhoneNumber(text: String) = Pattern.compile("^([+][0-9]{2}?)?[0-9]{9}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidDateOfBirth(text: String) = Pattern.compile("^[0-9]{1,2}[-/][0-9]{1,2}[-/][0-9]{1,4}\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun isValidPhoneNumber(text: String) = Pattern.compile("^(([+][0-9]{2}?)?[0-9]{9})?$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun isValidDateOfBirth(text: String) = Pattern.compile("^([0-9]{1,2}[-/][0-9]{1,2}[-/][0-9]{1,4})?\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 private fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 private fun isValidEmail(text: String) = Pattern.compile("^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 
+private fun checkAllValidations(
+    textDni: String,
+    textName: String,
+    textSurname:String,
+    textPhoneNumber: String,
+    textDateOfBirth: String,
+    textUser: String,
+    textEmail: String
+): Boolean {
+    if (
+        !isValidDni(text = textDni) ||
+        !isValidName(text = textName) ||
+        !isValidSurname(text = textSurname) ||
+        !isValidPhoneNumber(text = textPhoneNumber) ||
+        !isValidDateOfBirth(text = textDateOfBirth) ||
+        !isValidUser(text = textUser) ||
+        !isValidEmail(text = textEmail)
+    )  return false
+
+    return  true
+}
 
 
 @Preview(showBackground = true)

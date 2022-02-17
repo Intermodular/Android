@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,7 +57,6 @@ fun MainNewProduct(
     mainViewModelIngredients: MainViewModelIngredients
 ) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false) }
 
     //Textos
     var allTypes = viewModelTipos.typeListResponse
@@ -75,7 +75,7 @@ fun MainNewProduct(
 
     var (textCost, onValueChangeCost) = rememberSaveable{ mutableStateOf("0") }
     var (costError,costErrorChange) = remember { mutableStateOf(false) }
-    val costOfNameError: String = "El número debe de estar sin ','"
+    val costOfNameError: String = "Debe ser un número y sin ','"
 
     var (textImg, onValueChangeImg) = rememberSaveable{ mutableStateOf("") }
 
@@ -83,7 +83,16 @@ fun MainNewProduct(
     var (stockError,stockErrorChange) = remember { mutableStateOf(false) }
     val stockOfNameError: String = "Debe ser un número entero"
 
+
+    //Variables de ayuda
     val aplicateState = remember { mutableStateOf(true) }
+    val showToast = remember { mutableStateOf(false) }
+    val textOfToast = remember { mutableStateOf("") }
+
+    if (showToast.value) {
+        Toast.makeText(LocalContext.current,textOfToast.value,Toast.LENGTH_SHORT).show()
+        showToast.value = false
+    }
 
     if (aplicateState.value) {
         when (mainViewModelEspecifications.especificationsState){
@@ -203,7 +212,13 @@ fun MainNewProduct(
                     navigate = "${Destinations.Especifications.route}/${0}"
                 )
 
-                createRowList("Imágen",textImg,onValueChangeImg, enable = true,KeyboardType = KeyboardType.Text)
+                createRowList(
+                    text = "Imágen",
+                    value = textImg,
+                    onValueChange =  onValueChangeImg,
+                    enable = true,
+                    KeyboardType = KeyboardType.Text
+                )
 
                 createRowListWithErrorMesaje(
                     text = "Stock",
@@ -254,9 +269,15 @@ fun MainNewProduct(
                     Button(
                         onClick = {
                             //Cambiar por validación de solo numeros en coste
-                            val product: Productos
-                            if (!textCost.equals(""))
-                                 product = Productos(
+
+                            if (checkAllValidations(
+                                    textName = textName,
+                                    textPrice = textCost,
+                                    textStock = textStock
+                                )
+                            ) {
+                                val product: Productos
+                                product = Productos(
                                     _id = 0,
                                     name = textName,
                                     type = textType.value,
@@ -266,19 +287,16 @@ fun MainNewProduct(
                                     img = textImg,
                                     stock = textStock.toInt()
                                 )
-                            else
-                             product = Productos(
-                                _id = 0,
-                                name = textName,
-                                type = textType.value,
-                                ingredients = ingredientes,
-                                price = 0f,
-                                especifications = mainViewModelEspecifications._especifications,
-                                img = textImg,
-                                stock = textStock.toInt()
-                            )
-                            viewModelProductos.uploadProduct(product = product)
-                            navController.popBackStack()
+                                viewModelProductos.uploadProduct(product = product)
+                                showToast.value = true
+                                textOfToast.value = "El producto se creado correctamente"
+                                navController.popBackStack()
+                            }
+                            else {
+                                showToast.value = true
+                                textOfToast.value = "Debes de rellenar todos los campos correctamente"
+                            }
+
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -372,6 +390,20 @@ private fun selectedDropDownMenu(text: String,suggestions: List<String>): String
 private fun isValidNameOfProduct(text: String) = Pattern.compile("^[a-zA-Z ]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 private fun isValidCostOfProduct(text: String) = Pattern.compile("^[0-9.]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 private fun isValidStockOfProduct(text: String) = Pattern.compile("^[0-9]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+
+private fun checkAllValidations(
+    textName: String,
+    textPrice: String,
+    textStock:String,
+): Boolean {
+    if (
+        !isValidNameOfProduct(text = textName) ||
+        !isValidCostOfProduct(text = textPrice) ||
+        !isValidStockOfProduct(text = textStock)
+    )  return false
+
+    return  true
+}
 
 @Preview(showBackground = true)
 @Composable

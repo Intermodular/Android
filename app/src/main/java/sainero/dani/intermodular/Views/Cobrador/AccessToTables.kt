@@ -457,35 +457,12 @@ private fun createTables(allFilterTables: List<Mesas>, mainViewModelCreateOrder:
                             }
                         },
                         modifier = Modifier,
-
-                           // .scale(scale)
-                            /*
-                            .pointerInput(Unit){
-                              detectTapGestures (
-                                  onLongPress = {
-                                        //Evento al mantener
-                                    showMenu = true
-
-
-                                  }
-                              )
-
-                        }*/
                         contentPadding = PaddingValues(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = checkState(i.state),
                             contentColor = Color.Blue
                         )
                     ) {
-                        if(showMenu) {
-                            Popup() {
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceAround
-                                ) {
-                                    Text(text = "Liberar mesa")
-                                }
-                            }
-                        }
                         Column(
                             verticalArrangement = Arrangement.SpaceAround
                         ) {

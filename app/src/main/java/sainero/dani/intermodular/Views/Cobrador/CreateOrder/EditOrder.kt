@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,10 +16,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.DataClass.Pedidos
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelPedidos
 import sainero.dani.intermodular.Views.Cobrador.CreateOrder.ui.theme.IntermodularTheme
 
@@ -35,8 +38,12 @@ class EditOrder : ComponentActivity() {
 fun MainEditOrder(
     mainViewModelCreateOrder: MainViewModelCreateOrder,
     tableId: Int,
-    viemModelPedidos: ViewModelPedidos
+    viemModelPedidos: ViewModelPedidos,
+    viewModelMesas: ViewModelMesas
 ) {
+
+    var selectedTable = remember{ Mesas(_id = 0,state = "Libre",number = 0,numChair = 0,zone = "")}
+    viewModelMesas.mesasListResponse.forEach { if (it._id.equals(tableId)) selectedTable = it}
 
     LazyColumn(
         content = {
@@ -143,8 +150,11 @@ fun MainEditOrder(
                             viemModelPedidos.uploadOrder(mainViewModelCreateOrder.pedido!!)
                             mainViewModelCreateOrder.editOrder = true
                         }
-
-                        navController.popBackStack()
+                        selectedTable.state = "Ocupada"
+                        viewModelMesas.editMesa(mesa = selectedTable)
+                        navController.navigate(Destinations.AccessToTables.route) {
+                            popUpTo(Destinations.Login.route)
+                        }
 
 
                     },

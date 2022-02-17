@@ -211,7 +211,7 @@ fun MainCreateOrderLine(
                                         }
                                     ) {
                                         Icon(
-                                            painter = painterResource(id = R.drawable.remove_circle_outline),
+                                            painter = painterResource(id = R.drawable.logo_eros) ,
                                             contentDescription = "Less icon",
                                             modifier = Modifier
                                                 .size(100.dp)

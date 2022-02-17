@@ -279,7 +279,8 @@ fun NavigationHost(
             MainEditOrder(
                 mainViewModelCreateOrder = mainViewModelCreateOrder,
                 tableId = id,
-                viemModelPedidos = viewModelPedidos
+                viemModelPedidos = viewModelPedidos,
+                viewModelMesas = viewModelMesas
             )
         }
 

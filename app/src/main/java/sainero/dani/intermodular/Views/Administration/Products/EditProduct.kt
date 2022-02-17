@@ -65,6 +65,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
+import sainero.dani.intermodular.Views.Administration.Employee.*
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainViewModelIngredients
 import java.io.File
@@ -96,7 +97,8 @@ fun MainEditProduct(
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
-    val toastUpdateProduct = remember { mutableStateOf(false) }
+    val showToast = remember { mutableStateOf(false) }
+    val textOfToast = remember { mutableStateOf("") }
     val (deleteProduct, onValueChangeDeleteProduct) = remember { mutableStateOf(false) }
 
     viewModelProductos.getProductById(id)
@@ -138,14 +140,14 @@ fun MainEditProduct(
 
     var (textStock, onValueChangeStock) = rememberSaveable{mutableStateOf(selectedProduct.stock.toString())}
     var (stockError,stockErrorChange) = remember { mutableStateOf(false) }
-    val stockOfNameError: String = "Debe ser un número entero"
+    val stockOfNameError: String = "Debe ser un número y sin ','"
 
     //Variables de ayuda
     val aplicateState = remember { mutableStateOf(true) }
 
-    if (toastUpdateProduct.value) {
-        Toast.makeText(LocalContext.current,"El producto se ha actualizado correctamente",Toast.LENGTH_SHORT).show()
-        toastUpdateProduct.value = false
+    if (showToast.value) {
+        Toast.makeText(LocalContext.current,textOfToast.value,Toast.LENGTH_SHORT).show()
+        showToast.value = false
     }
 
 
@@ -381,18 +383,29 @@ fun MainEditProduct(
                             Button(
                                 onClick = {
                                     //Guardar los cambios en la BD
-                                    val updateProduct: Productos = Productos(
-                                        _id = id,
-                                        name = textName,
-                                        type =  textType.value,
-                                        ingredients = ingredientes,
-                                        price =  textCost.toFloat(),
-                                        especifications = mainViewModelEspecifications._especifications,
-                                        img = textImg,
-                                        stock =  textStock.toInt()
-                                    )
-                                    viewModelProductos.editProduct(product = updateProduct)
-                                    toastUpdateProduct.value = true
+                                    if (checkAllValidations(
+                                            textName = textName,
+                                            textPrice = textCost,
+                                            textStock = textStock
+                                        )
+                                    ) {
+                                        val updateProduct: Productos = Productos(
+                                            _id = id,
+                                            name = textName,
+                                            type =  textType.value,
+                                            ingredients = ingredientes,
+                                            price =  textCost.toFloat(),
+                                            especifications = mainViewModelEspecifications._especifications,
+                                            img = textImg,
+                                            stock =  textStock.toInt()
+                                        )
+                                        viewModelProductos.editProduct(product = updateProduct)
+                                        showToast.value = true
+                                        textOfToast.value = "El producto se ha actualizado correctamente"
+                                    } else {
+                                        showToast.value = true
+                                        textOfToast.value = "Debes de rellenar todos los campos correctamente"
+                                    }
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     backgroundColor = Color.White,
@@ -415,10 +428,8 @@ fun MainEditProduct(
                                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                                 Text(text = "Guardar cambios", fontSize = 15.sp)
                             }
-
                         }
                         Spacer(modifier = Modifier.padding(20.dp))
-
                     }
                 }
             )
@@ -481,76 +492,25 @@ private fun selectedDropDownMenu(text: String,suggestions: List<String>): String
     return selectedText
 }
 
-/*
-@Composable
-private fun dropDownMenu(text: String,suggestions: List<String>,navigate: String) {
-    Spacer(modifier = Modifier.padding(4.dp))
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(text) }
-    var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
-    var editItem = remember{ mutableStateOf(false)}
-
-    val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column() {
-
-            OutlinedTextField(
-                value = selectedText,
-                onValueChange = { selectedText = it },
-                enabled = false,
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-                    .onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size.toSize()
-                    },
-                trailingIcon = {
-                    Icon(icon, "arrowExpanded",
-                        Modifier.clickable { expanded = !expanded })
-                },
-                leadingIcon = {
-                    Icon(Icons.Default.Edit,"Edit ${text}",
-                        Modifier.clickable{
-                            editItem.value = true
-                            navController.navigate(navigate)
-
-                        })
-                }
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
-            ) {
-                suggestions.forEach { label ->
-                    DropdownMenuItem(onClick = {
-                        selectedText = label
-                        expanded = false
-                    }) {
-                        Text(text = label)
-                    }
-                }
-            }
-        }
-    }
-}*/
-
-
-
-
 
 //Validaciones
 private fun isValidNameOfProduct(text: String) = Pattern.compile("^[a-zA-Z ]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 private fun isValidCostOfProduct(text: String) = Pattern.compile("^[0-9.]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 private fun isValidStockOfProduct(text: String) = Pattern.compile("^[0-9]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+
+private fun checkAllValidations(
+    textName: String,
+    textPrice: String,
+    textStock:String,
+): Boolean {
+    if (
+        !isValidNameOfProduct(text = textName) ||
+        !isValidCostOfProduct(text = textPrice) ||
+        !isValidStockOfProduct(text = textStock)
+    )  return false
+
+    return  true
+}
 
 @Composable
 private fun confirmDeleteProduct(
