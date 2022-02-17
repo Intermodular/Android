@@ -84,7 +84,7 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                 Column(
                     verticalArrangement = Arrangement.Center
                 ) {
-                    var selectedText by remember { mutableStateOf("") }
+                    var selectedText by remember { mutableStateOf(extra.name) }
 
                     Row(
                         modifier = Modifier.height(IntrinsicSize.Min),
@@ -92,12 +92,15 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                     ) {
                         OutlinedTextField(
                             value =  selectedText,
-                            modifier = Modifier.size(width = 200.dp, height = 55.dp),
+                            modifier = Modifier
+                                .fillMaxWidth(0.7f)
+                                .fillMaxHeight(0.8f),
                             onValueChange = {
                                 selectedText = it
                                 extra.name = selectedText
                             },
                             placeholder = { Text(text = extra.name)},
+                            label = { Text(text = "Extra")},
                         )
 
                         Spacer(modifier = Modifier.padding(3.dp))
@@ -106,7 +109,9 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
 
                         OutlinedTextField(
                             value =  selectedTextPrice,
-                            modifier = Modifier.size(width = 90.dp, height = 55.dp),
+                            modifier = Modifier
+                                .fillMaxWidth(0.7f)
+                                .fillMaxHeight(0.8f),
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                             onValueChange = {
                                 if (it.equals("")) {
@@ -118,6 +123,7 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int
                                 }
                             },
                             placeholder = { Text(text = "Precio")},
+                            label = { Text(text = "Precio")},
                         )
                         IconButton(
                             onClick = {

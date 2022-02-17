@@ -107,8 +107,6 @@ fun MainCreateOrderWithOrder(
     val (selectedProduct,onValueChangeSelectedProduct) = remember { mutableStateOf(Productos(0,"","", arrayListOf(),0f, arrayListOf(),"",0))}
 
 
-
-
     //Variables de ayuda
     var state = remember { mutableStateOf(0)}
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
@@ -116,33 +114,8 @@ fun MainCreateOrderWithOrder(
     var selectedType = remember { mutableStateOf(Tipos(0,"","", arrayListOf()))}
     allTypes.forEach { if (it.name.equals(nameOfSelectedType.value)) selectedType.value = it }
 
-    if (mainViewModelCreateOrder.clearAllVariables) {
-        mainViewModelCreateOrder._lineasPedidos.clear()
-        mainViewModelCreateOrder._lineasExtras.clear()
-        mainViewModelCreateOrder.pedido = getOrder(
-            mainViewModelCreateOrder = mainViewModelCreateOrder,
-            tableId = tableId,
-            viewModelPedidos = viewModelPedidos
-        )
-        mainViewModelCreateOrder.clearAllVariables = false
-    }
-/*
-    if (mainViewModelCreateOrder.getOrder) {
-        viewModelPedidos.orderListResponse.forEach {
-            if (it.idMesa.equals(tableId)) {
-                mainViewModelCreateOrder._lineasPedidos = it.lineasPedido
-                mainViewModelCreateOrder.pedido = Pedidos(it._id,tableId,mainViewModelCreateOrder._lineasPedidos.toMutableList())
-            }
-        }
-        mainViewModelCreateOrder.getOrder = false
-    }*/
-
-
-    mainViewModelCreateOrder._lineasPedidos = mainViewModelCreateOrder.pedido!!.lineasPedido.toMutableList()
 
     val scope = rememberCoroutineScope()
-
-
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -158,7 +131,7 @@ fun MainCreateOrderWithOrder(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.logo_eros) ,
+                            painter = painterResource(id = R.drawable.edit_note) ,
                             contentDescription = "Eliminar pedido",
                             tint = Color.White
                         )
@@ -234,12 +207,6 @@ fun MainCreateOrderWithOrder(
                 ScrollableTabRow(
                     selectedTabIndex = state.value,
                     divider = {
-                        /* Divider(
-                             modifier = Modifier
-                                 .height(8.dp)
-                                 .fillMaxWidth()
-                                 .background(color = Color.Blue)
-                         )*/
                     },
                     modifier = Modifier.wrapContentWidth(),
                     edgePadding = 16.dp,
@@ -280,7 +247,7 @@ fun MainCreateOrderWithOrder(
     )
 }
 
-
+/*
 @ExperimentalFoundationApi
 @Composable
 fun MainCreateOrder(
@@ -313,7 +280,7 @@ fun MainCreateOrder(
     //Variables de extra
     val (informationProduct,onValueChangedInformationProduct) = remember { mutableStateOf(false) }
     val (selectedProduct,onValueChangeSelectedProduct) = remember { mutableStateOf(Productos(0,"","", arrayListOf(),0f, arrayListOf(),"",0))}
-//Crear linea pedido
+    //Crear linea pedido
 
     //Variables de pedido
     val Pedidos: Pedidos = Pedidos(0,0, arrayListOf())
@@ -331,16 +298,14 @@ fun MainCreateOrder(
     var clearViewModel = remember { mutableStateOf(true)}
     var (editOrder,onValueChangeEditOrder) = remember { mutableStateOf(false)}
 
-
+/*
     if (mainViewModelCreateOrder.clearAllVariables) {
         mainViewModelCreateOrder._lineasPedidos.clear()
         mainViewModelCreateOrder._lineasExtras.clear()
         mainViewModelCreateOrder.pedido = null
         mainViewModelCreateOrder.clearAllVariables = false
-    }
-
+    }*/
     val scope = rememberCoroutineScope()
-
 
 
     Scaffold(
@@ -358,7 +323,7 @@ fun MainCreateOrder(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.logo_eros) ,
+                            painter = painterResource(id = R.drawable.edit_note) ,
                             contentDescription = "Eliminar pedido",
                             tint = Color.White
                         )
@@ -480,7 +445,7 @@ fun MainCreateOrder(
     )
 
 }
-
+*/
 private fun aplicateProductsFilters(
     allProducts: List<Productos>,
     nameOfSelectedType: String,
@@ -641,11 +606,11 @@ private fun getOrder(
 
     viewModelPedidos.orderListResponse.forEach {
         if (it.idMesa.equals(tableId)) {
-            mainViewModelCreateOrder._lineasPedidos = it.lineasPedido
-            return Pedidos(it._id,tableId,mainViewModelCreateOrder._lineasPedidos.toMutableList())
+            mainViewModelCreateOrder.lineasPedidos = it.lineasPedido
+            return Pedidos(it._id,tableId,mainViewModelCreateOrder.lineasPedidos.toMutableList())
         }
     }
-    return Pedidos(0,tableId,mainViewModelCreateOrder._lineasPedidos)
+    return Pedidos(0,tableId,mainViewModelCreateOrder.lineasPedidos)
 }
 
 @Preview(showBackground = true)

@@ -1,6 +1,7 @@
 package sainero.dani.intermodular.Views.Cobrador.CreateOrder
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -34,6 +35,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelPedidos
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
+import java.lang.NumberFormatException
 
 class CreateOrderLine : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,18 +62,23 @@ fun MainCreateOrderLine(
 
     //Textos
     var description = rememberSaveable { mutableStateOf("") }
+
     var textQuantity = rememberSaveable{ mutableStateOf("1") }
+    var quantityError = remember { mutableStateOf(false) }
+    val textOfQuantityError: String = "Debe ser un número entero"
+
 
     var product: Productos = Productos(0,"","", arrayListOf(),0f, arrayListOf(),"",0)
     viewModelProductos.productListResponse.forEach { if (it._id.equals(productId)) product = it }
     var selectedType: Tipos = Tipos(0,"","", arrayListOf())
     viewModelTipos.typeListResponse.forEach { if (it._id.equals(typeId)) selectedType = it }
+
+
     Scaffold(
         topBar = {
              TopAppBar(
                  title = {
                      Text(text = "Editar producto",color = Color.White)
-
                  },
                  navigationIcon = {
                      IconButton(
@@ -120,7 +127,6 @@ fun MainCreateOrderLine(
                             verticalArrangement = Arrangement.Center
                         ) {
 
-
                             Spacer(modifier = Modifier.padding(10.dp))
                             Column(
                                 verticalArrangement = Arrangement.SpaceBetween
@@ -132,7 +138,6 @@ fun MainCreateOrderLine(
                                         painter =  rememberImagePainter(
                                             data =  if (!product.img.equals("")) "${product.img}" else "https://www.chollosocial.com/media/data/2019/11/678gf34.png",
                                             builder = {
-                                                //transformations(CircleCropTransformation())
 
                                             }
                                         ),
@@ -161,15 +166,22 @@ fun MainCreateOrderLine(
                                     OutlinedTextField(
                                         value = textQuantity.value,
                                         onValueChange = {
-                                            textQuantity.value = it
+                                            if (isInteger(it) || it.equals("")) {
+                                                textQuantity.value = it
+                                                quantityError.value = false
+                                            } else {
+                                                quantityError.value = true
+                                            }
                                         },
-                                        placeholder = { Text("1") },
-                                        label = {Text(text = "Cantidad:")},
+                                        placeholder = { Text("Cantidad") },
+                                        label = { Text(text = "Cantidad:") },
+                                        isError = quantityError.value,
+                                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                                         modifier = Modifier
                                             .padding(start = 20.dp, end = 20.dp)
                                             .fillMaxWidth(),
-                                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType =  KeyboardType.Number)
                                     )
+
                                 }
                                 Spacer(modifier = Modifier.padding(10.dp))
                                 Row(
@@ -206,12 +218,10 @@ fun MainCreateOrderLine(
                                             if (numExtra.value.toInt() > 0){
                                                 numExtra.value = (numExtra.value.toInt() - 1).toString()
                                             }
-
-
                                         }
                                     ) {
                                         Icon(
-                                            painter = painterResource(id = R.drawable.logo_eros) ,
+                                            painter = painterResource(id = R.drawable.remove_circle_outline),
                                             contentDescription = "Less icon",
                                             modifier = Modifier
                                                 .size(100.dp)
@@ -249,7 +259,8 @@ fun MainCreateOrderLine(
                                     }
                                 }
                                 val lineaExtra : LineaExtra = LineaExtra(it,numExtra.value.toInt())
-                                mainViewModelCreateOrder.addLineaExtras(lineaExtra)
+
+                                if (selectedType.compatibleExtras.size != mainViewModelCreateOrder.lineasExtras.size) mainViewModelCreateOrder.lineasExtras.add(lineaExtra)
                             }
                             Row(
                                 Modifier
@@ -283,33 +294,29 @@ fun MainCreateOrderLine(
                                     }
                                 }
 
+
                                 Row(
                                     Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 2),
                                     horizontalArrangement = Arrangement.End
                                 ) {
                                     Button(
                                         onClick = {
+                                            var linePrice = calculateLinePrice(
+                                                mainViewModelCreateOrder = mainViewModelCreateOrder,
+                                                product = product,
+                                                textQuantity = if (!textQuantity.value.equals("")) textQuantity.value.toInt() else 1
+                                            )
+
                                             var lineaDePedido = LineaPedido(
                                                 producto = product,
                                                 anotaciones = description.value,
-                                                cantidad = textQuantity.value.toInt(),
-                                                costeLinea = 0f,
-                                                lineasExtra = mainViewModelCreateOrder._lineasExtras.toMutableList()
+                                                cantidad = if (!textQuantity.value.equals("")) textQuantity.value.toInt() else 1,
+                                                costeLinea = linePrice,
+                                                lineasExtra = mainViewModelCreateOrder.lineasExtras.toMutableList()
                                             )
-                                            mainViewModelCreateOrder.addLineaPedido(lineaDePedido)
 
-                                            mainViewModelCreateOrder._lineasPedidos.remove(mainViewModelCreateOrder.pedidoEditar)
-                                            mainViewModelCreateOrder.pedidoEditar.lineasExtra.forEach{ mainViewModelCreateOrder._lineasExtras.remove(it)}
-
-
-                                            if (mainViewModelCreateOrder.editOrder) {
-                                                mainViewModelCreateOrder.pedido = Pedidos(mainViewModelCreateOrder.pedido!!._id,idMesa = tableId,lineasPedido = mainViewModelCreateOrder._lineasPedidos.toMutableList())
-                                                //viewModelPedidos.editOrder(mainViewModelCreateOrder.pedido!!)
-                                            }
-                                            else {
-                                                mainViewModelCreateOrder.pedido = Pedidos(_id = 0,idMesa = tableId, mainViewModelCreateOrder._lineasPedidos.toMutableList())
-                                            }
-
+                                            mainViewModelCreateOrder.lineasPedidos.add(lineaDePedido)
+                                            mainViewModelCreateOrder.lineasExtras.clear()
                                             navController.popBackStack()
 
                                         },
@@ -340,6 +347,34 @@ fun MainCreateOrderLine(
             )
         }
     )
+}
+
+//Validaciones
+private fun isInteger(
+    text:String
+): Boolean {
+
+    try {
+        text.toInt()
+    } catch (e: NumberFormatException) {
+        return false
+    }
+
+    return true
+}
+
+
+private fun calculateLinePrice(
+    mainViewModelCreateOrder: MainViewModelCreateOrder,
+    product: Productos,
+    textQuantity: Int
+): Float {
+    var priceTotalExtras = 0f
+
+    mainViewModelCreateOrder.lineasExtras.forEach{ priceTotalExtras += (it.extra.price * it.cantidad)}
+    var linePrice: Float = (product.price + priceTotalExtras) * textQuantity
+
+    return linePrice
 }
 
 @Preview(showBackground = true)

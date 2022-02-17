@@ -239,7 +239,8 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                 }) {
                     Icon(
                         Icons.Filled.MoreVert,
-                        contentDescription = "Localized description"
+                        contentDescription = "Localized description",
+                        tint = Color.White
                     )
                 }
 

@@ -36,6 +36,7 @@ import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import java.util.regex.Pattern
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.dropDownMenu
+import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
 
 
 @ExperimentalFoundationApi
@@ -82,11 +83,12 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
 
     var textPasswordUser = rememberSaveable { mutableStateOf("1234") }
 
-    var textRolUser = rememberSaveable { mutableListOf("Administrador","Empleado")}
+    var textRolUser = rememberSaveable { mutableStateOf("") }
+    var textListRolUser = rememberSaveable { mutableListOf("Empleado","Administrador")}
 
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false) }
+    var (textAddress, onValueChangeAddress) = rememberSaveable { mutableStateOf("") }
     val showToast = remember { mutableStateOf(false) }
     var toastMessage = rememberSaveable { mutableStateOf("")}
     val context = LocalContext.current
@@ -228,7 +230,11 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                             )
                         }
                         item {
-                            dropDownMenu(text = "Rol",textRolUser)
+                            textRolUser.value =
+                                selectedDropDownMenu(
+                                    text = "Rol",
+                                    suggestions = textListRolUser
+                                )
                         }
                         item {
                             Spacer(modifier = Modifier.padding(9.dp))
@@ -238,15 +244,13 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                             ) {
                                 Button(
                                     onClick = {
-
-                                        textNameUser = ""
-                                        textSurnameUser = ""
-                                        textDniUser = ""
-                                        textTelUser = ""
-                                        textFnacUser = ""
-                                        textUserUser = ""
-                                        textEmailUser = ""
-
+                                        onValueChangeNameUser("")
+                                        onValueChangeSurnameUser("")
+                                        onValueChangeDniUser("")
+                                        onValueChangeTelUser("")
+                                        onValueChangeFnacUser("")
+                                        onValueChangeUserUser("")
+                                        onValueChangeEmailUser("")
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = Color.White,
@@ -292,9 +296,11 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                                 fnac =  textFnacUser,
                                                 user =  textUserUser,
                                                 password =  textPasswordUser.value,
-                                                rol =  textRolUser.get(0),
+                                                rol =  textRolUser.value,
                                                 email =  textEmailUser,
-                                                newUser = true
+                                                newUser = true,
+                                                address = textAddress
+
                                             )
                                             viewModelUsers.uploadUser(newEmployee)
                                             navController.popBackStack()

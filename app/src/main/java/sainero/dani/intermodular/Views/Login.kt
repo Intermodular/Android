@@ -93,7 +93,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
     val context = LocalContext.current
     var nameError by remember { mutableStateOf(false) }
     var correctUser = remember { mutableStateOf(false)}
-    var selectedUser by remember { mutableStateOf(Users(0,"","","","","","","","","",false)) }
+    var selectedUser by remember { mutableStateOf(Users(0,"","","","","","","","","","",false)) }
 
 
 
@@ -115,8 +115,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                 //Tests
                 .clickable {
                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
-                    navController.navigate("${Destinations.MainAdministrationActivity.route}")
-
+                    navController.navigate("${Destinations.AccessToTables.route}")
                 }
         )
         Column(
@@ -352,7 +351,8 @@ private fun newPassword(
                                 password = value.value,
                                 phoneNumber = user.phoneNumber,
                                 rol = user.rol,
-                                surname = user.surname
+                                surname = user.surname,
+                                address = user.address
                             )
 
                             viewModelUsers.editUser(user = updateUser)

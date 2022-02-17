@@ -70,7 +70,8 @@ fun MainAdministrationActivityView() {
                         }) {
                             Icon(
                                 Icons.Filled.MoreVert,
-                                contentDescription = "Localized description"
+                                contentDescription = "Localized description",
+                                tint = Color.White
                             )
                         }
 
@@ -87,8 +88,6 @@ fun MainAdministrationActivityView() {
                                 onClick = {
                                     expanded.value = false
                                     val navBuilder: NavOptionsBuilder
-
-
                                     navController.navigate(Destinations.Login.route){
                                         popUpTo(0)
                                     }

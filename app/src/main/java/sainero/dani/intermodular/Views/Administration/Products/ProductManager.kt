@@ -89,7 +89,7 @@ fun MainProductManager(
                     onTextChange = {
                         mainViewModelSearchBar.updateSearchTextState(newValue = it)
                         aplicateFilter.value = false
-                        filter = it
+                        filter = it.lowercase()
                         aplicateFilter.value = true
                     },
                     onCloseClicked = {
@@ -97,7 +97,7 @@ fun MainProductManager(
                     },
                     onSearchClicked = {
                         aplicateFilter.value = false
-                        filter = it
+                        filter = it.lowercase()
                         aplicateFilter.value = true
                     },
                     onSearchTriggered = {
@@ -196,7 +196,6 @@ private fun filterContentByName(
                                     data = i.img,
                                     builder = {
                                         scale(Scale.FILL)
-                                        //placeholder(R.drawable.notification_action_background)
                                         transformations(CircleCropTransformation())
                                     },
                                 ),
@@ -259,7 +258,8 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                 ) {
                     Icon(
                         Icons.Filled.MoreVert,
-                        contentDescription = "Localized description"
+                        contentDescription = "Localized description",
+                        tint = Color.White
                     )
                 }
 

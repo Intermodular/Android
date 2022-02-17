@@ -1,6 +1,7 @@
 package sainero.dani.intermodular.Views.Administration.Zone.Table
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -15,17 +16,24 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
+import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.Views.Administration.Zone.Table.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
+import sainero.dani.intermodular.ViewsItems.dropDownMenu
+import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
+import java.lang.NumberFormatException
 
 
 class NewTable : ComponentActivity() {
@@ -38,15 +46,36 @@ class NewTable : ComponentActivity() {
 }
 
 @Composable
-fun MainNewTable(viewModelMesas: ViewModelMesas){
+fun MainNewTable(
+    viewModelMesas: ViewModelMesas,
+    viewModelZonas: ViewModelZonas
+){
+
+    //Variables de ayuda
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false) }
+    val showToast = remember { mutableStateOf(false) }
+    val textOfToast = remember { mutableStateOf("") }
+
+
+    //Funciones extras
+    if (showToast.value) {
+        Toast.makeText(LocalContext.current,textOfToast.value, Toast.LENGTH_SHORT).show()
+        showToast.value = false
+    }
 
     //Textos
-    var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf("") }
-    var (textNºsillas, onValueChangeNºsillas) = rememberSaveable{ mutableStateOf("") }
+    var (textZone, onValueChangeZone) = rememberSaveable{ mutableStateOf("") }
+    var (textState, onValueChangeState) = rememberSaveable{ mutableStateOf("")}
+    var listOfTextState = rememberSaveable{ mutableListOf("Libre","Ocupada") }
+
+
+    var (textNºChairs, onValueChangeNºChairs) = rememberSaveable{ mutableStateOf("0") }
+    var (numChairsError,numChairsErrorChange) = remember { mutableStateOf(false) }
+    val numChairsOfNumberError: String = "Debe ser un número entero"
+
     var (textNumber, onValueChangeNumber) = rememberSaveable{ mutableStateOf("") }
-    var (textState, onValueChangeState) = rememberSaveable{ mutableStateOf("") }
+    var (numberError,numberErrorChange) = remember { mutableStateOf(false) }
+    val nameOfNumberError: String = "Debe ser un número entero"
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -84,12 +113,47 @@ fun MainNewTable(viewModelMesas: ViewModelMesas){
                     .fillMaxWidth()
             ) {
 
+                createRowListWithErrorMesaje(
+                    text = "NºMesa",
+                    value = textNumber,
+                    onValueChange = onValueChangeNumber,
+                    validateError = ::isInteger,
+                    errorMesaje = nameOfNumberError,
+                    changeError = numberErrorChange,
+                    error = numberError,
+                    mandatory = true,
+                    KeyboardType = KeyboardType.Number
 
-                createRowList(text = "Nombre", value = textName, onValueChange = onValueChangeName,enable = true, KeyboardType.Text)
-                createRowList(text = "NºSillas", value = textNºsillas, onValueChange = onValueChangeNºsillas,enable = true, KeyboardType.Number)
-                createRowList(text = "Estado", value = textState, onValueChange = onValueChangeState,enable =  true, KeyboardType.Text)
-                createRowList(text = "Numero", value = textNumber, onValueChange = onValueChangeNumber,enable =  true, KeyboardType.Number)
+                )
 
+                var allNamesOfZone:MutableList<String> = mutableListOf()
+                viewModelZonas.zonesListResponse.forEach { allNamesOfZone.add(it.name) }
+                onValueChangeZone(
+                    selectedDropDownMenu(
+                        text = "Zona",
+                        suggestions = allNamesOfZone
+                    )
+                )
+
+                createRowListWithErrorMesaje(
+                    text = "NºSillas",
+                    value = textNºChairs,
+                    onValueChange = onValueChangeNºChairs,
+                    validateError = ::isInteger,
+                    errorMesaje = numChairsOfNumberError,
+                    changeError = numChairsErrorChange,
+                    error = numChairsError,
+                    mandatory = false,
+                    KeyboardType = KeyboardType.Number
+
+                )
+
+                onValueChangeState(
+                    selectedDropDownMenu(
+                        text = "Estado",
+                        suggestions = listOfTextState
+                    )
+                )
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
@@ -98,8 +162,10 @@ fun MainNewTable(viewModelMesas: ViewModelMesas){
                 ) {
                     Button(
                         onClick = {
-                            textName = ""
-                            textNºsillas = ""
+                            onValueChangeZone("")
+                            onValueChangeNºChairs("")
+                            onValueChangeState("")
+                            onValueChangeNumber("")
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -125,13 +191,29 @@ fun MainNewTable(viewModelMesas: ViewModelMesas){
 
                     Button(
                         onClick = {
-                            //Guardar mesa en la BD
-                            val mesa: Mesas
-                            if (textNºsillas.equals("") || textNumber.equals(""))
-                                mesa = Mesas(0,textName,0,textState,0)
-                            else
-                                mesa = Mesas(0,textName,textNºsillas.toInt(),textState,textNumber.toInt())
-                            viewModelMesas.uploadMesa(mesa)
+
+                            if(
+                                checkAllValidations(
+                                    textNºChairs = textNºChairs,
+                                    textNºMesas = textNumber
+                                )
+                            ) {
+                                var newTable: Mesas = Mesas(
+                                    _id = 0,
+                                    zone = textZone,
+                                    numChair = textNºChairs.toInt(),
+                                    number = textNumber.toInt(),
+                                    state = textState
+                                )
+                                viewModelMesas.uploadMesa(mesa = newTable)
+                                showToast.value = true
+                                textOfToast.value = "La mesa se ha creado correctamente"
+                                navController.popBackStack()
+                            } else {
+                                showToast.value = true
+                                textOfToast.value = "Debes de rellenar todos los campos correctamente"
+                            }
+
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -161,6 +243,28 @@ fun MainNewTable(viewModelMesas: ViewModelMesas){
         }
     )
 }
+
+//Validaciones
+private fun isInteger(text: String): Boolean {
+    try {
+        text.toInt()
+    } catch (e: NumberFormatException) {
+        return false
+    }
+    return true
+}
+
+private fun checkAllValidations(
+    textNºMesas: String,
+    textNºChairs: String
+): Boolean {
+    if(
+        !isInteger(textNºMesas) ||
+        !isInteger(textNºChairs)
+    ) return false
+    return true
+}
+
 
 @Preview(showBackground = true)
 @Composable

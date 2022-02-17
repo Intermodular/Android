@@ -1,6 +1,7 @@
 package sainero.dani.intermodular.DataClass
 
 import com.google.gson.annotations.SerializedName
+import java.net.Inet4Address
 
 data class Users(
     val _id: Int,
@@ -13,5 +14,6 @@ data class Users(
     val password: String,
     val rol: String,
     val email: String,
+    @SerializedName("direccion") val address: String,
     val newUser: Boolean
 )

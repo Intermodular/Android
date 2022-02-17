@@ -91,12 +91,15 @@ Column(
                         ) {
                         OutlinedTextField(
                             value =  selectedText,
-                            modifier = Modifier.size(width = 200.dp, height = 55.dp),
+                            modifier = Modifier
+                                .fillMaxWidth(0.7f)
+                                .fillMaxHeight(0.8f),
                             onValueChange = {
                                 selectedText = it
                                 extra.name = selectedText
                             },
-                            placeholder = { Text(text = "Nombre")},
+                            placeholder = { Text(text = extra.name)},
+                            label = { Text(text = "Extra")},
                         )
 
                         Spacer(modifier = Modifier.padding(3.dp))
@@ -105,7 +108,9 @@ Column(
                         var selectedTextPrice by remember { mutableStateOf(extra.price.toString()) }
                         OutlinedTextField(
                             value =  selectedTextPrice,
-                            modifier = Modifier.size(width = 90.dp, height = 55.dp),
+                            modifier = Modifier
+                                .fillMaxWidth(0.7f)
+                                .fillMaxHeight(0.8f),
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                             onValueChange = {
                                 if (it.equals("")) {
@@ -116,7 +121,8 @@ Column(
                                     extra.price = selectedTextPrice.toFloat()
                                 }
                             },
-                            placeholder = { Text(text = "0")},
+                            placeholder = { Text(text = "Precio")},
+                            label = { Text(text = "Precio")}
                         )
                         IconButton(
                             onClick = {

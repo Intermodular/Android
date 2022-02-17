@@ -1,6 +1,7 @@
 package sainero.dani.intermodular.Views.Administration.Products.Types
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,23 +46,31 @@ class ProductNewTyp : ComponentActivity() {
 
 @Composable
 fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras) {
+
+    //Variables de ayuda
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false) }
-
-
-    var newType: Tipos = Tipos(_id = 0,"","", arrayListOf())
+    val showToast = remember { mutableStateOf(false) }
+    val textOfToast = remember { mutableStateOf("") }
+    var newType: Tipos
     var allNamesOfExtras:MutableList<String> = mutableListOf()
-    var allExtras: MutableList<Extras> = mutableListOf()
+    val aplicateState = remember { mutableStateOf(true) }
+
 
     //Text
     var (textName, onValueChangeName) = rememberSaveable { mutableStateOf("") }
     var (nameError,nameErrorChange) = remember { mutableStateOf(false) }
-    val textOfNameError: String = "El nombre no puede ser mayor a 14 carácteres"
+    val textOfNameError: String = "El nombre no puede ser mayor a 14 carácteres ni esatar vacio"
 
     var (textImg, onValueChangeImg) = rememberSaveable { mutableStateOf("") }
     var textCompatibleExtras: MutableList<Extras> = remember { mutableListOf(Extras("",0f)) }
 
-    val aplicateState = remember { mutableStateOf(true) }
+
+
+
+    if (showToast.value) {
+        Toast.makeText(LocalContext.current,textOfToast.value, Toast.LENGTH_SHORT).show()
+        showToast.value = false
+    }
 
     //Control de acciones de la ventana
     if (aplicateState.value) {
@@ -148,23 +158,12 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
                     KeyboardType = KeyboardType.Text
                 )
 
-                dropDownMenu(
-                    text = "Extras",
-                    suggestions = allNamesOfExtras,
-                    textName = textName,
-                    textImg = textImg,
-                    textCompatibleExtras = textCompatibleExtras,
-                    mainViewModelExtras = mainViewModelExtras,
-                    navigation = "${Destinations.NewExtras.route}/${0}"
-                )
-
-                /*
                 mainViewModelExtras._extras.forEach{allNamesOfExtras.add(it.name)}
                 dropDownMenuWithNavigation(
                     text = "Extras",
                     suggestions = allNamesOfExtras,
-                    navigate = "${Destinations.Extras.route}/${0}",
-                )*/
+                    navigate = "${Destinations.NewExtras.route}",
+                )
 
                 createRowList(
                     text = "Img",
@@ -212,9 +211,18 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
 
                     Button(
                         onClick = {
+
                             newType = Tipos(0,textName,textImg,mainViewModelExtras._extras )
-                            viewModelTipos.uploadType(newType)
-                            navController.popBackStack()
+                            if (checkAllValidations(textNameOfType = textName)) {
+                                viewModelTipos.uploadType(tipo = newType)
+                                showToast.value = true
+                                textOfToast.value = "El tipo se ha creado correctamente"
+                                navController.popBackStack()
+
+                            } else {
+                                showToast.value = true
+                                textOfToast.value = "Debes de rellenar todos los campos correctamente"
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -245,78 +253,14 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
 }
 
 
-@Composable
-private fun dropDownMenu(
-    text: String,
-    suggestions: List<String>,
-    textName: String,
-    textImg: String,
-    textCompatibleExtras: MutableList<Extras>,
-    mainViewModelExtras: MainViewModelExtras,
-    navigation: String
-) {
-    Spacer(modifier = Modifier.padding(4.dp))
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(text) }
-    var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
-    var editItem = remember{ mutableStateOf(false)}
-
-    val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column() {
-
-            OutlinedTextField(
-                value = selectedText,
-                onValueChange = { selectedText = it },
-                enabled = false,
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-                    .onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size.toSize()
-                    },
-                trailingIcon = {
-                    Icon(icon, "arrowExpanded",
-                        Modifier.clickable { expanded = !expanded })
-                },
-                leadingIcon = {
-                    Icon(Icons.Default.Edit,"Edit ${text}",
-                        Modifier.clickable{
-                            editItem.value = true
-                            mainViewModelExtras.tmpType = Tipos(0,textName,textImg,textCompatibleExtras )
-                            navController.navigate(navigation)
-                        })
-                }
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
-            ) {
-                suggestions.forEach { label ->
-                    DropdownMenuItem(onClick = {
-                        selectedText = label
-                        expanded = false
-                    }) {
-                        Text(text = label)
-                    }
-                }
-            }
-        }
-    }
-}
-
 //Validaciones
 private fun isValidNameOfType(text: String) = Pattern.compile("^[^)(]{1,14}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-
+private fun checkAllValidations (
+    textNameOfType: String
+): Boolean {
+    if (!isValidNameOfType(text = textNameOfType)) return false
+    return true
+}
 
 @Preview(showBackground = true)
 @Composable

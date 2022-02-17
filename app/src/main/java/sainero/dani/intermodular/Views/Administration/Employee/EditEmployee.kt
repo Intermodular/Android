@@ -33,9 +33,11 @@ import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Views.Administration.ui.theme.IntermodularTheme
+import sainero.dani.intermodular.ViewsItems.createRowList
 import java.util.regex.Pattern
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.dropDownMenu
+import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
 
 @ExperimentalFoundationApi
 class EditEmployee : ComponentActivity() {
@@ -55,17 +57,18 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false)}
     val result = remember { mutableStateOf("") }
-    var deleteUser = remember { mutableStateOf(false)}
+    var (deleteUser,onValueChangeDeleteUser) = remember { mutableStateOf(false)}
     var showToast = remember { mutableStateOf(false)}
 
     if (showToast.value) {
         Toast.makeText(LocalContext.current,"Debes de rellenar todos los campos correctamente",Toast.LENGTH_SHORT).show()
         showToast.value = false
     }
+
     //Posible consulta en la Base de datos ¿? (but is ok)
     viewModelUsers.getUserById(id)
 
-    var selectedUser: Users = Users(0,"error","","","","","","","","",false)
+    var selectedUser: Users = Users(0,"error","","","","","","","","","",false)
     viewModelUsers.userListResponse.forEach{
         if (it._id.equals(id))  selectedUser = it
     }
@@ -100,14 +103,20 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     val nameOfUserError: String = "El usuario no puede estar vacio ni contener caracteres especiales"
 
     var (textPasswordUser, onValueChangePasswordUser) = rememberSaveable { mutableStateOf(selectedUser.password) }
+    var (textAddress, onValueChangeAddress) = rememberSaveable { mutableStateOf(selectedUser.password) }
 
-    var textRolUser = rememberSaveable { mutableListOf(selectedUser.rol,"")}
+    var textRolUser = rememberSaveable { mutableStateOf("") }
+    var textListRolUser = rememberSaveable { mutableListOf(selectedUser.rol,"")}
 
-    if (textRolUser[0].equals("Administrador")) textRolUser[1] = "Empleado" else textRolUser[1] = "Administrador"
+    if (textListRolUser[0].equals("Administrador")) textListRolUser[1] = "Empleado" else textListRolUser[1] = "Administrador"
 
     //Funciones extras a realizar
-    if (deleteUser.value) {
-        confirmDeleteUser(viewModelUsers = viewModelUsers,id = id)
+    if (deleteUser) {
+        confirmDeleteUser(
+            viewModelUsers = viewModelUsers,
+            id = id,
+            onValueChangeUser = onValueChangeDeleteUser
+        )
     }
 
     //Ventana
@@ -125,7 +134,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                 actions = {
                     IconButton(
                         onClick = {
-                            deleteUser.value = true
+                            onValueChangeDeleteUser(true)
                         }
                     ) {
                         Icon(
@@ -275,7 +284,20 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                             )
                         }
                         item {
-                            dropDownMenu(text = "Rol",textRolUser)
+                            textRolUser.value =
+                                selectedDropDownMenu(
+                                    text = "Rol",
+                                    suggestions = textListRolUser
+                                )
+                        }
+                        item { 
+                            createRowList(
+                                text = "Dirección",
+                                value = textAddress,
+                                onValueChange = onValueChangeAddress,
+                                enable = true,
+                                KeyboardType = KeyboardType.Text
+                            )
                         }
                         item {
                             Row(
@@ -284,14 +306,14 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                             ) {
                                 Button(
                                     onClick = {
-                                        textDniUser = selectedUser.dni
-                                        textNameUser = selectedUser.name
-                                        textSurnameUser = selectedUser.surname
-                                        textFnacUser = selectedUser.fnac
-                                        textEmailUser = selectedUser.email
-                                        textUserUser = selectedUser.user
-                                        textPasswordUser = selectedUser.password
-                                        textRolUser[0] = selectedUser.rol
+                                        onValueChangeNameUser(selectedUser.name)
+                                        onValueChangeSurnameUser(selectedUser.surname)
+                                        onValueChangeDniUser(selectedUser.dni)
+                                        onValueChangePhoneNumberUser(selectedUser.phoneNumber)
+                                        onValueChangeFnacUser(selectedUser.fnac)
+                                        onValueChangeUserUser(selectedUser.user)
+                                        onValueChangeEmailUser(selectedUser.email)
+                                        textRolUser.value = selectedUser.rol
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = Color.White,
@@ -307,8 +329,6 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
                                     Text(text = "Revertir cambios", fontSize = 15.sp)
                                 }
-
-
 
                                 Button(
                                     onClick = {
@@ -330,17 +350,18 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                                 fnac =  textFnacUser,
                                                 user =  textUserUser,
                                                 password =  textPasswordUser,
-                                                rol =  textRolUser.get(0),
+                                                rol =  textRolUser.value,
                                                 email =  textEmailUser,
                                                 newUser = false,
-                                                phoneNumber = textPhoneNumberUser )
+                                                phoneNumber = textPhoneNumberUser,
+                                                address = textAddress
+
+                                            )
                                             viewModelUsers.editUser(selectedUser)
                                         }
                                         else {
                                             showToast.value = true
                                         }
-
-
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = Color.White,
@@ -369,7 +390,8 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                             rol =  selectedUser.rol,
                                             email =  selectedUser.email,
                                             newUser = true,
-                                            phoneNumber = selectedUser.phoneNumber
+                                            phoneNumber = selectedUser.phoneNumber,
+                                            address = textAddress
                                         )
                                         viewModelUsers.editUser(selectedUser)
                                     },
@@ -395,11 +417,14 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
             }
         }
     )
-
 }
 
 @Composable
-private fun confirmDeleteUser(viewModelUsers: ViewModelUsers,id: Int) {
+private fun confirmDeleteUser(
+    viewModelUsers: ViewModelUsers,
+    id: Int,
+    onValueChangeUser: (Boolean) -> Unit
+) {
     MaterialTheme {
 
         Column {
@@ -416,7 +441,9 @@ private fun confirmDeleteUser(viewModelUsers: ViewModelUsers,id: Int) {
                     Button(
                         onClick = {
                             viewModelUsers.deleteUser(id)
-                            navController.navigate(Destinations.EmployeeManager.route)
+                            navController.popBackStack()
+
+
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Blue,
@@ -429,7 +456,7 @@ private fun confirmDeleteUser(viewModelUsers: ViewModelUsers,id: Int) {
                 dismissButton = {
                     Button(
                         onClick = {
-                            navController.navigate("${Destinations.EditEmployee.route}/${id}")
+                            onValueChangeUser(false)
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Blue,

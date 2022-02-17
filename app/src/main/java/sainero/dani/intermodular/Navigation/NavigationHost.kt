@@ -230,12 +230,20 @@ fun NavigationHost(
             val id = it.arguments?.getInt("tableId")
             requireNotNull(id)
             viewModelMesas.getMesaList()
-            MainEditTable(_id = id, viewModelMesas = viewModelMesas)
+            MainEditTable(
+                _id = id,
+                viewModelMesas = viewModelMesas,
+                viewModelZonas = viewModelZonas
+            )
         }
 
         composable(route = Destinations.NewTable.route){
             viewModelMesas.getMesaList()
-            MainNewTable(viewModelMesas = viewModelMesas)
+            viewModelZonas.getZoneList()
+            MainNewTable(
+                viewModelMesas = viewModelMesas,
+                viewModelZonas = viewModelZonas
+            )
         }
 
         composable(
@@ -249,16 +257,13 @@ fun NavigationHost(
         }
 
         composable(
-            route = "${Destinations.NewExtras.route}/{productId}",
-            arguments = listOf(navArgument("productId"){type = NavType.IntType})
+            route = "${Destinations.NewExtras.route}",
         ){
-            val id = it.arguments?.getInt("productId")
-            requireNotNull(id)
             viewModelTipos.getTypesList()
             MainNewExtra(mainViewModelExtras)
         }
 
-
+/*
         composable(
             route = "${Destinations.NewExtras.route}/{productId}",
             arguments = listOf(navArgument("productId"){type = NavType.IntType})
@@ -267,7 +272,7 @@ fun NavigationHost(
             requireNotNull(id)
             viewModelTipos.getTypesList()
             MainNewExtra(mainViewModelExtras)
-        }
+        }*/
 
         composable(
             route = "${Destinations.EditOrder.route}/{tableId}",
@@ -311,7 +316,7 @@ fun NavigationHost(
                 viewModelPedidos = viewModelPedidos
             )
         }
-
+/*
         composable(
             route = Destinations.CreateOrder.route + "/{tableId}",
             arguments = listOf(navArgument("tableId") { type = NavType.IntType })
@@ -330,20 +335,22 @@ fun NavigationHost(
                 viewModelPedidos = viewModelPedidos,
                 mainViewModelCreateOrder = mainViewModelCreateOrder
             )
-        }
+        }*/
 
         composable(
-            route = Destinations.CreateOrderWithOrder.route + "/{tableId}",
-            arguments = listOf(navArgument("tableId") { type = NavType.IntType })
+            route = "${Destinations.CreateOrderWithOrder.route}/{tableId}",
+            arguments = listOf(
+                navArgument("tableId") { type = NavType.IntType },
+            )
         ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getInt("tableId")
-            requireNotNull(id,{"La id de la mesa no puede ser nula"})
+            val tableId = backStackEntry.arguments?.getInt("tableId")
+            requireNotNull(tableId,{"La id de la mesa no puede ser nula"})
 
             viewModelMesas.getMesaList()
             viewModelProductos.getProductList()
             viewModelTipos.getTypesList()
             MainCreateOrderWithOrder(
-                tableId = id,
+                tableId = tableId,
                 viewModelProductos = viewModelProductos,
                 viewModelTipos = viewModelTipos,
                 viewModelMesas = viewModelMesas,

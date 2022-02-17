@@ -56,7 +56,11 @@ class ProductTypeAdministration : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras) {
+fun MainProductTypeManager(
+    mainViewModelSearchBar: MainViewModelSearchBar,
+    viewModelTipos: ViewModelTipos,
+    mainViewModelExtras: MainViewModelExtras
+) {
 
     var clearSearchBar = remember { mutableStateOf(true) }
     if (clearSearchBar.value) {
@@ -127,7 +131,11 @@ fun MainProductTypeManager(mainViewModelSearchBar: MainViewModelSearchBar,viewMo
 
 
 @Composable
-private fun filterContentByName(allTypes: List<Tipos>, filterName: String,mainViewModelExtras: MainViewModelExtras) {
+private fun filterContentByName(
+    allTypes: List<Tipos>,
+    filterName: String,
+    mainViewModelExtras: MainViewModelExtras
+) {
     LazyColumn(
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {

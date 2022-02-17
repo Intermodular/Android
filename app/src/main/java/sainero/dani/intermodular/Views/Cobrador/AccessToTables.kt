@@ -1,18 +1,13 @@
 package sainero.dani.intermodular.Views.Cobrador
 
-import android.inputmethodservice.Keyboard
 import android.os.Bundle
-import android.view.KeyEvent
-import android.widget.PopupMenu
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -22,10 +17,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.focusOrder
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -36,19 +30,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupPositionProvider
-import androidx.navigation.NavController
-import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
-import okhttp3.internal.assertThreadDoesntHoldLock
-import sainero.dani.intermodular.DataClass.Mesas
-import sainero.dani.intermodular.DataClass.Productos
-import sainero.dani.intermodular.DataClass.Zonas
+import sainero.dani.intermodular.DataClass.*
 import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Navigation.NavigationHost
-import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
@@ -72,8 +56,15 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     var scaffoldStateFilter = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
 
+    val (disableAlert,onValueChangeDisableAlert) = remember { mutableStateOf(false) }
+
+    val (selectedTable,onValueChangeSelectedTable) = remember { mutableStateOf(Mesas(_id = 0,zone = "",numChair = 0,number =0,state = ""))}
+
+    if (disableAlert) {
+        confirmCreateOrder(onValueChangeDisableAlert = onValueChangeDisableAlert,mainViewModelCreateOrder = mainViewModelCreateOrder,table = selectedTable,viewModelMesas = viewModelMesas)
+    }
+
     val expanded = remember { mutableStateOf(false) }
-    val result = remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
     //Consulta BD
@@ -115,7 +106,6 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
                         Box(Modifier.wrapContentSize()) {
                             IconButton(onClick = {
                                 expanded.value = true
-                                result.value = "More icon clicked"
                             }) {
                                 Icon(
                                     Icons.Filled.MoreVert,
@@ -126,14 +116,6 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
                             DropdownMenu(
                                 expanded = expanded.value,
                                 onDismissRequest = { expanded.value = false }) {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        expanded.value = false
-                                        navController.navigate(Destinations.AccessToTables.route)
-                                    }) {
-                                    Text(text = "Gestionar Reservas")
-                                }
-                                Divider()
                                 DropdownMenuItem(
                                     onClick = {
                                         expanded.value = false
@@ -259,28 +241,23 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
                     },
                     floatingActionButtonPosition = FabPosition.Center
                 )
-
-
-
             },
             content = {
                 val scrollState = rememberScrollState()
                 Column(
                     verticalArrangement = Arrangement.Center
                 ) {
-
-                        filterByAllFilters(
-                            allTables = allTables,
-                            nºMesasFilter = nºMesa,
-                            zoneFilter = textSelectedZone.value,
-                            stateFilter = textState.value,
-                            dinersFilter = nºComensales,
-                            mainViewModelCreateOrder = mainViewModelCreateOrder
-                        )
-
-
+                    filterByAllFilters(
+                        allTables = allTables,
+                        nºMesasFilter = nºMesa,
+                        zoneFilter = textSelectedZone.value,
+                        stateFilter = textState.value,
+                        dinersFilter = nºComensales,
+                        mainViewModelCreateOrder = mainViewModelCreateOrder,
+                        onValueChangeDisableAlert = onValueChangeDisableAlert,
+                        onValueChangeSelectedTable = onValueChangeSelectedTable
+                    )
                 }
-
             },
         )
     }
@@ -288,7 +265,11 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
 
 
 @Composable
-private fun selectedDropDownMenu(text: String,suggestions: List<String>,onValueChangeNºMesa: (String) -> Unit): String {
+private fun selectedDropDownMenu(
+    text: String,
+    suggestions: List<String>,
+    onValueChangeNºMesa: (String) -> Unit): String
+{
     Spacer(modifier = Modifier.padding(4.dp))
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf("Todas") }
@@ -354,32 +335,19 @@ private fun checkState(state: String): Color {
     return Color.White
 }
 
-@Composable
-private fun createRowList(text: String, value: String, onValueChange: (String) -> Unit, KeyboardType: KeyboardType) {
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Spacer(modifier = Modifier.padding(10.dp))
-        Text(text = "${text}:", Modifier.width(100.dp))
-        OutlinedTextField(
-            value = value,
-            onValueChange = {
-                onValueChange(it)
-            },
-            placeholder = { Text(text) },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType),
-            label = { Text(text = text) },
-            modifier = Modifier
-                .padding(start = 10.dp, end = 20.dp)
-        )
-    }
-}
 
 @ExperimentalFoundationApi
 @Composable
-private fun filterByAllFilters(allTables: List<Mesas>, nºMesasFilter: String,zoneFilter: String, stateFilter: String, dinersFilter: String,mainViewModelCreateOrder : MainViewModelCreateOrder) {
+private fun filterByAllFilters(
+    allTables: List<Mesas>,
+    nºMesasFilter: String,
+    zoneFilter: String,
+    stateFilter: String,
+    dinersFilter: String,
+    mainViewModelCreateOrder : MainViewModelCreateOrder,
+    onValueChangeDisableAlert: (Boolean) -> Unit,
+    onValueChangeSelectedTable: (Mesas) -> Unit
+) {
 
     //Obtener todas las mesas (Luego le vamos restando las que no cumplan la condición)
     val allFilterTables: MutableList<Mesas> = mutableListOf()
@@ -418,12 +386,17 @@ private fun filterByAllFilters(allTables: List<Mesas>, nºMesasFilter: String,zo
         if(!dinersFilter.equals("")) listOfAllFilterTables = allFilterTables.sortedBy {it.numChair}
         else listOfAllFilterTables = allFilterTables
     }
-    createTables(allFilterTables = listOfAllFilterTables,mainViewModelCreateOrder = mainViewModelCreateOrder)
+    createTables(allFilterTables = listOfAllFilterTables,mainViewModelCreateOrder = mainViewModelCreateOrder,onValueChangeDisableAlert = onValueChangeDisableAlert,onValueChangeSelectedTable = onValueChangeSelectedTable)
 }
 
 @ExperimentalFoundationApi
 @Composable
-private fun createTables(allFilterTables: List<Mesas>, mainViewModelCreateOrder: MainViewModelCreateOrder) {
+private fun createTables(
+    allFilterTables: List<Mesas>,
+    mainViewModelCreateOrder: MainViewModelCreateOrder,
+    onValueChangeDisableAlert:  (Boolean) -> Unit,
+    onValueChangeSelectedTable: (Mesas) -> Unit
+) {
     var showMenu by remember { mutableStateOf(false) }
 
     LazyVerticalGrid(
@@ -432,28 +405,24 @@ private fun createTables(allFilterTables: List<Mesas>, mainViewModelCreateOrder:
     ) {
         for (i in allFilterTables) {
             item {
-                /*val infiniteTransition = rememberInfiniteTransition()
-                val scale by infiniteTransition.animateFloat(
-                    initialValue = 1f,
-                    targetValue = 1.2f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1000),
-                        repeatMode = RepeatMode.Reverse
-                    )
-                )*/
-                Box(Modifier.padding(10.dp)) {
+                Box(
+                    Modifier
+                        .padding(10.dp)
+
+                ) {
                     Button(
                         onClick = {
-                            mainViewModelCreateOrder.clearAllVariables = true
-                           // mainViewModelCreateOrder.getOrder = true
-
-                            if (i.state.equals("Ocupada")) {
+                            onValueChangeSelectedTable(i)
+                            if (i.state.equals("Ocupada")){
+                                mainViewModelCreateOrder.clearAllVariables = true
                                 mainViewModelCreateOrder.editOrder = true
-                                navController.navigate(Destinations.CreateOrderWithOrder.route + "/${i._id}")
-                            }
-                            else {
-                                mainViewModelCreateOrder.editOrder = false
-                                navController.navigate(Destinations.CreateOrder.route + "/${i._id}")
+                                mainViewModelCreateOrder.getOrderByTableWithDelay(id = i._id) {
+                                    mainViewModelCreateOrder.lineasPedidos = arrayListOf()
+                                    mainViewModelCreateOrder.lineasPedidos = mainViewModelCreateOrder.orderByTable.lineasPedido
+                                }
+                                navController.navigate("${Destinations.CreateOrderWithOrder.route}/${i._id}")
+                            } else {
+                                onValueChangeDisableAlert(true)
                             }
                         },
                         modifier = Modifier,
@@ -488,6 +457,67 @@ private fun createTables(allFilterTables: List<Mesas>, mainViewModelCreateOrder:
     }
 }
 
+@Composable
+private fun confirmCreateOrder(
+    viewModelMesas: ViewModelMesas,
+    table: Mesas,
+    onValueChangeDisableAlert: (Boolean) -> Unit,
+    mainViewModelCreateOrder: MainViewModelCreateOrder
+) {
+    MaterialTheme {
+
+        Column {
+            AlertDialog(
+                onDismissRequest = {
+                },
+                title = {
+                    Text(text = "¿Seguro que desea crear un pedido?")
+                },
+                text = {
+                    Text("")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            var updateTable = Mesas(state = "Ocupada",number = table.number,numChair = table.numChair,zone = table.zone,_id = table._id)
+                            viewModelMesas.editMesa(updateTable)
+
+                            mainViewModelCreateOrder.pedido = Pedidos(idMesa = table._id,lineasPedido = arrayListOf(),_id = 0)
+                            mainViewModelCreateOrder.uploadOrder(order = mainViewModelCreateOrder.pedido)
+
+                            mainViewModelCreateOrder.editOrder = false
+                            mainViewModelCreateOrder.clearAllVariables = true
+                            mainViewModelCreateOrder.lineasPedidos = arrayListOf()
+                            mainViewModelCreateOrder.getOrderByTable(id = table._id)
+
+                            navController.navigate("${Destinations.CreateOrderWithOrder.route}/${table._id}")
+
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Blue,
+                            contentColor = Color.White
+                        ),
+                    ) {
+                        Text("Aceptar")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            onValueChangeDisableAlert(false)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Blue,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @ExperimentalFoundationApi

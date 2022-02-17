@@ -1,6 +1,7 @@
 package sainero.dani.intermodular.Views.Administration.Zone.Table
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -20,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,6 +57,7 @@ fun MainTableManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelMes
         mainViewModelSearchBar.clearSearchBar()
         clearSearchBar.value = false
     }
+
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
 
@@ -128,7 +131,7 @@ fun filtercontentbyname(allMesas: List<Mesas>, filterName: String){
                         .fillMaxWidth()
                         .height(90.dp)
                         .clickable {
-                            navController.navigate("${Destinations.EditProduct.route}/${i._id}")
+                            navController.navigate("${Destinations.EditTable.route}/${i._id}")
                         },
                         shape = RoundedCornerShape(8.dp),
                         elevation = 4.dp,
@@ -143,7 +146,6 @@ fun filtercontentbyname(allMesas: List<Mesas>, filterName: String){
                                     data = R.drawable.default_admin_img,
                                     builder = {
                                         scale(Scale.FILL)
-                                        //placeholder(R.drawable.notification_action_background)
                                         transformations(CircleCropTransformation())
                                     },
                                 ),

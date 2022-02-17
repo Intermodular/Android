@@ -1,10 +1,10 @@
 package sainero.dani.intermodular.Views.Administration.Zone.Table
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -17,20 +17,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import sainero.dani.intermodular.DataClass.Mesas
-import sainero.dani.intermodular.DataClass.Zonas
-import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
-import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
-import sainero.dani.intermodular.Views.Administration.Zone.Table.ui.theme.IntermodularTheme
-import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
+import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
+import java.lang.NumberFormatException
 
 class EditTable : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,15 +40,26 @@ class EditTable : ComponentActivity() {
 }
 
 @Composable
-fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
-
+fun MainEditTable(
+    _id: Int,
+    viewModelMesas: ViewModelMesas,
+    viewModelZonas: ViewModelZonas
+) {
     viewModelMesas.getMesaById(_id)
-    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false) }
-    var deleteUser = remember { mutableStateOf(false)}
 
-    if (deleteUser.value){
-        confirmDeleteTable(viewModelMesas = viewModelMesas,id = _id)
+    //Variables de ayuda
+    val showToast = remember { mutableStateOf(false) }
+    val textOfToast = remember { mutableStateOf("") }
+
+    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
+    var (deleteTable,onValueChangeDeleteTable) = remember { mutableStateOf(false)}
+
+    if (deleteTable){
+        confirmDeleteTable(
+            viewModelMesas = viewModelMesas,
+            id = _id,
+            onValueChangeDeleteTable = onValueChangeDeleteTable
+        )
     }
 
     //Esto se eliminará por una consulta a la BD
@@ -62,9 +71,21 @@ fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
 
     //Textos
     var (textZone, onValueChangeZone) = rememberSaveable{ mutableStateOf(selectedTable.zone) }
-    var (textNºsillas, onValueChangeNºsillas) = rememberSaveable{ mutableStateOf(selectedTable.numChair.toString()) }
     var (textState, onValueChangeState) = rememberSaveable{ mutableStateOf(selectedTable.state)}
-    var (textNumber, onValueChangeNumber) = rememberSaveable{ mutableStateOf(selectedTable.number.toString())}
+    var listOfTextState = rememberSaveable{ mutableListOf("Libre","Ocupada") }
+
+    var (textNºChairs, onValueChangeNºChairs) = rememberSaveable{ mutableStateOf(selectedTable.numChair.toString()) }
+    var (numChairsError,numChairsErrorChange) = remember { mutableStateOf(false) }
+    val numChairsOfNumberError: String = "Debe ser un número entero"
+
+    var (textNumber, onValueChangeNumber) = rememberSaveable{ mutableStateOf(selectedTable.number.toString()) }
+    var (numberError,numberErrorChange) = remember { mutableStateOf(false) }
+    val nameOfNumberError: String = "Debe ser un número entero"
+
+    if (showToast.value) {
+        Toast.makeText(LocalContext.current,textOfToast.value, Toast.LENGTH_SHORT).show()
+        showToast.value = false
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -77,7 +98,7 @@ fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     IconButton(onClick = {
-                        deleteUser.value = true
+                        onValueChangeDeleteTable(true)
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
@@ -89,12 +110,12 @@ fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            GlobalVariables.navController.popBackStack()
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(
                             Icons.Filled.ArrowBack,
-                            contentDescription = "",
+                            contentDescription = "Go Back",
                             tint = Color.White
                         )
                     }
@@ -110,10 +131,47 @@ fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
                     .fillMaxWidth()
             ) {
 
-                createRowList(text = "Nombre", value = textZone, onValueChange = onValueChangeZone,enable = true, KeyboardType.Text)
-                createRowList(text = "NºSillas", value = textNºsillas, onValueChange = onValueChangeNºsillas,enable = true, KeyboardType.Number)
-                createRowList(text = "Estado", value = textState, onValueChange = onValueChangeState,enable =  true,KeyboardType.Text)
-                createRowList(text = "Numero", value = textNumber, onValueChange = onValueChangeNumber,enable =  true,KeyboardType.Number)
+                createRowListWithErrorMesaje(
+                    text = "NºMesa",
+                    value = textNumber,
+                    onValueChange = onValueChangeNumber,
+                    validateError = ::isInteger,
+                    errorMesaje = nameOfNumberError,
+                    changeError = numberErrorChange,
+                    error = numberError,
+                    mandatory = true,
+                    KeyboardType = KeyboardType.Number
+
+                )
+
+                var allNamesOfZone:MutableList<String> = mutableListOf()
+                viewModelZonas.zonesListResponse.forEach { allNamesOfZone.add(it.name) }
+                onValueChangeZone(
+                    selectedDropDownMenu(
+                        text = "Zona",
+                        suggestions = allNamesOfZone
+                    )
+                )
+
+                createRowListWithErrorMesaje(
+                    text = "NºSillas",
+                    value = textNºChairs,
+                    onValueChange = onValueChangeNºChairs,
+                    validateError = ::isInteger,
+                    errorMesaje = numChairsOfNumberError,
+                    changeError = numChairsErrorChange,
+                    error = numChairsError,
+                    mandatory = false,
+                    KeyboardType = KeyboardType.Number
+
+                )
+
+                onValueChangeState(
+                    selectedDropDownMenu(
+                        text = "Estado",
+                        suggestions = listOfTextState
+                    )
+                )
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
@@ -122,8 +180,10 @@ fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
                 ) {
                     Button(
                         onClick = {
-                            textZone = ""
-                            textNºsillas = ""
+                            onValueChangeZone(selectedTable.zone)
+                            onValueChangeNºChairs(selectedTable.numChair.toString())
+                            onValueChangeState(selectedTable.state)
+                            onValueChangeNumber(selectedTable.number.toString())
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -148,17 +208,28 @@ fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
                     }
 
 
-
                     Button(
                         onClick = {
-                            selectedTable.zone = textZone
-                            selectedTable.numChair = textNºsillas.toInt()
-                            selectedTable.state = textState
-                            selectedTable.number = textNumber.toInt()
-
-                            //Guardar zona  en la BB
-
-
+                            if(
+                                checkAllValidations(
+                                    textNºChairs = textNºChairs,
+                                    textNºMesas = textNumber
+                                )
+                            ) {
+                                var updateTable: Mesas = Mesas(
+                                    _id = selectedTable._id,
+                                    zone = textZone,
+                                    numChair = textNºChairs.toInt(),
+                                    number = textNumber.toInt(),
+                                    state = textState
+                                )
+                                viewModelMesas.editMesa(updateTable)
+                                showToast.value = true
+                                textOfToast.value = "El producto se ha actualizado correctamente"
+                            } else {
+                                showToast.value = true
+                                textOfToast.value = "Debes de rellenar todos los campos correctamente"
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -190,7 +261,11 @@ fun MainEditTable(_id: Int,viewModelMesas: ViewModelMesas) {
 }
 
 @Composable
-private fun confirmDeleteTable(viewModelMesas: ViewModelMesas, id: Int) {
+private fun confirmDeleteTable(
+    viewModelMesas: ViewModelMesas,
+    id: Int,
+    onValueChangeDeleteTable: (Boolean) -> Unit
+) {
     MaterialTheme {
 
         Column {
@@ -207,7 +282,7 @@ private fun confirmDeleteTable(viewModelMesas: ViewModelMesas, id: Int) {
                     Button(
                         onClick = {
                             viewModelMesas.deleteMesa(id)
-                            GlobalVariables.navController.navigate(Destinations.TableManager.route)
+                            navController.popBackStack()
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Blue,
@@ -220,7 +295,7 @@ private fun confirmDeleteTable(viewModelMesas: ViewModelMesas, id: Int) {
                 dismissButton = {
                     Button(
                         onClick = {
-                            GlobalVariables.navController.navigate("${Destinations.EditTable.route}/${id}")
+                            onValueChangeDeleteTable(false)
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Blue,
@@ -233,6 +308,27 @@ private fun confirmDeleteTable(viewModelMesas: ViewModelMesas, id: Int) {
             )
         }
     }
+}
+
+//Validaciones
+private fun isInteger(text: String): Boolean {
+    try {
+        text.toInt()
+    } catch (e: NumberFormatException) {
+        return false
+    }
+    return true
+}
+
+private fun checkAllValidations(
+    textNºMesas: String,
+    textNºChairs: String
+): Boolean {
+    if(
+        !isInteger(textNºMesas) ||
+        !isInteger(textNºChairs)
+    ) return false
+    return true
 }
 
 @Preview(showBackground = true)

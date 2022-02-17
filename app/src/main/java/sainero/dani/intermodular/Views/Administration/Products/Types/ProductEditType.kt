@@ -1,6 +1,7 @@
 package sainero.dani.intermodular.Views.Administration.Products.Types
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,6 +66,8 @@ fun MainProductEditType(
     val aplicateState = remember { mutableStateOf(true) }
     var extrasCompatibles: MutableList<Extras> = mutableListOf()
 
+
+
 if (aplicateState.value) {
     when (mainViewModelExtras.extrasState){
         "New" -> {
@@ -98,11 +102,14 @@ if (aplicateState.value) {
 
 @Composable
 private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras: (Boolean) -> Unit, selectedType: Tipos,mainViewModelExtras: MainViewModelExtras) {
+
+    //Variables de ayuda
+    val showToast = remember { mutableStateOf(false) }
+    val textOfToast = remember { mutableStateOf("") }
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
     var deleteType = remember { mutableStateOf(false) }
-    var state = remember { mutableStateOf(0) }
 
 
 
@@ -124,7 +131,10 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
     if (deleteType.value) {
         confirmDeleteType(viewModelTipos = viewModelTipos, id = id)
     }
-
+    if (showToast.value) {
+        Toast.makeText(LocalContext.current,textOfToast.value, Toast.LENGTH_SHORT).show()
+        showToast.value = false
+    }
 
     //Ventana
     Scaffold(
@@ -265,7 +275,14 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                         onClick = {
 
                             var updateType: Tipos = Tipos(id,textName,textImg,mainViewModelExtras._extras)
-                            viewModelTipos.editType(updateType)
+                            if (checkAllValidations(textNameOfType = textName)) {
+                                viewModelTipos.editType(tipo = updateType)
+                                showToast.value = true
+                                textOfToast.value = "El tipo se ha actualizado correctamente"
+                            } else {
+                                showToast.value = true
+                                textOfToast.value = "Debes de rellenar todos los campos correctamente"
+                            }
 
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -344,6 +361,12 @@ private fun confirmDeleteType(viewModelTipos: ViewModelTipos, id: Int) {
 
 //Validaciones
 private fun isValidNameOfType(text: String) = Pattern.compile("^[^)(]{1,14}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun checkAllValidations (
+    textNameOfType: String
+): Boolean {
+    if (!isValidNameOfType(text = textNameOfType)) return false
+    return true
+}
 
 @Preview(showBackground = true)
 @Composable

@@ -16,6 +16,11 @@ interface ApiServiceOrder {
         @Path("id") id: Int
     ): Response<Pedidos>
 
+    @GET("pedido/idMesa/{id}")
+    suspend fun getOrderByTable(
+        @Path("id") id: Int
+    ): Response<Pedidos>
+
     @POST("pedido")
     suspend fun uploadOrder(
         @Body order : Pedidos

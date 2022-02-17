@@ -90,7 +90,7 @@ class ViewModelMesas: ViewModel()  {
 
                 val result =  apiService.deleteTable(id)
                 if (result.isSuccessful)
-                    newMesa.add(result.body()!!)
+                    deleteMesa.add(result.body()!!)
                 else
                     Log.d("Error: delete table","Error: delete table")
             } catch (e: Exception) {

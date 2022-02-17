@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+//Solucionar error de ingredientes menor al q ya hay
 @Composable
 fun MainIngredient(
     _id: Int,
@@ -119,7 +120,6 @@ private fun createContent(
                         leadingIcon = {
                             IconButton(
                                 onClick = {
-
                                     mainViewModelIngredients._tmpIngredients.remove(suggestion)
                                     onValueChangeRefresh(false)
                                     onValueChangeRefresh(true)
@@ -147,9 +147,8 @@ private fun createContent(
                     )
                 }
                 if (getValues.value) {
-
                     mainViewModelIngredients.newsValuesIngredients.add(selectedText)
-                    if (mainViewModelIngredients._ingredients.size  == mainViewModelIngredients.newsValuesIngredients.size) {
+                    if (mainViewModelIngredients._ingredients.size == mainViewModelIngredients.newsValuesIngredients.size) {
                         mainViewModelIngredients._tmpIngredients = mainViewModelIngredients.newsValuesIngredients.toMutableList()
                         mainViewModelIngredients.ingredientsState = "Edit"
                         getValues.value = false
@@ -221,6 +220,7 @@ private fun createContent(
                             onValueChangeRefresh(false)
                             onValueChangeRefresh(true)
                             getValues.value = true
+
 
                         },
                         colors = ButtonDefaults.buttonColors(

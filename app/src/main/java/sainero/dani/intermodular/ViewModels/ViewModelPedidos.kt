@@ -64,6 +64,7 @@ class ViewModelPedidos: ViewModel() {
         }
     }
 
+    //Métodos Put
     var editOrder: Pedidos by mutableStateOf (Pedidos(_id = 0,idMesa = 0,lineasPedido = arrayListOf()))
     fun editOrder(order: Pedidos) {
         viewModelScope.launch {

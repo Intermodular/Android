@@ -21,12 +21,12 @@ interface ApiServiceZone {
         @Body zone: Zonas,
     ): Response<Zonas>
 
-    @PUT("zonas")
+    @PUT("zona")
     suspend fun editZone(
         @Body zone: Zonas
     ): Response<Zonas>
 
-    @DELETE("zone/id/{id}")
+    @DELETE("zona/id/{id}")
     suspend fun deleteZone(
         @Path("id") id:Int
     ): Response<Zonas>

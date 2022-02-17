@@ -52,7 +52,7 @@ fun MainEspecifications(id: Int, viewModelProductos: ViewModelProductos, mainVie
             "Vegetariano",
             "Picante",
             "Sin gluten",
-            "Sin lactosa"
+            "Pescetariano"
         )
     }
 
@@ -184,7 +184,6 @@ private fun createEspecifications(
                 Button(
                     onClick = {
                         mainViewModelEspecifications.especificationsState = "Cancel"
-
                         navController.popBackStack()
                     },
                     colors = ButtonDefaults.buttonColors(

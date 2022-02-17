@@ -1,6 +1,7 @@
 package sainero.dani.intermodular.Views.Administration.Zone
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -17,14 +18,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import sainero.dani.intermodular.DataClass.Productos
+import sainero.dani.intermodular.DataClass.Tipos
 import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.ViewsItems.createRowList
@@ -44,19 +49,33 @@ class EditZone : ComponentActivity() {
 @Composable
 fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
 
+    //Variables de ayuda
+    val showToast = remember { mutableStateOf(false) }
+    val textOfToast = remember { mutableStateOf("") }
     viewModelZonas.getZoneById(_id)
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    val expanded = remember { mutableStateOf(false) }
+    var (deleteZone,onValueChangeDeleteZone) = remember { mutableStateOf(false)}
 
-    //Esto se eliminará por una consulta a la BD
+
     var selectedZone : Zonas = Zonas(_id,"Zone${_id}",2)
-
     viewModelZonas.zonesListResponse.forEach{
         if (it._id.equals(_id)) selectedZone = it
     }
 
+    if (showToast.value) {
+        Toast.makeText(LocalContext.current,textOfToast.value, Toast.LENGTH_SHORT).show()
+        showToast.value = false
+    }
+    if (deleteZone) {
+        confirmDeleteZone(
+            viewModelZonas = viewModelZonas,
+            id = _id,
+            onValueChangeZone = onValueChangeDeleteZone
+        )
+    }
+
     //Textos
-    var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf("") }
+    var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf(selectedZone.name) }
     var (nameError,nameErrorChange) = remember { mutableStateOf(false) }
     val nameOfNameError: String = "El nombre no puede contener ')(' ni ser mayor de 10"
     var (textNºmesas, onValueChangeNºmesas) = rememberSaveable{ mutableStateOf(selectedZone.nºTables.toString()) }
@@ -72,7 +91,12 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                 backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
-                    IconButton(onClick = { /*Eliminar elementod e la Base de datos y ir atras*/ }) {
+                    IconButton(
+                        onClick = {
+                            onValueChangeDeleteZone(true)
+
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
                             contentDescription = "Delete Icon",
@@ -84,7 +108,7 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            GlobalVariables.navController.popBackStack()
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -135,7 +159,6 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                     Button(
                         onClick = {
                             textName = ""
-                            textNºmesas = ""
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -163,12 +186,17 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
 
                     Button(
                         onClick = {
-                            selectedZone.name = textName
-                            selectedZone.nºTables = textNºmesas.toInt()
+                            if (checkAllValidations(textNameOfZone = textName)
+                            ) {
+                                val editZone = Zonas(_id = _id,name = textName,nºTables = textNºmesas.toInt())
+                                viewModelZonas.editZone(zone = editZone)
+                                showToast.value = true
+                                textOfToast.value = "La zona se ha modificado correctamente"
 
-                            //Guardar zona  en la BB
-
-
+                            } else {
+                                showToast.value = true
+                                textOfToast.value = "Debes de rellenar todos los campos correctamente"
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
@@ -200,10 +228,64 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
 }
 
 
+@Composable
+private fun confirmDeleteZone(
+    viewModelZonas: ViewModelZonas,
+    id: Int,
+    onValueChangeZone: (Boolean) -> Unit
+) {
+    MaterialTheme {
+
+        Column {
+            AlertDialog(
+                onDismissRequest = {
+                },
+                title = {
+                    Text(text = "¿Seguro que desea eliminar la zona seleccionada?")
+                },
+                text = {
+                    Text("No podrás volver a recuperarlo")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModelZonas.deleteZone(id = id)
+                            navController.popBackStack()
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Blue,
+                            contentColor = Color.White
+                        ),
+                    ) {
+                        Text("Aceptar")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            onValueChangeZone(false)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Blue,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
+    }
+}
 
 //Validaciones
-private fun isValidNameOfZone(text: String) = Pattern.compile("^[^()]{0,10}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-
+private fun isValidNameOfZone(text: String) = Pattern.compile("^[^()]{1,14}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+private fun checkAllValidations (
+    textNameOfZone: String
+): Boolean {
+    if (!isValidNameOfZone(text = textNameOfZone)) return false
+    return true
+}
 
 @Preview(showBackground = true)
 @Composable

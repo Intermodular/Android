@@ -37,6 +37,7 @@ import java.util.regex.Pattern
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
+import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
 
 
 @ExperimentalFoundationApi
@@ -268,7 +269,6 @@ fun MainNewProduct(
 
                     Button(
                         onClick = {
-                            //Cambiar por validación de solo numeros en coste
 
                             if (checkAllValidations(
                                     textName = textName,
@@ -326,64 +326,6 @@ fun MainNewProduct(
         }
     )
 }
-
-
-@Composable
-private fun selectedDropDownMenu(text: String,suggestions: List<String>): String {
-    Spacer(modifier = Modifier.padding(4.dp))
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(suggestions[0]) }
-    var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
-    var editItem = remember{ mutableStateOf(false)}
-
-    val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(text = "${text}:", Modifier.width(100.dp))
-        Column() {
-
-            OutlinedTextField(
-                value = selectedText,
-                onValueChange = { selectedText = it },
-                enabled = false,
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
-                    .onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size.toSize()
-                    },
-                trailingIcon = {
-                    Icon(icon, "arrowExpanded",
-                        Modifier.clickable { expanded = !expanded })
-                }
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
-            ) {
-                suggestions.forEach { label ->
-                    DropdownMenuItem(onClick = {
-                        selectedText = label
-                        expanded = false
-                    }) {
-                        Text(text = label)
-                    }
-                }
-            }
-        }
-    }
-    return selectedText
-}
-
-
-
 
 
 //Validaciones

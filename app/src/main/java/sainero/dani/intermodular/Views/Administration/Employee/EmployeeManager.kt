@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -64,7 +65,6 @@ fun MainEmployeeManager(
     viewModelUsers: ViewModelUsers
 ) {
 
-
     var clearSearchBar = remember { mutableStateOf(true) }
     if (clearSearchBar.value) {
         mainViewModelSearchBar.clearSearchBar()
@@ -95,7 +95,7 @@ fun MainEmployeeManager(
                     onTextChange = {
                         mainViewModelSearchBar.updateSearchTextState(newValue = it)
                         aplicateFilter.value = false
-                        filter = it
+                        filter = it.lowercase()
                         aplicateFilter.value = true
                     },
                     onCloseClicked = {
@@ -103,7 +103,7 @@ fun MainEmployeeManager(
                     },
                     onSearchClicked = {
                         aplicateFilter.value = false
-                        filter = it
+                        filter = it.lowercase()
                         aplicateFilter.value = true
                     },
                     onSearchTriggered = {
@@ -141,7 +141,7 @@ private fun filterContentByName(allUsers: List<Users>,filterName: String) {
     ) {
         item {
             for (i in allUsers) {
-                if (i.name.contains(filterName)) {
+                if (i.name.lowercase().contains(filterName)) {
 
                     Card(
                         modifier = Modifier
