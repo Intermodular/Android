@@ -68,55 +68,40 @@ import sainero.dani.intermodular.ViewModels.ViewModelTipos
 import sainero.dani.intermodular.Views.Administration.Employee.*
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainViewModelIngredients
+import sainero.dani.intermodular.ViewsItems.*
 import java.io.File
 import java.util.function.ToDoubleBiFunction
 import java.util.regex.Pattern
-import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
-import sainero.dani.intermodular.ViewsItems.createRowList
-import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
-import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
 
-
-@ExperimentalFoundationApi
-class EditProduct : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
 
 @Composable
 fun MainEditProduct(
     id: Int,
-    viewModelProductos: ViewModelProductos,
-    viewModelTipos : ViewModelTipos,
     mainViewModelEspecifications: MainViewModelEspecifications,
-    mainViewModelIngredients: MainViewModelIngredients
+    mainViewModelIngredients: MainViewModelIngredients,
+    mainViewModelProductos: MainViewModelProducts
 ) {
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val showToast = remember { mutableStateOf(false) }
     val textOfToast = remember { mutableStateOf("") }
-    val (deleteProduct, onValueChangeDeleteProduct) = remember { mutableStateOf(false) }
+    val (deleteItem, onValueChangeDeleteItem) = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    viewModelProductos.getProductById(id)
+    mainViewModelProductos.getProductById(id)
     var ingredientes: MutableList<String> = mutableListOf()
     var especification: MutableList<String> = mutableListOf()
 
     //Consultas BD
     var selectedProduct: Productos = Productos(0,"","",ingredientes,3.4f, especification,"",1)
-    viewModelProductos.productListResponse.forEach{
+    mainViewModelProductos.productListResponse.forEach{
         if (it._id.equals(id))  selectedProduct = it
     }
 
-    if (deleteProduct) confirmDeleteProduct(
-        viewModelProductos = ViewModelProductos(),
-        id = id,
-        onValueChangeDeleteProduct = onValueChangeDeleteProduct
-    )
-    var allTypes = viewModelTipos.typeListResponse
+
+
+
+    var allTypes = mainViewModelProductos.typeListResponse
     var allTypesNames: MutableList<String> = mutableListOf()
     allTypes.forEach{allTypesNames.add(it.name)}
 
@@ -149,6 +134,8 @@ fun MainEditProduct(
         Toast.makeText(LocalContext.current,textOfToast.value,Toast.LENGTH_SHORT).show()
         showToast.value = false
     }
+
+
 
     if (aplicateState.value) {
         when (mainViewModelEspecifications.especificationsState){
@@ -194,7 +181,23 @@ fun MainEditProduct(
     especification = mainViewModelEspecifications._especifications.toMutableList()
     ingredientes = mainViewModelIngredients._ingredients.toMutableList()
 
+    if (deleteItem) {
+        var title: String = "¿Seguro que desea eliminar el producto seleccionado?"
+        var subtitle: String = "No podrás volver a recuperarlo"
 
+        confirmAlertDialog(
+            title = title,
+            subtitle = subtitle,
+            onValueChangeGoBack = onValueChangeDeleteItem,
+        ) {
+            if (it) {
+                mainViewModelProductos.deleteProduct(id = id)
+                Toast.makeText(context,"El producto se ha eliminado correctamente",Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+
+            }
+        }
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -207,7 +210,7 @@ fun MainEditProduct(
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     IconButton(onClick = {
-                        onValueChangeDeleteProduct(true)
+                        onValueChangeDeleteItem(true)
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
@@ -278,7 +281,7 @@ fun MainEditProduct(
                             text = "Nombre",
                             value = textName,
                             onValueChange = onValueChangeName,
-                            validateError = ::isValidNameOfProduct,
+                            validateError = mainViewModelProductos::isValidNameOfProduct,
                             errorMesaje = nameOfNameError,
                             changeError = nameErrorChange,
                             error = nameError,
@@ -301,7 +304,7 @@ fun MainEditProduct(
                             text = "Coste",
                             value = textCost,
                             onValueChange = onValueChangeCost,
-                            validateError = ::isValidCostOfProduct,
+                            validateError = mainViewModelProductos::isValidCostOfProduct,
                             errorMesaje = costOfNameError,
                             changeError = costErrorChange,
                             error = costError,
@@ -333,7 +336,7 @@ fun MainEditProduct(
                             text = "Stock",
                             value = textStock,
                             onValueChange = onValueChangeStock,
-                            validateError = ::isValidStockOfProduct,
+                            validateError = mainViewModelProductos::isValidStockOfProduct,
                             errorMesaje = stockOfNameError,
                             changeError = stockErrorChange,
                             error = stockError,
@@ -380,7 +383,7 @@ fun MainEditProduct(
                             Button(
                                 onClick = {
                                     //Guardar los cambios en la BD
-                                    if (checkAllValidations(
+                                    if (mainViewModelProductos.checkAllValidations(
                                             textName = textName,
                                             textPrice = textCost,
                                             textStock = textStock
@@ -396,7 +399,7 @@ fun MainEditProduct(
                                             img = textImg,
                                             stock =  textStock.toInt()
                                         )
-                                        viewModelProductos.editProduct(product = updateProduct)
+                                        mainViewModelProductos.editProduct(product = updateProduct)
                                         showToast.value = true
                                         textOfToast.value = "El producto se ha actualizado correctamente"
                                     } else {
@@ -435,74 +438,6 @@ fun MainEditProduct(
 
 }
 
-//Validaciones
-private fun isValidNameOfProduct(text: String) = Pattern.compile("^[a-zA-Z ]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidCostOfProduct(text: String) = Pattern.compile("^[0-9.]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidStockOfProduct(text: String) = Pattern.compile("^[0-9]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-
-private fun checkAllValidations(
-    textName: String,
-    textPrice: String,
-    textStock:String,
-): Boolean {
-    if (
-        !isValidNameOfProduct(text = textName) ||
-        !isValidCostOfProduct(text = textPrice) ||
-        !isValidStockOfProduct(text = textStock)
-    )  return false
-
-    return  true
-}
-
-@Composable
-private fun confirmDeleteProduct(
-    viewModelProductos : ViewModelProductos,
-    id: Int,
-    onValueChangeDeleteProduct: (Boolean) -> Unit
-) {
-    MaterialTheme {
-
-        Column {
-            AlertDialog(
-                onDismissRequest = {
-                },
-                title = {
-                    Text(text = "¿Seguro que desea eliminar el producto seleccionado?")
-                },
-                text = {
-                    Text("No podrás volver a recuperarlo")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            viewModelProductos.deleteProduct(id)
-                            navController.popBackStack()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        ),
-                    ) {
-                        Text("Aceptar")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            onValueChangeDeleteProduct(false)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text("Cancelar")
-                    }
-                }
-            )
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

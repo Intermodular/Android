@@ -9,9 +9,14 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import sainero.dani.intermodular.ViewModels.*
 import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
+import sainero.dani.intermodular.Views.Administration.Employee.MainViewModelEmployee
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainViewModelIngredients
+import sainero.dani.intermodular.Views.Administration.Products.MainViewModelProducts
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainViewModelExtras
+import sainero.dani.intermodular.Views.Administration.Products.Types.MainViewModelTypes
+import sainero.dani.intermodular.Views.Administration.Zone.MainViewModelZone
+import sainero.dani.intermodular.Views.Administration.Zone.Table.MainViewModelTable
 import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainViewModelCreateOrder
 
 @ExperimentalFoundationApi
@@ -30,9 +35,16 @@ class MainActivity : ComponentActivity() {
     private val mainViewModelModelExtras by viewModels<MainViewModelExtras>()
     private val mainViewModelEspecifications by viewModels<MainViewModelEspecifications>()
     private val mainViewModelIngredients by viewModels<MainViewModelIngredients>()
+
+    private val mainViewModelZone by viewModels<MainViewModelZone>()
+    private val mainViewModelEmployee by viewModels<MainViewModelEmployee>()
+    private val mainViewModelTable by viewModels<MainViewModelTable>()
+    private val mainViewModelTypes by viewModels<MainViewModelTypes>()
+    private val mainViewModelProductos by viewModels<MainViewModelProducts>()
+
+
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContent {
             viewModelUsers.getUserList()
@@ -43,7 +55,15 @@ class MainActivity : ComponentActivity() {
             viewModelTipos.getTypesList()
             viewModelPedidos.getOrderList()
 
+            ///
+            mainViewModelZone.getZoneList()
+            mainViewModelEmployee.getUserList()
+            mainViewModelTable.getMesaList()
+            mainViewModelTable.getZoneList()
+            mainViewModelTypes.getTypesList()
+            mainViewModelProductos.getProductList()
 
+            ////
             NavigationHost(
                 mainViewModelSearchBar,
                 viewModelUsers,
@@ -57,7 +77,12 @@ class MainActivity : ComponentActivity() {
                 mainViewModelCreateOrder,
                 mainViewModelModelExtras,
                 mainViewModelEspecifications,
-                mainViewModelIngredients
+                mainViewModelIngredients,
+                mainViewModelZone,
+                mainViewModelEmployee,
+                mainViewModelTable,
+                mainViewModelTypes,
+                mainViewModelProductos
             )
         }
     }

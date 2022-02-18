@@ -45,24 +45,13 @@ import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainViewModelIngredients
 
-
-@ExperimentalFoundationApi
-class ProductManager : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @ExperimentalFoundationApi
 @Composable
 fun MainProductManager(
     mainViewModelSearchBar: MainViewModelSearchBar,
-    viewModelProductos: ViewModelProductos,
     mainViewModelEspecifications: MainViewModelEspecifications,
-    mainViewModelIngredients: MainViewModelIngredients
+    mainViewModelIngredients: MainViewModelIngredients,
+    mainViewModelProductos: MainViewModelProducts
 ) {
 
     var clearSearchBar = remember { mutableStateOf(true) }
@@ -72,7 +61,7 @@ fun MainProductManager(
     }
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    var allProducts: List<Productos> = viewModelProductos.productListResponse
+    var allProducts: List<Productos> = mainViewModelProductos.productListResponse
 
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState
     val searchTextState by mainViewModelSearchBar.searchTextState

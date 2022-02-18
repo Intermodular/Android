@@ -28,16 +28,6 @@ import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 
-@ExperimentalFoundationApi
-
-class MainAdministrationActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            //No se ejecuta
-        }
-    }
-}
 //API Key
 //GOgVQm3MOJNPcKODXTZqFq90b5p4wjsqmcJ6vTJJY4Rod4tTEWywir0HYAvU4oYe
 
@@ -195,7 +185,6 @@ fun MainAdministrationActivityView() {
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview2() {
-    val navController = rememberNavController()
+fun MainAdministrationActivity() {
     MainAdministrationActivityView()
 }

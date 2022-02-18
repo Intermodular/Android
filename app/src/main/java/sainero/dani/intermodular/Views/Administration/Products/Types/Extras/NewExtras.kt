@@ -28,15 +28,6 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.ui.theme.IntermodularTheme
 import java.lang.NumberFormatException
 
-class NewExtras : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @Composable
 fun MainNewExtra(mainViewModelExtras: MainViewModelExtras) {
     val state = remember { mutableStateOf(0) }

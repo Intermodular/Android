@@ -43,21 +43,11 @@ import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
 
-@ExperimentalFoundationApi
-
-class ZoneAdministration : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            IntermodularTheme {
-
-            }
-        }
-    }
-}
-
 @Composable
-fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelZonas: ViewModelZonas) {
+fun MainZoneManager(
+    mainViewModelSearchBar: MainViewModelSearchBar,
+    mainViewModelZone: MainViewModelZone
+) {
 
     var clearSearchBar = remember { mutableStateOf(true) }
     if (clearSearchBar.value) {
@@ -69,7 +59,7 @@ fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelZona
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
 
     //Consulta BD
-    var allZones: List<Zonas> = viewModelZonas.zonesListResponse
+    var allZones: List<Zonas> = mainViewModelZone.zonesListResponse
 
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState
     val searchTextState by mainViewModelSearchBar.searchTextState
@@ -115,7 +105,7 @@ fun MainZoneManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelZona
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    GlobalVariables.navController.navigate(Destinations.NewZone.route)
+                   navController.navigate(Destinations.NewZone.route)
                 }
             ) {
                 Text("+")

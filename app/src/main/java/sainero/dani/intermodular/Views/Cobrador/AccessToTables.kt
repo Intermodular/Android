@@ -52,7 +52,11 @@ class AccessToTables : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModelZonas, mainViewModelCreateOrder: MainViewModelCreateOrder) {
+fun MainAccessToTables(
+    viewModelMesas: ViewModelMesas,
+    viewModelZonas: ViewModelZonas,
+    mainViewModelCreateOrder: MainViewModelCreateOrder
+) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     var scaffoldStateFilter = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
 

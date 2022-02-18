@@ -47,20 +47,6 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import java.util.regex.Pattern
 
-@ExperimentalFoundationApi
-
-class Login : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-
-        }
-    }
-}
-
-
 
 @Composable
 fun LoginMain(viewModelUsers: ViewModelUsers) {
@@ -115,7 +101,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                 //Tests
                 .clickable {
                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
-                    navController.navigate("${Destinations.AccessToTables.route}")
+                    navController.navigate("${Destinations.MainAdministrationActivity.route}")
                 }
         )
         Column(

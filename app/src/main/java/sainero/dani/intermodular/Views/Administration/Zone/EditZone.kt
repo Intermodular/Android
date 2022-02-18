@@ -31,34 +31,30 @@ import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
+import sainero.dani.intermodular.ViewsItems.confirmAlertDialog
 import sainero.dani.intermodular.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 
 import java.util.regex.Pattern
 
-class EditZone : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
 
 @Composable
-fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
+fun MainEditZone(
+    _id: Int,
+    mainViewModelZone:MainViewModelZone
+) {
 
     //Variables de ayuda
     val showToast = remember { mutableStateOf(false) }
     val textOfToast = remember { mutableStateOf("") }
-    viewModelZonas.getZoneById(_id)
+    mainViewModelZone.getZoneById(_id)
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    var (deleteZone,onValueChangeDeleteZone) = remember { mutableStateOf(false)}
-
+    var (deleteItem,onValueChangeDeleteItem) = remember { mutableStateOf(false)}
+    var context = LocalContext.current
 
     var selectedZone : Zonas = Zonas(_id,"Zone${_id}",2)
-    viewModelZonas.zonesListResponse.forEach{
+    mainViewModelZone.zonesListResponse.forEach{
         if (it._id.equals(_id)) selectedZone = it
     }
 
@@ -66,12 +62,23 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
         Toast.makeText(LocalContext.current,textOfToast.value, Toast.LENGTH_SHORT).show()
         showToast.value = false
     }
-    if (deleteZone) {
-        confirmDeleteZone(
-            viewModelZonas = viewModelZonas,
-            id = _id,
-            onValueChangeZone = onValueChangeDeleteZone
-        )
+
+    if (deleteItem) {
+        var title: String = "¿Seguro que desea eliminar la zona seleccionada?"
+        var subtitle: String = "No podrás volver a recuperarla"
+
+        confirmAlertDialog(
+            title = title,
+            subtitle = subtitle,
+            onValueChangeGoBack = onValueChangeDeleteItem,
+        ) {
+            if (it) {
+                mainViewModelZone.deleteZone(id = _id)
+                Toast.makeText(context,"La zona se ha eliminado correctamente",Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+
+            }
+        }
     }
 
     //Textos
@@ -93,8 +100,7 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                 actions = {
                     IconButton(
                         onClick = {
-                            onValueChangeDeleteZone(true)
-
+                            onValueChangeDeleteItem(true)
                         }
                     ) {
                         Icon(
@@ -133,7 +139,7 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
                     text = "Nombre",
                     value = textName,
                     onValueChange = onValueChangeName,
-                    validateError = ::isValidNameOfZone,
+                    validateError = mainViewModelZone::isValidNameOfZone,
                     errorMesaje = nameOfNameError,
                     changeError = nameErrorChange,
                     error = nameError,
@@ -186,10 +192,9 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
 
                     Button(
                         onClick = {
-                            if (checkAllValidations(textNameOfZone = textName)
-                            ) {
+                            if (mainViewModelZone.checkAllValidations(textNameOfZone = textName)) {
                                 val editZone = Zonas(_id = _id,name = textName,nºTables = textNºmesas.toInt())
-                                viewModelZonas.editZone(zone = editZone)
+                                mainViewModelZone.editZone(zone = editZone)
                                 showToast.value = true
                                 textOfToast.value = "La zona se ha modificado correctamente"
 
@@ -228,64 +233,8 @@ fun MainEditZone(_id: Int,viewModelZonas: ViewModelZonas) {
 }
 
 
-@Composable
-private fun confirmDeleteZone(
-    viewModelZonas: ViewModelZonas,
-    id: Int,
-    onValueChangeZone: (Boolean) -> Unit
-) {
-    MaterialTheme {
 
-        Column {
-            AlertDialog(
-                onDismissRequest = {
-                },
-                title = {
-                    Text(text = "¿Seguro que desea eliminar la zona seleccionada?")
-                },
-                text = {
-                    Text("No podrás volver a recuperarlo")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            viewModelZonas.deleteZone(id = id)
-                            navController.popBackStack()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        ),
-                    ) {
-                        Text("Aceptar")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            onValueChangeZone(false)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text("Cancelar")
-                    }
-                }
-            )
-        }
-    }
-}
 
-//Validaciones
-private fun isValidNameOfZone(text: String) = Pattern.compile("^[^()]{1,14}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun checkAllValidations (
-    textNameOfZone: String
-): Boolean {
-    if (!isValidNameOfZone(text = textNameOfZone)) return false
-    return true
-}
 
 @Preview(showBackground = true)
 @Composable

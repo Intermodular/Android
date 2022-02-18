@@ -26,46 +26,48 @@ import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
+import sainero.dani.intermodular.ViewsItems.confirmAlertDialog
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
 import java.lang.NumberFormatException
 
-class EditTable : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @Composable
 fun MainEditTable(
     _id: Int,
-    viewModelMesas: ViewModelMesas,
-    viewModelZonas: ViewModelZonas
+    mainViewModelTable: MainViewModelTable
 ) {
-    viewModelMesas.getMesaById(_id)
+    mainViewModelTable.getMesaById(_id)
 
     //Variables de ayuda
     val showToast = remember { mutableStateOf(false) }
     val textOfToast = remember { mutableStateOf("") }
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    var (deleteTable,onValueChangeDeleteTable) = remember { mutableStateOf(false)}
+    val (deleteItem,onValueChangeDeleteItem) = remember { mutableStateOf(false)}
+    val context = LocalContext.current
 
-    if (deleteTable){
-        confirmDeleteTable(
-            viewModelMesas = viewModelMesas,
-            id = _id,
-            onValueChangeDeleteTable = onValueChangeDeleteTable
-        )
+    if (deleteItem) {
+        var title: String = "¿Seguro que desea eliminar la mesa seleccionada?"
+        var subtitle: String = "No podrás volver a recuperarla"
+
+        confirmAlertDialog(
+            title = title,
+            subtitle = subtitle,
+            onValueChangeGoBack = onValueChangeDeleteItem,
+        ) {
+            if (it) {
+                mainViewModelTable.deleteMesa(id = _id)
+                Toast.makeText(context,"La mesa se ha eliminado correctamente",Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+
+            }
+        }
     }
 
     //Esto se eliminará por una consulta a la BD
     var selectedTable : Mesas = Mesas(_id,"Table${_id}",2,"libre",3)
 
-    viewModelMesas.mesasListResponse.forEach{
+    mainViewModelTable.mesasListResponse.forEach{
         if (it._id.equals(_id)) selectedTable = it
     }
 
@@ -98,7 +100,7 @@ fun MainEditTable(
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     IconButton(onClick = {
-                        onValueChangeDeleteTable(true)
+                        onValueChangeDeleteItem(true)
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
@@ -135,7 +137,7 @@ fun MainEditTable(
                     text = "NºMesa",
                     value = textNumber,
                     onValueChange = onValueChangeNumber,
-                    validateError = ::isInteger,
+                    validateError = mainViewModelTable::isInteger,
                     errorMesaje = nameOfNumberError,
                     changeError = numberErrorChange,
                     error = numberError,
@@ -145,7 +147,7 @@ fun MainEditTable(
                 )
 
                 var allNamesOfZone:MutableList<String> = mutableListOf()
-                viewModelZonas.zonesListResponse.forEach { allNamesOfZone.add(it.name) }
+                mainViewModelTable.zonesListResponse.forEach { allNamesOfZone.add(it.name) }
                 onValueChangeZone(
                     selectedDropDownMenu(
                         text = "Zona",
@@ -157,7 +159,7 @@ fun MainEditTable(
                     text = "NºSillas",
                     value = textNºChairs,
                     onValueChange = onValueChangeNºChairs,
-                    validateError = ::isInteger,
+                    validateError = mainViewModelTable::isInteger,
                     errorMesaje = numChairsOfNumberError,
                     changeError = numChairsErrorChange,
                     error = numChairsError,
@@ -211,7 +213,7 @@ fun MainEditTable(
                     Button(
                         onClick = {
                             if(
-                                checkAllValidations(
+                                mainViewModelTable.checkAllValidations(
                                     textNºChairs = textNºChairs,
                                     textNºMesas = textNumber
                                 )
@@ -223,7 +225,7 @@ fun MainEditTable(
                                     number = textNumber.toInt(),
                                     state = textState
                                 )
-                                viewModelMesas.editMesa(updateTable)
+                                mainViewModelTable.editMesa(updateTable)
                                 showToast.value = true
                                 textOfToast.value = "El producto se ha actualizado correctamente"
                             } else {
@@ -258,77 +260,6 @@ fun MainEditTable(
 
         }
     )
-}
-
-@Composable
-private fun confirmDeleteTable(
-    viewModelMesas: ViewModelMesas,
-    id: Int,
-    onValueChangeDeleteTable: (Boolean) -> Unit
-) {
-    MaterialTheme {
-
-        Column {
-            AlertDialog(
-                onDismissRequest = {
-                },
-                title = {
-                    Text(text = "¿Seguro que desea eliminar la mesa seleccionada?")
-                },
-                text = {
-                    Text("No podrás volver a recuperarla")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            viewModelMesas.deleteMesa(id)
-                            navController.popBackStack()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        ),
-                    ) {
-                        Text("Aceptar")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            onValueChangeDeleteTable(false)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text("Cancelar")
-                    }
-                }
-            )
-        }
-    }
-}
-
-//Validaciones
-private fun isInteger(text: String): Boolean {
-    try {
-        text.toInt()
-    } catch (e: NumberFormatException) {
-        return false
-    }
-    return true
-}
-
-private fun checkAllValidations(
-    textNºMesas: String,
-    textNºChairs: String
-): Boolean {
-    if(
-        !isInteger(textNºMesas) ||
-        !isInteger(textNºChairs)
-    ) return false
-    return true
 }
 
 @Preview(showBackground = true)

@@ -30,15 +30,6 @@ import java.lang.Float.*
 import java.lang.NumberFormatException
 import java.util.regex.Pattern
 
-class Extras : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @Composable
 fun MainExtras(mainViewModelExtras: MainViewModelExtras,idProduct: Int) {
     val state = remember { mutableStateOf(0) }

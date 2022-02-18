@@ -40,17 +40,11 @@ import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
 
-class TableManager : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @Composable
-fun MainTableManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelMesas: ViewModelMesas) {
+fun MainTableManager(
+    mainViewModelSearchBar: MainViewModelSearchBar,
+    mainViewModelTable: MainViewModelTable
+) {
 
     var clearSearchBar = remember { mutableStateOf(true) }
     if (clearSearchBar.value) {
@@ -62,7 +56,7 @@ fun MainTableManager(mainViewModelSearchBar: MainViewModelSearchBar,viewModelMes
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
 
     //Consulta BD
-    var allMesas: List<Mesas> = viewModelMesas.mesasListResponse
+    var allMesas: List<Mesas> = mainViewModelTable.mesasListResponse
 
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState
     val searchTextState by mainViewModelSearchBar.searchTextState

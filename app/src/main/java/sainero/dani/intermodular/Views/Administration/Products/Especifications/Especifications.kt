@@ -31,15 +31,6 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.Views.Administration.Products.Types.*
 
-class Especifications : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @Composable
 fun MainEspecifications(id: Int, viewModelProductos: ViewModelProductos, mainViewModelEspecifications: MainViewModelEspecifications) {
 

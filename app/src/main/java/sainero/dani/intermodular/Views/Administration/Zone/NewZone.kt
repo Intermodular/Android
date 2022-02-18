@@ -32,21 +32,10 @@ import java.util.regex.Pattern
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 
-class NewZone : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            IntermodularTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                }
-            }
-        }
-    }
-}
-
 @Composable
-fun MainNewZone(viewModelZonas: ViewModelZonas) {
+fun MainNewZone(
+    mainViewModelZone: MainViewModelZone
+) {
 
     //Variables de ayuda
     val showToast = remember { mutableStateOf(false) }
@@ -105,7 +94,7 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
                     text = "Nombre",
                     value = textName,
                     onValueChange = onValueChangeName,
-                    validateError = ::isValidNameOfZone,
+                    validateError = mainViewModelZone::isValidNameOfZone,
                     errorMesaje = nameOfNameError,
                     changeError = nameErrorChange,
                     error = nameError,
@@ -155,10 +144,9 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
 
                     Button(
                         onClick = {
-                            if (checkAllValidations(textNameOfZone = textName)
-                            ) {
+                            if (mainViewModelZone.checkAllValidations(textNameOfZone = textName)) {
                                 val newZone = Zonas(_id = 0,name = textName,nºTables = textNºmesas.toInt())
-                                viewModelZonas.uploadZone(zone = newZone)
+                                mainViewModelZone.uploadZone(zone = newZone)
                                 showToast.value = true
                                 textOfToast.value = "La zona se ha creado correctamente"
                                 navController.popBackStack()
@@ -197,19 +185,6 @@ fun MainNewZone(viewModelZonas: ViewModelZonas) {
 }
 
 
-
-
-
-
-
-//Validaciones
-private fun isValidNameOfZone(text: String) = Pattern.compile("^[^()]{1,14}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun checkAllValidations (
-    textNameOfZone: String
-): Boolean {
-    if (!isValidNameOfZone(text = textNameOfZone)) return false
-    return true
-}
 
 @Preview(showBackground = true)
 @Composable
