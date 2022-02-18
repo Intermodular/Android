@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -14,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -93,12 +95,15 @@ fun MainEditOrder(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(start = 25.dp, bottom = 20.dp, end = 25.dp)
-                                        .clickable {
+                                        .pointerInput(Unit) {
+                                            detectTapGestures (
+                                                onLongPress = {
 
-
-                                            val id = mainViewModelCreateOrder.lineasPedidos.indexOf(it)
-                                          //  mainViewModelCreateOrder.lineasPedidos[id] = LineaPedido()
-                                            //navController.navigate(Destinations.CreateOrder.route)
+                                                },
+                                                onTap = { Offset ->
+                                                    val idLineaPedido = mainViewModelCreateOrder.lineasPedidos.indexOf(it)
+                                                }
+                                            )
                                         }
 
 
