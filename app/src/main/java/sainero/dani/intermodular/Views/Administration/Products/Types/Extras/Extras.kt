@@ -52,17 +52,16 @@ fun MainExtras(mainViewModelExtras: MainViewModelExtras,idProduct: Int) {
             )
         },
         content = {
-            if (refresh)  createContent(mainViewModelExtras = mainViewModelExtras,idProduct, onValueChangeRefresh)
+            if (refresh)  createContent(mainViewModelExtras = mainViewModelExtras, onValueChangeRefresh)
         }
     )
 }
 
 @Composable
-private fun createContent(mainViewModelExtras: MainViewModelExtras,idProduct:Int, onValueChangeRefresh: (Boolean) -> Unit) {
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-    val tmpText = remember { mutableStateOf("")}
-
+private fun createContent(
+    mainViewModelExtras: MainViewModelExtras,
+    onValueChangeRefresh: (Boolean) -> Unit
+) {
 
     LazyColumn(
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)

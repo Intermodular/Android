@@ -32,7 +32,6 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.ViewsItems.confirmAlertDialog
-import sainero.dani.intermodular.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 
@@ -239,7 +238,5 @@ fun MainEditZone(
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview9() {
-    IntermodularTheme {
-       // Greeting("Android")
-    }
+
 }
