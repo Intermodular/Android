@@ -35,17 +35,12 @@ import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
 
-class ProductNewTyp : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
 
 @Composable
-fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: MainViewModelExtras) {
+fun MainProductNewType(
+    mainViewModelExtras: MainViewModelExtras,
+    mainViewModelTypes: MainViewModelTypes
+) {
 
     //Variables de ayuda
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
@@ -150,7 +145,7 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
                     text = "Name",
                     value = textName,
                     onValueChange = onValueChangeName,
-                    validateError = ::isValidNameOfType,
+                    validateError = mainViewModelTypes::isValidNameOfType,
                     errorMesaje = textOfNameError,
                     changeError = nameErrorChange,
                     error = nameError,
@@ -213,8 +208,8 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
                         onClick = {
 
                             newType = Tipos(0,textName,textImg,mainViewModelExtras._extras )
-                            if (checkAllValidations(textNameOfType = textName)) {
-                                viewModelTipos.uploadType(tipo = newType)
+                            if (mainViewModelTypes.checkAllValidations(textNameOfType = textName)) {
+                                mainViewModelTypes.uploadType(tipo = newType)
                                 showToast.value = true
                                 textOfToast.value = "El tipo se ha creado correctamente"
                                 navController.popBackStack()
@@ -253,14 +248,7 @@ fun MainProductNewType(viewModelTipos: ViewModelTipos, mainViewModelExtras: Main
 }
 
 
-//Validaciones
-private fun isValidNameOfType(text: String) = Pattern.compile("^[^)(]{1,14}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun checkAllValidations (
-    textNameOfType: String
-): Boolean {
-    if (!isValidNameOfType(text = textNameOfType)) return false
-    return true
-}
+
 
 @Preview(showBackground = true)
 @Composable

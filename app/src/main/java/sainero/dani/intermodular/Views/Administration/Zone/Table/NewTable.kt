@@ -28,7 +28,6 @@ import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
-import sainero.dani.intermodular.Views.Administration.Zone.Table.ui.theme.IntermodularTheme
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.dropDownMenu
@@ -36,19 +35,9 @@ import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
 import java.lang.NumberFormatException
 
 
-class NewTable : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @Composable
 fun MainNewTable(
-    viewModelMesas: ViewModelMesas,
-    viewModelZonas: ViewModelZonas
+    mainViewModelTable: MainViewModelTable
 ){
 
     //Variables de ayuda
@@ -117,7 +106,7 @@ fun MainNewTable(
                     text = "NºMesa",
                     value = textNumber,
                     onValueChange = onValueChangeNumber,
-                    validateError = ::isInteger,
+                    validateError = mainViewModelTable::isInteger,
                     errorMesaje = nameOfNumberError,
                     changeError = numberErrorChange,
                     error = numberError,
@@ -127,7 +116,7 @@ fun MainNewTable(
                 )
 
                 var allNamesOfZone:MutableList<String> = mutableListOf()
-                viewModelZonas.zonesListResponse.forEach { allNamesOfZone.add(it.name) }
+                mainViewModelTable.zonesListResponse.forEach { allNamesOfZone.add(it.name) }
                 onValueChangeZone(
                     selectedDropDownMenu(
                         text = "Zona",
@@ -139,7 +128,7 @@ fun MainNewTable(
                     text = "NºSillas",
                     value = textNºChairs,
                     onValueChange = onValueChangeNºChairs,
-                    validateError = ::isInteger,
+                    validateError = mainViewModelTable::isInteger,
                     errorMesaje = numChairsOfNumberError,
                     changeError = numChairsErrorChange,
                     error = numChairsError,
@@ -193,7 +182,7 @@ fun MainNewTable(
                         onClick = {
 
                             if(
-                                checkAllValidations(
+                                mainViewModelTable.checkAllValidations(
                                     textNºChairs = textNºChairs,
                                     textNºMesas = textNumber
                                 )
@@ -205,7 +194,7 @@ fun MainNewTable(
                                     number = textNumber.toInt(),
                                     state = textState
                                 )
-                                viewModelMesas.uploadMesa(mesa = newTable)
+                                mainViewModelTable.uploadMesa(mesa = newTable)
                                 showToast.value = true
                                 textOfToast.value = "La mesa se ha creado correctamente"
                                 navController.popBackStack()
@@ -243,28 +232,6 @@ fun MainNewTable(
         }
     )
 }
-
-//Validaciones
-private fun isInteger(text: String): Boolean {
-    try {
-        text.toInt()
-    } catch (e: NumberFormatException) {
-        return false
-    }
-    return true
-}
-
-private fun checkAllValidations(
-    textNºMesas: String,
-    textNºChairs: String
-): Boolean {
-    if(
-        !isInteger(textNºMesas) ||
-        !isInteger(textNºChairs)
-    ) return false
-    return true
-}
-
 
 @Preview(showBackground = true)
 @Composable

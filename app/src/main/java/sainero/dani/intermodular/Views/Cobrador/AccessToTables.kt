@@ -52,7 +52,11 @@ class AccessToTables : ComponentActivity() {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModelZonas, mainViewModelCreateOrder: MainViewModelCreateOrder) {
+fun MainAccessToTables(
+    viewModelMesas: ViewModelMesas,
+    viewModelZonas: ViewModelZonas,
+    mainViewModelCreateOrder: MainViewModelCreateOrder
+) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     var scaffoldStateFilter = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
 
@@ -147,7 +151,6 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
                             Icon(Icons.Filled.Menu, contentDescription = "")
                         }
                     }
-
                 )
             },
             drawerShape = MaterialTheme.shapes.large,
@@ -199,7 +202,6 @@ fun MainAccessToTables(viewModelMesas: ViewModelMesas, viewModelZonas: ViewModel
                                 )
                             }
 
-                            //Reiniciar valores ¿?
                             textSelectedZone.value = selectedDropDownMenu(text = "Zona",suggestions = allNamesOfZones,onValueChangeNºMesa = onValueChangeNºMesa)
                             textState.value = selectedDropDownMenu(text = "Estado",suggestions = allStates,onValueChangeNºMesa = onValueChangeNºMesa)
 

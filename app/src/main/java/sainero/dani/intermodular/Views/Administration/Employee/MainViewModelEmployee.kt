@@ -1,7 +1,6 @@
-package sainero.dani.intermodular.ViewModels
+package sainero.dani.intermodular.Views.Administration.Employee
 
 import android.util.Log
-import androidx.compose.animation.core.animateIntSizeAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,10 +9,12 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import sainero.dani.intermodular.Api.ApiServiceUser
 import sainero.dani.intermodular.DataClass.Users
+import java.util.regex.Pattern
 
-class ViewModelUsers: ViewModel() {
+class MainViewModelEmployee: ViewModel() {
+
+    //Consultas BD
     private var errorMessage: String by mutableStateOf ("")
-
 
     //Métodos get
     var userListResponse: List <Users> by mutableStateOf ( listOf ())
@@ -64,6 +65,7 @@ class ViewModelUsers: ViewModel() {
         }
     }
 
+    //Métodos put
     var editUser: MutableList<Users> = mutableListOf()
     fun editUser(user: Users) {
         viewModelScope.launch {
@@ -100,4 +102,39 @@ class ViewModelUsers: ViewModel() {
             }
         }
     }
+
+    //Validaciones
+    fun isValidDni(text: String) = Pattern.compile("^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+    fun isValidName(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+    fun isValidSurname(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+    fun isValidPhoneNumber(text: String) = Pattern.compile("^(([+][0-9]{2}?)?[0-9]{9})?$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+    fun isValidDateOfBirth(text: String) = Pattern.compile("^([0-9]{1,2}[-/][0-9]{1,2}[-/][0-9]{1,4})?\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+    fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+    fun isValidEmail(text: String) = Pattern.compile("^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+
+    fun checkAllValidations(
+        textDni: String,
+        textName: String,
+        textSurname:String,
+        textPhoneNumber: String,
+        textDateOfBirth: String,
+        textUser: String,
+        textEmail: String
+    ): Boolean {
+        if (
+            !isValidDni(text = textDni) ||
+            !isValidName(text = textName) ||
+            !isValidSurname(text = textSurname) ||
+            !isValidPhoneNumber(text = textPhoneNumber) ||
+            !isValidDateOfBirth(text = textDateOfBirth) ||
+            !isValidUser(text = textUser) ||
+            !isValidEmail(text = textEmail)
+        )  return false
+
+        return  true
+    }
+
+
 }
+
+

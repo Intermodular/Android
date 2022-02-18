@@ -32,45 +32,34 @@ import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.Views.Administration.ui.theme.IntermodularTheme
-import sainero.dani.intermodular.ViewsItems.createRowList
+import sainero.dani.intermodular.ViewsItems.*
 import java.util.regex.Pattern
-import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
-import sainero.dani.intermodular.ViewsItems.dropDownMenu
-import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
 
-@ExperimentalFoundationApi
-class EditEmployee : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            IntermodularTheme {
-
-            }
-        }
-    }
-}
 
 @Composable
-fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
+fun MainEditEmployee(
+    _id: Int,
+    mainViewModelEmployee: MainViewModelEmployee
+) {
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false)}
     val result = remember { mutableStateOf("") }
-    var (deleteUser,onValueChangeDeleteUser) = remember { mutableStateOf(false)}
+    var (deleteItem,onValueChangeDeleteItem) = remember { mutableStateOf(false)}
     var showToast = remember { mutableStateOf(false)}
+    var context = LocalContext.current
 
     if (showToast.value) {
-        Toast.makeText(LocalContext.current,"Debes de rellenar todos los campos correctamente",Toast.LENGTH_SHORT).show()
+        Toast.makeText(context,"Debes de rellenar todos los campos correctamente",Toast.LENGTH_SHORT).show()
         showToast.value = false
     }
 
     //Posible consulta en la Base de datos ¿? (but is ok)
-    viewModelUsers.getUserById(id)
+    mainViewModelEmployee.getUserById(_id)
 
     var selectedUser: Users = Users(0,"error","","","","","","","","","",false)
-    viewModelUsers.userListResponse.forEach{
-        if (it._id.equals(id))  selectedUser = it
+    mainViewModelEmployee.userListResponse.forEach{
+        if (it._id.equals(_id))  selectedUser = it
     }
 
     //Texts
@@ -111,14 +100,22 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     if (textListRolUser[0].equals("Administrador")) textListRolUser[1] = "Empleado" else textListRolUser[1] = "Administrador"
 
     //Funciones extras a realizar
-    if (deleteUser) {
-        confirmDeleteUser(
-            viewModelUsers = viewModelUsers,
-            id = id,
-            onValueChangeUser = onValueChangeDeleteUser
-        )
-    }
+    if (deleteItem) {
+        var title: String = "¿Seguro que desea eliminar el empleado seleccionado?"
+        var subtitle: String = "No podrás volver a recuperarlo"
 
+        confirmAlertDialog(
+            title = title,
+            subtitle = subtitle,
+            onValueChangeGoBack = onValueChangeDeleteItem,
+        ) {
+            if (it) {
+                mainViewModelEmployee.deleteUser(id = _id)
+                Toast.makeText(context,"El usuario se ha eliminado correctamente",Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+            }
+        }
+    }
     //Ventana
     Scaffold(
 
@@ -134,7 +131,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                 actions = {
                     IconButton(
                         onClick = {
-                            onValueChangeDeleteUser(true)
+                            onValueChangeDeleteItem(true)
                         }
                     ) {
                         Icon(
@@ -196,7 +193,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 text = "DNI",
                                 value = textDniUser,
                                 onValueChange = onValueChangeDniUser,
-                                validateError = ::isValidDni,
+                                validateError = mainViewModelEmployee::isValidDni,
                                 errorMesaje = nameOfDniError,
                                 changeError = dniErrorChange,
                                 error = dniError,
@@ -209,7 +206,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 text = "Name",
                                 value = textNameUser,
                                 onValueChange = onValueChangeNameUser,
-                                validateError = ::isValidName,
+                                validateError = mainViewModelEmployee::isValidName,
                                 errorMesaje = nameOfNameError,
                                 changeError = nameErrorChange,
                                 error = nameError,
@@ -222,7 +219,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 text = "Surname",
                                 value = textSurnameUser,
                                 onValueChange = onValueChangeSurnameUser,
-                                validateError = ::isValidSurname,
+                                validateError = mainViewModelEmployee::isValidSurname,
                                 errorMesaje = nameOfsurnameError,
                                 changeError = surnameErrorChange,
                                 error = surnameError,
@@ -235,7 +232,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 text = "Phone Number",
                                 value = textPhoneNumberUser,
                                 onValueChange = onValueChangePhoneNumberUser,
-                                validateError = ::isValidPhoneNumber,
+                                validateError = mainViewModelEmployee::isValidPhoneNumber,
                                 errorMesaje = nameOfTelError,
                                 changeError = telErrorChange,
                                 error = telError,
@@ -248,7 +245,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 text = "Fecha Nacimiento",
                                 value = textFnacUser,
                                 onValueChange = onValueChangeFnacUser,
-                                validateError = ::isValidDateOfBirth,
+                                validateError = mainViewModelEmployee::isValidDateOfBirth,
                                 errorMesaje = nameOfFnacError,
                                 changeError = fNacErrorChange,
                                 error = fNacError,
@@ -262,7 +259,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 text = "User",
                                 value = textUserUser,
                                 onValueChange = onValueChangeUserUser,
-                                validateError = ::isValidUser,
+                                validateError = mainViewModelEmployee::isValidUser,
                                 errorMesaje = nameOfUserError,
                                 changeError = userErrorChange,
                                 error = userError,
@@ -275,7 +272,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                 text = "Email",
                                 value = textEmailUser,
                                 onValueChange = onValueChangeEmailUser,
-                                validateError = ::isValidEmail,
+                                validateError = mainViewModelEmployee::isValidEmail,
                                 errorMesaje = nameOfEmailError,
                                 changeError = emailErrorChange,
                                 error = emailError,
@@ -332,7 +329,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
 
                                 Button(
                                     onClick = {
-                                        if (checkAllValidations(
+                                        if (mainViewModelEmployee.checkAllValidations(
                                                 textDni = textDniUser,
                                                 textName = textNameUser,
                                                 textSurname = textSurnameUser,
@@ -343,7 +340,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                                 )
                                         ) {
                                             selectedUser = Users(
-                                                _id = id,
+                                                _id = _id,
                                                 dni = textDniUser,
                                                 name =  textNameUser,
                                                 surname =  textSurnameUser,
@@ -357,7 +354,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                                 address = textAddress
 
                                             )
-                                            viewModelUsers.editUser(selectedUser)
+                                            mainViewModelEmployee.editUser(selectedUser)
                                         }
                                         else {
                                             showToast.value = true
@@ -393,7 +390,7 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
                                             phoneNumber = selectedUser.phoneNumber,
                                             address = textAddress
                                         )
-                                        viewModelUsers.editUser(selectedUser)
+                                        mainViewModelEmployee.editUser(selectedUser)
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = Color.White,
@@ -419,97 +416,9 @@ fun MainEditEmployee(id: Int,viewModelUsers: ViewModelUsers) {
     )
 }
 
-@Composable
-private fun confirmDeleteUser(
-    viewModelUsers: ViewModelUsers,
-    id: Int,
-    onValueChangeUser: (Boolean) -> Unit
-) {
-    MaterialTheme {
-
-        Column {
-            AlertDialog(
-                onDismissRequest = {
-                },
-                title = {
-                    Text(text = "¿Seguro que desea eliminar al empleado seleccionado?")
-                },
-                text = {
-                    Text("No podrás volver a recuperarlo")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            viewModelUsers.deleteUser(id)
-                            navController.popBackStack()
-
-
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        ),
-                    ) {
-                        Text("Aceptar")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            onValueChangeUser(false)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text("Cancelar")
-                    }
-                }
-            )
-        }
-    }
-}
-
-
-
-//Validaciones
-private fun isValidDni(text: String) = Pattern.compile("^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidName(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidSurname(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidPhoneNumber(text: String) = Pattern.compile("^(([+][0-9]{2}?)?[0-9]{9})?$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidDateOfBirth(text: String) = Pattern.compile("^([0-9]{1,2}[-/][0-9]{1,2}[-/][0-9]{1,4})?\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidEmail(text: String) = Pattern.compile("^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-
-private fun checkAllValidations(
-    textDni: String,
-    textName: String,
-    textSurname:String,
-    textPhoneNumber: String,
-    textDateOfBirth: String,
-    textUser: String,
-    textEmail: String
-): Boolean {
-    if (
-        !isValidDni(text = textDni) ||
-        !isValidName(text = textName) ||
-        !isValidSurname(text = textSurname) ||
-        !isValidPhoneNumber(text = textPhoneNumber) ||
-        !isValidDateOfBirth(text = textDateOfBirth) ||
-        !isValidUser(text = textUser) ||
-        !isValidEmail(text = textEmail)
-    )  return false
-
-    return  true
-}
-
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview8() {
-    IntermodularTheme {
-        //MainEditEmployee(1)
-    }
+
 }
 

@@ -44,25 +44,12 @@ import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Utils.MainViewModelSearchBar
 import sainero.dani.intermodular.Utils.SearchWidgetState
 
-@ExperimentalFoundationApi
-class EmployeeManager : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
-        setContent {
-            IntermodularTheme {
-
-            }
-        }
-    }
-}
 
 @ExperimentalComposeUiApi
 @Composable
 fun MainEmployeeManager(
     mainViewModelSearchBar: MainViewModelSearchBar,
-    viewModelUsers: ViewModelUsers
+    mainViewModelEmployee: MainViewModelEmployee
 ) {
 
     var clearSearchBar = remember { mutableStateOf(true) }
@@ -76,7 +63,7 @@ fun MainEmployeeManager(
     val searchTextState by mainViewModelSearchBar.searchTextState
     val aplicateFilter = remember { mutableStateOf(false) }
     var filter: String = ""
-    var allUsers: List<Users> = viewModelUsers.userListResponse
+    var allUsers: List<Users> = mainViewModelEmployee.userListResponse
 
 
 

@@ -19,7 +19,5 @@ class MainViewModelEspecifications: ViewModel() {
         _especifications.add(newValue)
     }
 
-    fun getEspecifications() : MutableList<String> {
-        return _especifications
-    }
+
 }

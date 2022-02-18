@@ -27,15 +27,6 @@ import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import java.util.regex.Pattern
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 //Solucionar error de ingredientes menor al q ya hay
 @Composable
 fun MainIngredient(

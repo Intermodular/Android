@@ -25,7 +25,4 @@ class MainViewModelExtras : ViewModel() {
         _extras.add(newValue)
     }
 
-    fun getExtra() : MutableList<Extras> {
-        return _extras
-    }
 }

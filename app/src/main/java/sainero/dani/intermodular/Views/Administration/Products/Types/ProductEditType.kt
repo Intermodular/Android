@@ -33,24 +33,16 @@ import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
 import sainero.dani.intermodular.ViewsItems.confirmAlertDialog
 
 
-class ProductEditType : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @Composable
 fun MainProductEditType(
     id: Int,
-    viewModelTipos: ViewModelTipos,
-    mainViewModelExtras: MainViewModelExtras
+    mainViewModelExtras: MainViewModelExtras,
+    mainViewModelTypes: MainViewModelTypes
 ) {
+
     //Posible consulta en la Base de datos ¿? (but is ok)
     var selectedType: Tipos = Tipos(_id = id,"","", arrayListOf())
-    viewModelTipos.typeListResponse.forEach{ if (it._id.equals(id))  selectedType = it }
+    mainViewModelTypes.typeListResponse.forEach{ if (it._id.equals(id))  selectedType = it }
 
     var (valueOfEditExtras, onChangeEditExtras) = remember { mutableStateOf(false) }
     val aplicateState = remember { mutableStateOf(true) }
@@ -85,13 +77,13 @@ if (aplicateState.value) {
 
 }
 
-    editType(id = id, viewModelTipos = viewModelTipos,onChangeEditExtras = onChangeEditExtras,selectedType = selectedType,mainViewModelExtras = mainViewModelExtras)
+    editType(id = id, mainViewModelTypes = mainViewModelTypes,onChangeEditExtras = onChangeEditExtras,selectedType = selectedType,mainViewModelExtras = mainViewModelExtras)
 
 }
 
 
 @Composable
-private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras: (Boolean) -> Unit, selectedType: Tipos,mainViewModelExtras: MainViewModelExtras) {
+private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEditExtras: (Boolean) -> Unit, selectedType: Tipos,mainViewModelExtras: MainViewModelExtras) {
 
     //Variables de ayuda
     val showToast = remember { mutableStateOf(false) }
@@ -99,16 +91,14 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
-    var (deleteType,onValueChangeDeleteType) = remember { mutableStateOf(false) }
-
+    var (deleteItem,onValueChangeDeleteItem) = remember { mutableStateOf(false) }
+    var context = LocalContext.current
 
 
 
     //Text
 
     var allNamesOfExtras: MutableList<String> = mutableListOf()
-    //selectedType.compatibleExtras.forEach{allNamesOfExtras.add(it.name)}
-
     var (textName, onValueChangeName) = rememberSaveable { mutableStateOf(selectedType.name) }
     var (nameError,nameErrorChange) = remember { mutableStateOf(false) }
     val textOfNameError: String = "El nombre no puede ser mayor a 14 carácteres"
@@ -118,18 +108,20 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
 
 
     //Funciones extras a realizar
-    if (deleteType) {
+    if (deleteItem) {
         var title: String = "¿Seguro que desea eliminar el tipo seleccionado?"
         var subtitle: String = "No podrás volver a recuperarlo"
 
         confirmAlertDialog(
             title = title,
             subtitle = subtitle,
-            onValueChangeGoBack = onValueChangeDeleteType,
+            onValueChangeGoBack = onValueChangeDeleteItem,
         ) {
             if (it) {
-                viewModelTipos.deleteType(id = id)
+                mainViewModelTypes.deleteType(id = id)
+                Toast.makeText(context,"El tipo se ha eliminado correctamente",Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
+
             }
         }
     }
@@ -154,7 +146,7 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                 actions = {
                     IconButton(
                         onClick = {
-                            onValueChangeDeleteType(true)
+                            onValueChangeDeleteItem(true)
                         }
                     ) {
                         Icon(
@@ -214,7 +206,7 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                     text = "Name",
                     value = textName,
                     onValueChange = onValueChangeName,
-                    validateError = ::isValidNameOfType,
+                    validateError = mainViewModelTypes::isValidNameOfType,
                     errorMesaje = textOfNameError,
                     changeError = nameErrorChange,
                     error = nameError,
@@ -278,8 +270,8 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                         onClick = {
 
                             var updateType: Tipos = Tipos(id,textName,textImg,mainViewModelExtras._extras)
-                            if (checkAllValidations(textNameOfType = textName)) {
-                                viewModelTipos.editType(tipo = updateType)
+                            if (mainViewModelTypes.checkAllValidations(textNameOfType = textName)) {
+                                mainViewModelTypes.editType(tipo = updateType)
                                 showToast.value = true
                                 textOfToast.value = "El tipo se ha actualizado correctamente"
                             } else {
@@ -312,64 +304,12 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
 
                 }
             }
-        })
-}
-
-@Composable
-private fun confirmDeleteType(viewModelTipos: ViewModelTipos, id: Int) {
-    MaterialTheme {
-
-        Column {
-            AlertDialog(
-                onDismissRequest = {
-                },
-                title = {
-                    Text(text = "¿Seguro que desea eliminar el tipo seleccionado?")
-                },
-                text = {
-                    Text("No podrás volver a recuperarlo")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            viewModelTipos.deleteType(id)
-                            navController.navigate(Destinations.ProductTypeManager.route)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        ),
-                    ) {
-                        Text("Aceptar")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            navController.navigate("${Destinations.ProductEditType.route}/${id}")
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text("Cancelar")
-                    }
-                }
-            )
         }
-    }
+    )
 }
 
 
-//Validaciones
-private fun isValidNameOfType(text: String) = Pattern.compile("^[^)(]{1,14}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun checkAllValidations (
-    textNameOfType: String
-): Boolean {
-    if (!isValidNameOfType(text = textNameOfType)) return false
-    return true
-}
+
 
 @Preview(showBackground = true)
 @Composable

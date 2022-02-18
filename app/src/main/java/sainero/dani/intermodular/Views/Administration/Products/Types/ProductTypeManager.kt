@@ -41,25 +41,13 @@ import sainero.dani.intermodular.Utils.SearchWidgetState
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainViewModelExtras
 
-@ExperimentalFoundationApi
-
-class ProductTypeAdministration : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            IntermodularTheme {
-
-            }
-        }
-    }
-}
 
 @ExperimentalFoundationApi
 @Composable
 fun MainProductTypeManager(
     mainViewModelSearchBar: MainViewModelSearchBar,
-    viewModelTipos: ViewModelTipos,
-    mainViewModelExtras: MainViewModelExtras
+    mainViewModelExtras: MainViewModelExtras,
+    mainViewModelTypes: MainViewModelTypes
 ) {
 
     var clearSearchBar = remember { mutableStateOf(true) }
@@ -71,7 +59,7 @@ fun MainProductTypeManager(
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
 
     //Consulta BD
-    var allTypes = viewModelTipos.typeListResponse
+    var allTypes = mainViewModelTypes.typeListResponse
 
 
     val searchWidgetState by mainViewModelSearchBar.searchWidgetState

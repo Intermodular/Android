@@ -38,19 +38,10 @@ import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.dropDownMenu
 import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
 
-
-@ExperimentalFoundationApi
-class NewEmployee : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @Composable
-fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
+fun MainNewEmployee(
+    mainViewModelEmployee: MainViewModelEmployee
+) {
 
     //Texts
     var (textDniUser, onValueChangeDniUser) = rememberSaveable { mutableStateOf("") }
@@ -137,7 +128,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 text = "DNI",
                                 value = textDniUser,
                                 onValueChange = onValueChangeDniUser,
-                                validateError = ::isValidDni,
+                                validateError = mainViewModelEmployee::isValidDni,
                                 errorMesaje = nameOfDniError,
                                 changeError = dniErrorChange,
                                 error = dniError,
@@ -150,7 +141,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 text = "Name",
                                 value = textNameUser,
                                 onValueChange = onValueChangeNameUser,
-                                validateError = ::isValidName,
+                                validateError = mainViewModelEmployee::isValidName,
                                 errorMesaje = nameOfNameError,
                                 changeError = nameErrorChange,
                                 error = nameError,
@@ -165,7 +156,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 text = "Surname",
                                 value = textSurnameUser,
                                 onValueChange = onValueChangeSurnameUser,
-                                validateError = ::isValidSurname,
+                                validateError = mainViewModelEmployee::isValidSurname,
                                 errorMesaje = nameOfsurnameError,
                                 changeError = surnameErrorChange,
                                 error = surnameError,
@@ -180,7 +171,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 text = "Phone Number",
                                 value = textTelUser,
                                 onValueChange = onValueChangeTelUser,
-                                validateError = ::isValidPhoneNumber,
+                                validateError = mainViewModelEmployee::isValidPhoneNumber,
                                 errorMesaje = nameOfTelError,
                                 changeError = telErrorChange,
                                 error = telError,
@@ -194,7 +185,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 text = "Fecha Nacimiento",
                                 value = textFnacUser,
                                 onValueChange = onValueChangeFnacUser,
-                                validateError = ::isValidDateOfBirth,
+                                validateError = mainViewModelEmployee::isValidDateOfBirth,
                                 errorMesaje = nameOfFnacError,
                                 changeError = fNacErrorChange,
                                 error = fNacError,
@@ -207,7 +198,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 text = "User",
                                 value = textUserUser,
                                 onValueChange = onValueChangeUserUser,
-                                validateError = ::isValidUser,
+                                validateError = mainViewModelEmployee::isValidUser,
                                 errorMesaje = nameOfUserError,
                                 changeError = userErrorChange,
                                 error = userError,
@@ -221,7 +212,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 text = "Email",
                                 value = textEmailUser,
                                 onValueChange = onValueChangeEmailUser,
-                                validateError = ::isValidEmail,
+                                validateError = mainViewModelEmployee::isValidEmail,
                                 errorMesaje = nameOfEmailError,
                                 changeError = emailErrorChange,
                                 error = emailError,
@@ -277,7 +268,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                 Button(
                                     onClick = {
 
-                                        if (checkAllValidations(
+                                        if (mainViewModelEmployee.checkAllValidations(
                                                 textDni = textDniUser,
                                                 textName = textNameUser,
                                                 textSurname = textSurnameUser,
@@ -302,7 +293,7 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
                                                 address = textAddress
 
                                             )
-                                            viewModelUsers.uploadUser(newEmployee)
+                                            mainViewModelEmployee.uploadUser(newEmployee)
                                             navController.popBackStack()
                                         }
                                         else {
@@ -350,38 +341,6 @@ fun MainNewEmployee(viewModelUsers: ViewModelUsers) {
         showToast.value = false
     }
 }
-
-//Validaciones
-private fun isValidDni(text: String) = Pattern.compile("^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidName(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidSurname(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidPhoneNumber(text: String) = Pattern.compile("^(([+][0-9]{2}?)?[0-9]{9})?$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidDateOfBirth(text: String) = Pattern.compile("^([0-9]{1,2}[-/][0-9]{1,2}[-/][0-9]{1,4})?\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidEmail(text: String) = Pattern.compile("^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-
-private fun checkAllValidations(
-    textDni: String,
-    textName: String,
-    textSurname:String,
-    textPhoneNumber: String,
-    textDateOfBirth: String,
-    textUser: String,
-    textEmail: String
-): Boolean {
-    if (
-        !isValidDni(text = textDni) ||
-        !isValidName(text = textName) ||
-        !isValidSurname(text = textSurname) ||
-        !isValidPhoneNumber(text = textPhoneNumber) ||
-        !isValidDateOfBirth(text = textDateOfBirth) ||
-        !isValidUser(text = textUser) ||
-        !isValidEmail(text = textEmail)
-    )  return false
-
-    return  true
-}
-
 
 @Preview(showBackground = true)
 @Composable

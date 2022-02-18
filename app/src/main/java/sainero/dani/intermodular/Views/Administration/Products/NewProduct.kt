@@ -39,28 +39,16 @@ import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
 import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
 
-
-@ExperimentalFoundationApi
-class NewProduct : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @Composable
 fun MainNewProduct(
-    viewModelProductos: ViewModelProductos,
-    viewModelTipos: ViewModelTipos,
     mainViewModelEspecifications: MainViewModelEspecifications,
-    mainViewModelIngredients: MainViewModelIngredients
+    mainViewModelIngredients: MainViewModelIngredients,
+    mainViewModelProductos: MainViewModelProducts
 ) {
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
 
     //Textos
-    var allTypes = viewModelTipos.typeListResponse
+    var allTypes = mainViewModelProductos.typeListResponse
     var allTypesNames: MutableList<String> = mutableListOf()
     allTypes.forEach{allTypesNames.add(it.name)}
 
@@ -180,7 +168,7 @@ fun MainNewProduct(
                     text = "Nombre",
                     value = textName,
                     onValueChange = onValueChangeName,
-                    validateError = ::isValidNameOfProduct,
+                    validateError = mainViewModelProductos::isValidNameOfProduct,
                     errorMesaje = nameOfNameError,
                     changeError = nameErrorChange,
                     error = nameError,
@@ -199,7 +187,7 @@ fun MainNewProduct(
                     text = "Coste",
                     value = textCost,
                     onValueChange = onValueChangeCost,
-                    validateError = ::isValidCostOfProduct,
+                    validateError = mainViewModelProductos::isValidCostOfProduct,
                     errorMesaje = costOfNameError,
                     changeError = costErrorChange,
                     error = costError,
@@ -225,7 +213,7 @@ fun MainNewProduct(
                     text = "Stock",
                     value = textStock,
                     onValueChange = onValueChangeStock,
-                    validateError = ::isValidStockOfProduct,
+                    validateError = mainViewModelProductos::isValidStockOfProduct,
                     errorMesaje = stockOfNameError,
                     changeError = stockErrorChange,
                     error = stockError,
@@ -270,7 +258,7 @@ fun MainNewProduct(
                     Button(
                         onClick = {
 
-                            if (checkAllValidations(
+                            if (mainViewModelProductos.checkAllValidations(
                                     textName = textName,
                                     textPrice = textCost,
                                     textStock = textStock
@@ -287,7 +275,7 @@ fun MainNewProduct(
                                     img = textImg,
                                     stock = textStock.toInt()
                                 )
-                                viewModelProductos.uploadProduct(product = product)
+                                mainViewModelProductos.uploadProduct(product = product)
                                 showToast.value = true
                                 textOfToast.value = "El producto se creado correctamente"
                                 navController.popBackStack()
@@ -328,24 +316,6 @@ fun MainNewProduct(
 }
 
 
-//Validaciones
-private fun isValidNameOfProduct(text: String) = Pattern.compile("^[a-zA-Z ]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidCostOfProduct(text: String) = Pattern.compile("^[0-9.]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-private fun isValidStockOfProduct(text: String) = Pattern.compile("^[0-9]{1,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-
-private fun checkAllValidations(
-    textName: String,
-    textPrice: String,
-    textStock:String,
-): Boolean {
-    if (
-        !isValidNameOfProduct(text = textName) ||
-        !isValidCostOfProduct(text = textPrice) ||
-        !isValidStockOfProduct(text = textStock)
-    )  return false
-
-    return  true
-}
 
 @Preview(showBackground = true)
 @Composable

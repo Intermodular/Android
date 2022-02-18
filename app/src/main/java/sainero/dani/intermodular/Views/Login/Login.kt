@@ -1,10 +1,7 @@
 package sainero.dani.intermodular.Views
 
-import android.os.Bundle
 import android.view.KeyEvent.KEYCODE_ENTER
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
@@ -21,7 +18,6 @@ import sainero.dani.intermodular.Navigation.Destinations
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -37,49 +33,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.*
-import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.R
-import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
-import java.util.regex.Pattern
-
-@ExperimentalFoundationApi
-
-class Login : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-
-        }
-    }
-}
-
+import sainero.dani.intermodular.Views.Login.MainViewModelLogin
 
 
 @Composable
-fun LoginMain(viewModelUsers: ViewModelUsers) {
-    var (currentTime,onValueChangeCurrentTime) = remember { mutableStateOf(false) }
-
-    val current = LocalContext.current
-
-    LaunchedEffect(key1 = currentTime) {
-        if(currentTime) {
-            delay(300L)
-            viewModelUsers.getUserList()
-            Toast.makeText(current,"Contraseña actualizada", Toast.LENGTH_SHORT).show()
-
-        }
-    }
-
-    //API
-    val coroutineScope = rememberCoroutineScope()
-    var allUsers: List<Users>? by remember { mutableStateOf(null) }
+fun LoginMain(
+    mainViewModelLogin: MainViewModelLogin
+) {
 
     //Text
     var textUser by rememberSaveable { mutableStateOf("") }
@@ -115,7 +79,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                 //Tests
                 .clickable {
                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
-                    navController.navigate("${Destinations.AccessToTables.route}")
+                    navController.navigate("${Destinations.MainAdministrationActivity.route}")
                 }
         )
         Column(
@@ -129,7 +93,7 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
                 value = textUser,
                 onValueChange = {
                     textUser = it
-                    nameError = !isValidUser(it)
+                    nameError = !mainViewModelLogin.isValidUser(it)
                 },
                 placeholder = { Text("User") },
                 singleLine = true,
@@ -201,24 +165,25 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
             Button(
                 onClick = {
                     correctUser.value = false
-                    viewModelUsers.getUserList()
-                    viewModelUsers.userListResponse.forEach{
+                    mainViewModelLogin.getUserList{
+                        mainViewModelLogin.userListResponse.forEach{
 
-                        if (it.user.equals(textUser) && it.password.equals(textPassword)) {
-                            correctUser.value = true
-                            if (it.newUser) {
-                                onValueChangeNewPassword(true)
-                                selectedUser = it
-                            } else {
-                                if (it.rol.equals("Administrador"))
-                                    showAlertDialog.value = true
-                                else
-                                    navController.navigate(Destinations.AccessToTables.route)
+                            if (it.user.equals(textUser) && it.password.equals(textPassword)) {
+                                correctUser.value = true
+                                if (it.newUser) {
+                                    onValueChangeNewPassword(true)
+                                    selectedUser = it
+                                } else {
+                                    if (it.rol.equals("Administrador"))
+                                        showAlertDialog.value = true
+                                    else
+                                        navController.navigate(Destinations.AccessToTables.route)
+                                }
                             }
-                        }
 
+                        }
+                        if (!correctUser.value) Toast.makeText(context, "El usuario o la contraseña son incorrectos",Toast.LENGTH_SHORT).show()
                     }
-                    if (!correctUser.value) Toast.makeText(context, "El usuario o la contraseña son incorrectos",Toast.LENGTH_SHORT).show()
                 },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.White,
@@ -247,16 +212,15 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
             }
         }
 
-        //Llamar al Dialogo
+
         if (showAlertDialog.value) {
             adminAlertDestination()
-        }//Llamar al Dialogo
+        }
+
         if (showNewPassword) {
-            viewModelUsers.getUserList()
             newPassword(
                 onValueChangeNewPassword =onValueChangeNewPassword,
-                onValueChangeCurrentTime = onValueChangeCurrentTime,
-                viewModelUsers = viewModelUsers,
+                mainViewModelLogin = mainViewModelLogin,
                 user = selectedUser
             )
         }
@@ -265,18 +229,17 @@ fun LoginMain(viewModelUsers: ViewModelUsers) {
 }
 
 
-//Validaciones
-private fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 
 @Composable
 private fun newPassword(
     onValueChangeNewPassword: (Boolean) -> Unit,
-    onValueChangeCurrentTime: (Boolean) -> Unit,
-    viewModelUsers: ViewModelUsers,
+    mainViewModelLogin: MainViewModelLogin,
     user: Users
 ) {
     val value = remember { mutableStateOf("")}
     val error = remember{ mutableStateOf(false)}
+    val current = LocalContext.current
+
     Dialog(
         onDismissRequest = {
             onValueChangeNewPassword(false)
@@ -355,9 +318,11 @@ private fun newPassword(
                                 address = user.address
                             )
 
-                            viewModelUsers.editUser(user = updateUser)
+                            mainViewModelLogin.editUser(user = updateUser) {
+                                mainViewModelLogin.getUserList{}
+                                Toast.makeText(current,"La contraseña ha sido modificada",Toast.LENGTH_SHORT).show()
+                            }
                             onValueChangeNewPassword(false)
-                            onValueChangeCurrentTime(true)
 
 
                         },
@@ -384,6 +349,8 @@ private fun newPassword(
         }
     )
 }
+
+
 
 @Composable
 private fun adminAlertDestination() {
