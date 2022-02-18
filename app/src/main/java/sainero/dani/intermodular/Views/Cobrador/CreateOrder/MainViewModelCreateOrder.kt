@@ -70,14 +70,14 @@ class MainViewModelCreateOrder : ViewModel() {
     }
 
     //Métodos put
-    var getEditOrder: Pedidos by mutableStateOf (Pedidos(_id = 0,idMesa = 0,lineasPedido = arrayListOf()))
+    var valueOfEditOrder: Pedidos by mutableStateOf (Pedidos(_id = 0,idMesa = 0,lineasPedido = arrayListOf()))
     fun editOrder(order: Pedidos) {
         viewModelScope.launch {
             val apiService = ApiServiceOrder.getInstance()
             try {
                 val result = apiService.editOrder(order = order)
                 if (result.isSuccessful)
-                    getEditOrder = result.body()!!
+                    valueOfEditOrder = result.body()!!
                 else
                     Log.d("Error: edit order","Error: edit order")
             } catch (e: Exception) {
@@ -92,6 +92,7 @@ class MainViewModelCreateOrder : ViewModel() {
     var lineasPedidos: MutableList<LineaPedido> = mutableListOf()
     var lineasExtras: MutableList<LineaExtra> = mutableListOf()
     var editOrder = true
+    var editLineOrder: MutableList<LineaPedido> = arrayListOf()
 
 
 
@@ -101,26 +102,6 @@ class MainViewModelCreateOrder : ViewModel() {
 
 
 
-
-
-
-
-    var clearAllVariables = true
-
-    var getOrder = true
-    private val _lineaPedido: LineaPedido = LineaPedido(lineasExtra = arrayListOf(),costeLinea = 0f,cantidad = 0,anotaciones = "",producto = Productos(_id = 0,type = "",price = 0f,especifications = arrayListOf(),stock = 0,img = "",ingredients = arrayListOf(),name = ""))
-
-
-    private val _lineaExtras = ""
-    var pedidoEditar: LineaPedido = LineaPedido(lineasExtra = arrayListOf(),costeLinea = 0f,cantidad = 0,anotaciones = "",producto = Productos(_id = 0,type = "",price = 0f,especifications = arrayListOf(),stock = 0,img = "",ingredients = arrayListOf(),name = ""))
-
-    fun addLineaPedido(newValue: LineaPedido) {
-        lineasPedidos.add(newValue)
-    }
-
-    fun addLineaExtras(newValue: LineaExtra) {
-        lineasExtras.add(newValue)
-    }
 
 
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -17,6 +18,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import sainero.dani.intermodular.DataClass.LineaPedido
 import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.DataClass.Pedidos
 import sainero.dani.intermodular.Navigation.Destinations
@@ -92,10 +94,14 @@ fun MainEditOrder(
                                         .fillMaxWidth()
                                         .padding(start = 25.dp, bottom = 20.dp, end = 25.dp)
                                         .clickable {
-                                            mainViewModelCreateOrder.pedidoEditar = it
 
+
+                                            val id = mainViewModelCreateOrder.lineasPedidos.indexOf(it)
+                                          //  mainViewModelCreateOrder.lineasPedidos[id] = LineaPedido()
                                             //navController.navigate(Destinations.CreateOrder.route)
                                         }
+
+
                                 ) {
                                     Column(
                                         horizontalAlignment = Alignment.Start

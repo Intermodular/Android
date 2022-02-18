@@ -5,17 +5,13 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import sainero.dani.intermodular.Utils.GlobalVariables
-import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.ViewModels.ViewModelProductos
-
 
 @Composable
-fun confirmDeleteProduct(
+fun confirmAlertDialog(
     title: String,
     subtitle: String,
-    viewModelProductos : ViewModelProductos,
-    id: Int,
-    onValueChangeDeleteProduct: (Boolean) -> Unit
+    onValueChangeGoBack: (Boolean) -> Unit,
+    onFinishAlertDialog: (correct:Boolean) -> Unit
 ) {
     MaterialTheme {
 
@@ -32,8 +28,7 @@ fun confirmDeleteProduct(
                 confirmButton = {
                     Button(
                         onClick = {
-                            viewModelProductos.deleteProduct(id)
-                            navController.popBackStack()
+                            onFinishAlertDialog(true)
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Blue,
@@ -46,7 +41,8 @@ fun confirmDeleteProduct(
                 dismissButton = {
                     Button(
                         onClick = {
-                            onValueChangeDeleteProduct(false)
+                            onFinishAlertDialog(false)
+                            onValueChangeGoBack(false)
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Blue,
@@ -60,3 +56,4 @@ fun confirmDeleteProduct(
         }
     }
 }
+

@@ -6,8 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,32 +13,24 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
 import sainero.dani.intermodular.DataClass.Extras
-import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.DataClass.Tipos
-import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.ViewModels.ViewModelExtras
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
-import sainero.dani.intermodular.ViewModels.ViewModelUsers
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainViewModelExtras
 import java.util.regex.Pattern
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
+import sainero.dani.intermodular.ViewsItems.confirmAlertDialog
 
 
 class ProductEditType : ComponentActivity() {
@@ -109,7 +99,7 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     val expanded = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf("") }
-    var deleteType = remember { mutableStateOf(false) }
+    var (deleteType,onValueChangeDeleteType) = remember { mutableStateOf(false) }
 
 
 
@@ -128,9 +118,22 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
 
 
     //Funciones extras a realizar
-    if (deleteType.value) {
-        confirmDeleteType(viewModelTipos = viewModelTipos, id = id)
+    if (deleteType) {
+        var title: String = "¿Seguro que desea eliminar el tipo seleccionado?"
+        var subtitle: String = "No podrás volver a recuperarlo"
+
+        confirmAlertDialog(
+            title = title,
+            subtitle = subtitle,
+            onValueChangeGoBack = onValueChangeDeleteType,
+        ) {
+            if (it) {
+                viewModelTipos.deleteType(id = id)
+                navController.popBackStack()
+            }
+        }
     }
+
     if (showToast.value) {
         Toast.makeText(LocalContext.current,textOfToast.value, Toast.LENGTH_SHORT).show()
         showToast.value = false
@@ -151,7 +154,7 @@ private fun editType(id: Int, viewModelTipos: ViewModelTipos, onChangeEditExtras
                 actions = {
                     IconButton(
                         onClick = {
-                            deleteType.value = true
+                            onValueChangeDeleteType(true)
                         }
                     ) {
                         Icon(

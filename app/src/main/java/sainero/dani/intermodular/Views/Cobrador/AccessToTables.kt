@@ -414,12 +414,13 @@ private fun createTables(
                         onClick = {
                             onValueChangeSelectedTable(i)
                             if (i.state.equals("Ocupada")){
-                                mainViewModelCreateOrder.clearAllVariables = true
+
                                 mainViewModelCreateOrder.editOrder = true
                                 mainViewModelCreateOrder.getOrderByTableWithDelay(id = i._id) {
                                     mainViewModelCreateOrder.lineasPedidos = arrayListOf()
                                     mainViewModelCreateOrder.lineasPedidos = mainViewModelCreateOrder.orderByTable.lineasPedido
                                 }
+
                                 navController.navigate("${Destinations.CreateOrderWithOrder.route}/${i._id}")
                             } else {
                                 onValueChangeDisableAlert(true)
@@ -486,7 +487,7 @@ private fun confirmCreateOrder(
                             mainViewModelCreateOrder.uploadOrder(order = mainViewModelCreateOrder.pedido)
 
                             mainViewModelCreateOrder.editOrder = false
-                            mainViewModelCreateOrder.clearAllVariables = true
+
                             mainViewModelCreateOrder.lineasPedidos = arrayListOf()
                             mainViewModelCreateOrder.getOrderByTable(id = table._id)
 
