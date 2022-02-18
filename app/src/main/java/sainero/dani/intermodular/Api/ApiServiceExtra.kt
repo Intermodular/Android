@@ -38,8 +38,8 @@ interface ApiServiceExtra {
             if (apiService == null) {
                 apiService = Retrofit.Builder()
                     //Cambiar el puerto al 8080
-                    .baseUrl("http://192.168.18.2:3000/api/")
-                    //.baseUrl("http://192.168.1.136:3000/api/")
+                    //.baseUrl("http://192.168.18.2:3000/api/")
+                    .baseUrl("http://192.168.1.136:3000/api/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
                     .create(ApiServiceExtra::class.java)

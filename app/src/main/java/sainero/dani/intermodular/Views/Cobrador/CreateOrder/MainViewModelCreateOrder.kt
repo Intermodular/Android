@@ -6,10 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import sainero.dani.intermodular.Api.ApiServiceOrder
-import sainero.dani.intermodular.DataClass.LineaExtra
-import sainero.dani.intermodular.DataClass.LineaPedido
-import sainero.dani.intermodular.DataClass.Pedidos
-import sainero.dani.intermodular.DataClass.Productos
+import sainero.dani.intermodular.Api.ApiServiceZone
+import sainero.dani.intermodular.DataClass.*
 
 class MainViewModelCreateOrder : ViewModel() {
 
@@ -85,7 +83,6 @@ class MainViewModelCreateOrder : ViewModel() {
             }
         }
     }
-
 
     //Variables
     var pedido: Pedidos = Pedidos(0,0, arrayListOf())
