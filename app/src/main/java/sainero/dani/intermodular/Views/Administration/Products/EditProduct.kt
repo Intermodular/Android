@@ -7,12 +7,6 @@ import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.camera.core.Camera
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageCapture
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -292,7 +286,9 @@ fun MainEditProduct(
                     item {
                         textType.value = selectedDropDownMenu("Tipo",allTypesNames)
                     }
+
                     item {
+                        Spacer(modifier = Modifier.padding(top = 8.dp))
                         dropDownMenuWithNavigation(
                             text ="Ingredientes",
                             suggestions = ingredientes,
@@ -300,6 +296,7 @@ fun MainEditProduct(
                         )
                     }
                     item {
+                        Spacer(modifier = Modifier.padding(top = 8.dp))
                         createRowListWithErrorMesaje(
                             text = "Coste",
                             value = textCost,
@@ -322,6 +319,7 @@ fun MainEditProduct(
                     }
 
                     item {
+                        Spacer(modifier = Modifier.padding(top = 8.dp))
                         createRowList(
                             text = "Imágen",
                             value = textImg,
@@ -332,6 +330,7 @@ fun MainEditProduct(
                     }
 
                     item {
+                        Spacer(modifier = Modifier.padding(top = 8.dp))
                         createRowListWithErrorMesaje(
                             text = "Stock",
                             value = textStock,
@@ -371,11 +370,6 @@ fun MainEditProduct(
                                 modifier = Modifier
                                     .padding(start = 10.dp, end = 20.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowBack,
-                                    contentDescription = "Revertir cambios",
-                                    modifier = Modifier.size(ButtonDefaults.IconSize)
-                                )
                                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                                 Text(text = "Revertir cambios", fontSize = 15.sp)
                             }
@@ -420,11 +414,6 @@ fun MainEditProduct(
                                 modifier = Modifier
                                     .padding(start = 10.dp, end = 20.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Done,
-                                    contentDescription = "Guardar cambios",
-                                    modifier = Modifier.size(ButtonDefaults.IconSize)
-                                )
                                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                                 Text(text = "Guardar cambios", fontSize = 15.sp)
                             }
@@ -460,7 +449,7 @@ private fun getDirectory(): File {
 
 
 
-@Composable
+/*@Composable
 fun CamerOpen(directory: File) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -474,10 +463,10 @@ fun CamerOpen(directory: File) {
     )
 }
 
+*/
 
 
-@Composable
-fun SimpleCameraPreview(
+/*fun SimpleCameraPreview(
     modifier: Modifier = Modifier,
     context: Context,
     lifecycleOwner: LifecycleOwner,
@@ -495,6 +484,8 @@ fun SimpleCameraPreview(
     var cameraSelector: CameraSelector?
     val cameraProvider = cameraProviderFuture.get()
 /*
+
+ */
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { ctx ->
@@ -528,7 +519,7 @@ fun SimpleCameraPreview(
             previewView
         }
     )
-*/
+
     IconButton(
         onClick = {
             camera?.let {
@@ -549,4 +540,4 @@ fun SimpleCameraPreview(
         )
     }
 }
-
+*/

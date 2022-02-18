@@ -38,7 +38,7 @@ fun createRowList(
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType =  KeyboardType),
             label = { Text(text = text) },
             modifier = Modifier
-                .padding(start = 10.dp, end = 20.dp)
+                .padding(start = 20.dp, end = 20.dp)
         )
     }
 }

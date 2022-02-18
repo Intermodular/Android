@@ -27,7 +27,6 @@ import sainero.dani.intermodular.DataClass.Zonas
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
-import sainero.dani.intermodular.ui.theme.IntermodularTheme
 import java.util.regex.Pattern
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
@@ -189,7 +188,5 @@ fun MainNewZone(
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview14() {
-    IntermodularTheme {
-        //MainNewZone()
-    }
+
 }

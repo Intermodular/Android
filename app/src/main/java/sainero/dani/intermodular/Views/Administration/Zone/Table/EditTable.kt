@@ -154,7 +154,7 @@ fun MainEditTable(
                         suggestions = allNamesOfZone
                     )
                 )
-
+                Spacer(modifier = Modifier.padding(top = 8.dp))
                 createRowListWithErrorMesaje(
                     text = "NºSillas",
                     value = textNºChairs,

@@ -44,7 +44,7 @@ fun createRowListWithErrorMesaje(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType),
 
                 modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
+                    .padding(start = 20.dp, end = 20.dp)
             )
             val assistiveElementText = if (error) errorMesaje else if (mandatory) "*Obligatorio" else ""
             val assistiveElementColor = if (error) {
@@ -56,7 +56,7 @@ fun createRowListWithErrorMesaje(
                 text = assistiveElementText,
                 color = assistiveElementColor,
                 style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = 10.dp, end = 20.dp)
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp)
             )
         }
     }

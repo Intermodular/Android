@@ -287,7 +287,9 @@ fun MainEditEmployee(
                                     suggestions = textListRolUser
                                 )
                         }
-                        item { 
+
+                        item {
+                            Spacer(modifier = Modifier.padding(8.dp))
                             createRowList(
                                 text = "Dirección",
                                 value = textAddress,
@@ -297,9 +299,48 @@ fun MainEditEmployee(
                             )
                         }
                         item {
+                            Spacer(modifier = Modifier.padding(10.dp))
+                            Button(
+                                onClick = {
+                                    selectedUser = Users(
+                                        _id = selectedUser._id,
+                                        dni = selectedUser.dni,
+                                        name =  selectedUser.name,
+                                        surname =  selectedUser.surname,
+                                        fnac =  selectedUser.fnac,
+                                        user =  selectedUser.user,
+                                        password =  selectedUser.password,
+                                        rol =  selectedUser.rol,
+                                        email =  selectedUser.email,
+                                        newUser = true,
+                                        phoneNumber = selectedUser.phoneNumber,
+                                        address = textAddress
+                                    )
+                                    mainViewModelEmployee.editUser(selectedUser)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color.White,
+                                    contentColor = Color.Blue
+                                ),
+                                contentPadding = PaddingValues(
+                                    start = 10.dp,
+                                    top = 6.dp,
+                                    end = 10.dp,
+                                    bottom = 6.dp
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 20.dp, end = 20.dp)
+                            ) {
+                                Text(text = "Restablecer contraseña", fontSize = 15.sp)
+                            }
+                        }
+                        item {
+                            Spacer(modifier = Modifier.padding(10.dp))
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceEvenly,
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp)
                             ) {
                                 Button(
                                     onClick = {
@@ -374,37 +415,6 @@ fun MainEditEmployee(
                                     Text(text = "Guardar cambios", fontSize = 15.sp)
                                 }
 
-                                Button(
-                                    onClick = {
-                                        selectedUser = Users(
-                                            _id = selectedUser._id,
-                                            dni = selectedUser.dni,
-                                            name =  selectedUser.name,
-                                            surname =  selectedUser.surname,
-                                            fnac =  selectedUser.fnac,
-                                            user =  selectedUser.user,
-                                            password =  selectedUser.password,
-                                            rol =  selectedUser.rol,
-                                            email =  selectedUser.email,
-                                            newUser = true,
-                                            phoneNumber = selectedUser.phoneNumber,
-                                            address = textAddress
-                                        )
-                                        mainViewModelEmployee.editUser(selectedUser)
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color.White,
-                                        contentColor = Color.Blue
-                                    ),
-                                    contentPadding = PaddingValues(
-                                        start = 10.dp,
-                                        top = 6.dp,
-                                        end = 10.dp,
-                                        bottom = 6.dp
-                                    )
-                                ) {
-                                    Text(text = "Restablecer contraseña", fontSize = 15.sp)
-                                }
                             }
                         }
                     }

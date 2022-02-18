@@ -44,7 +44,7 @@ fun dropDownMenu(
                 onValueChange = { selectedText = it },
                 enabled = false,
                 modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp)
+                    .padding(start = 20.dp, end = 20.dp)
                     .onGloballyPositioned { coordinates ->
                         textfieldSize = coordinates.size.toSize()
                     },
