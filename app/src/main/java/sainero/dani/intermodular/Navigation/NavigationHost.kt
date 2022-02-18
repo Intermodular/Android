@@ -50,6 +50,7 @@ import sainero.dani.intermodular.Views.Administration.Zone.Table.MainTableManage
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainViewModelTable
 import sainero.dani.intermodular.Views.Cobrador.CreateOrder.*
 import sainero.dani.intermodular.Views.Cobrador.MainProductInformation
+import sainero.dani.intermodular.Views.Login.MainViewModelLogin
 
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
@@ -72,7 +73,8 @@ fun NavigationHost(
     mainViewModelEmployee: MainViewModelEmployee,
     mainViewModelTable: MainViewModelTable,
     mainViewModelTypes: MainViewModelTypes,
-    mainViewModelProductos: MainViewModelProducts
+    mainViewModelProductos: MainViewModelProducts,
+    mainViewModelLogin: MainViewModelLogin
 ){
     navController = rememberNavController()
 
@@ -82,11 +84,10 @@ fun NavigationHost(
     ){
 
         composable(route = Destinations.Login.route){
-            LoginMain(viewModelUsers)
+            LoginMain(mainViewModelLogin = mainViewModelLogin)
         }
 
         //Administration
-
         composable(route = Destinations.MainAdministrationActivity.route){
             MainAdministrationActivityView()
         }

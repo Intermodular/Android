@@ -110,13 +110,4 @@ class MainViewModelZone: ViewModel() {
         if (!isValidNameOfZone(text = textNameOfZone)) return false
         return true
     }
-
-
-
-
-
-
-
-
-
 }

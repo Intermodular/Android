@@ -151,7 +151,6 @@ fun MainAccessToTables(
                             Icon(Icons.Filled.Menu, contentDescription = "")
                         }
                     }
-
                 )
             },
             drawerShape = MaterialTheme.shapes.large,
@@ -203,7 +202,6 @@ fun MainAccessToTables(
                                 )
                             }
 
-                            //Reiniciar valores ¿?
                             textSelectedZone.value = selectedDropDownMenu(text = "Zona",suggestions = allNamesOfZones,onValueChangeNºMesa = onValueChangeNºMesa)
                             textState.value = selectedDropDownMenu(text = "Estado",suggestions = allStates,onValueChangeNºMesa = onValueChangeNºMesa)
 

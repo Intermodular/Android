@@ -18,7 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import sainero.dani.intermodular.Utils.DragAndDrop.ui.theme.IntermodularTheme
 
 class MainDragAndDrop : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

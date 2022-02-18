@@ -1,4 +1,4 @@
-package sainero.dani.intermodular
+package sainero.dani.intermodular.Views
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,6 +18,8 @@ import sainero.dani.intermodular.Views.Administration.Products.Types.MainViewMod
 import sainero.dani.intermodular.Views.Administration.Zone.MainViewModelZone
 import sainero.dani.intermodular.Views.Administration.Zone.Table.MainViewModelTable
 import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainViewModelCreateOrder
+import sainero.dani.intermodular.Views.Login.MainViewModelLogin
+import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 
 @ExperimentalFoundationApi
 class MainActivity : ComponentActivity() {
@@ -41,49 +43,52 @@ class MainActivity : ComponentActivity() {
     private val mainViewModelTable by viewModels<MainViewModelTable>()
     private val mainViewModelTypes by viewModels<MainViewModelTypes>()
     private val mainViewModelProductos by viewModels<MainViewModelProducts>()
-
+    private val mainViewModelLogin by viewModels<MainViewModelLogin>()
 
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            viewModelUsers.getUserList()
-            viewModelProductos.getProductList()
-            viewModelZonas.getZoneList()
-            viewModelExtras.getExtrasList()
-            viewModelMesas.getMesaList()
-            viewModelTipos.getTypesList()
-            viewModelPedidos.getOrderList()
+            IntermodularTheme() {
+                viewModelUsers.getUserList()
+                viewModelProductos.getProductList()
+                viewModelZonas.getZoneList()
+                viewModelExtras.getExtrasList()
+                viewModelMesas.getMesaList()
+                viewModelTipos.getTypesList()
+                viewModelPedidos.getOrderList()
 
-            ///
-            mainViewModelZone.getZoneList()
-            mainViewModelEmployee.getUserList()
-            mainViewModelTable.getMesaList()
-            mainViewModelTable.getZoneList()
-            mainViewModelTypes.getTypesList()
-            mainViewModelProductos.getProductList()
+                ///
+                mainViewModelZone.getZoneList()
+                mainViewModelEmployee.getUserList()
+                mainViewModelTable.getMesaList()
+                mainViewModelTable.getZoneList()
+                mainViewModelTypes.getTypesList()
+                mainViewModelProductos.getProductList()
 
-            ////
-            NavigationHost(
-                mainViewModelSearchBar,
-                viewModelUsers,
-                viewModelExtras,
-                viewModelMesas,
-                viewModelNominas,
-                viewModelPedidos,
-                viewModelProductos,
-                viewModelTipos,
-                viewModelZonas,
-                mainViewModelCreateOrder,
-                mainViewModelModelExtras,
-                mainViewModelEspecifications,
-                mainViewModelIngredients,
-                mainViewModelZone,
-                mainViewModelEmployee,
-                mainViewModelTable,
-                mainViewModelTypes,
-                mainViewModelProductos
-            )
+                ////
+                NavigationHost(
+                    mainViewModelSearchBar,
+                    viewModelUsers,
+                    viewModelExtras,
+                    viewModelMesas,
+                    viewModelNominas,
+                    viewModelPedidos,
+                    viewModelProductos,
+                    viewModelTipos,
+                    viewModelZonas,
+                    mainViewModelCreateOrder,
+                    mainViewModelModelExtras,
+                    mainViewModelEspecifications,
+                    mainViewModelIngredients,
+                    mainViewModelZone,
+                    mainViewModelEmployee,
+                    mainViewModelTable,
+                    mainViewModelTypes,
+                    mainViewModelProductos,
+                    mainViewModelLogin
+                )
+            }
         }
     }
 }

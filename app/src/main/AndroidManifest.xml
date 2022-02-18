@@ -169,7 +169,7 @@
             android:label="@string/title_activity_main_administration"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Views.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"

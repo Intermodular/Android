@@ -9,7 +9,7 @@ import sainero.dani.intermodular.DataClass.Users
 interface ApiServiceUser {
 
     @GET("empleados")
-    suspend fun getUsers() : List<Users>
+    suspend fun getUsers() : Response<List<Users>>
 
     @GET("empleado/id/{id}")
     suspend fun getUserById(

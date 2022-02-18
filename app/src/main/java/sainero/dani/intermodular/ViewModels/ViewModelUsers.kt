@@ -23,7 +23,7 @@ class ViewModelUsers: ViewModel() {
 
             try {
                 val usersList = apiService.getUsers()
-                userListResponse = usersList
+                userListResponse = usersList.body()!!
 
             } catch (e: Exception) {
                 errorMessage = e.message.toString()

@@ -48,7 +48,6 @@ class MainViewModelTable: ViewModel() {
         }
     }
 
-    //Métodos get
     var zonesListResponse: List <Zonas> by mutableStateOf ( listOf ())
     fun getZoneList() {
         viewModelScope.launch {

@@ -28,16 +28,7 @@ import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelPedidos
-import sainero.dani.intermodular.Views.Cobrador.CreateOrder.ui.theme.IntermodularTheme
 
-class EditOrder : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
 
 @Composable
 fun MainEditOrder(
