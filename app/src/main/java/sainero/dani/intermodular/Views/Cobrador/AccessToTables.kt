@@ -142,7 +142,6 @@ fun MainAccessToTables(
                         }
                     },
                     navigationIcon = {
-                        // show drawer icon
                         IconButton(
                             onClick = {
                                 scope.launch { scaffoldState.drawerState.open() }
@@ -227,21 +226,7 @@ fun MainAccessToTables(
 
 
                         }
-                    },
-                    floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = {
-
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Search,
-                                contentDescription = "Search Icon",
-                                tint = MaterialTheme.colors.onSecondary
-                            )
-                        }
-                    },
-                    floatingActionButtonPosition = FabPosition.Center
+                    }
                 )
             },
             content = {

@@ -48,9 +48,8 @@ fun MainEditOrder(
     mainViewModelCreateOrder: MainViewModelCreateOrder,
     tableId: Int,
     viemModelPedidos: ViewModelPedidos,
-    viewModelMesas: ViewModelMesas
-
-
+    viewModelMesas: ViewModelMesas,
+    typeId: Int
 ) {
     //Variables
     var (refresh, onValueChangeRefresh) = rememberSaveable { mutableStateOf(true) }
@@ -58,7 +57,15 @@ fun MainEditOrder(
     Scaffold(
 
         content = {
-            if (refresh) CreateContent(mainViewModelCreateOrder = mainViewModelCreateOrder, onValueChangeRefresh = onValueChangeRefresh, tableId = tableId, viemModelPedidos = viemModelPedidos, viewModelMesas = viewModelMesas)
+            if (refresh)
+                CreateContent(
+                    mainViewModelCreateOrder = mainViewModelCreateOrder,
+                    onValueChangeRefresh = onValueChangeRefresh,
+                    tableId = tableId,
+                    viemModelPedidos = viemModelPedidos,
+                    viewModelMesas = viewModelMesas,
+                    typeId = typeId
+                )
 
         }
     )
@@ -72,8 +79,9 @@ private fun CreateContent(
     tableId: Int,
     viemModelPedidos: ViewModelPedidos,
     viewModelMesas: ViewModelMesas,
-    onValueChangeRefresh: (Boolean)-> Unit
-    ){
+    onValueChangeRefresh: (Boolean)-> Unit,
+    typeId: Int
+){
     var selectedTable = remember{ Mesas(_id = 0,state = "Libre",number = 0,numChair = 0,zone = "")}
     viewModelMesas.mesasListResponse.forEach { if (it._id.equals(tableId)) selectedTable = it}
     var indexItem : MutableState<Int> = remember{ mutableStateOf(0)}
@@ -157,9 +165,10 @@ private fun CreateContent(
                                             onValueChangeDeleteLane(true)
                                         },
                                         onTap = { Offset ->
-                                            val idLineaPedido = mainViewModelCreateOrder.lineasPedidos.indexOf(it)
-                                            
-                                            //navController.navigate("${Destinations.EditOrder.route}/${}/${}")
+                                            //val idLineaPedido = mainViewModelCreateOrder.lineasPedidos.indexOf(it)
+                                            mainViewModelCreateOrder.editLineOrder = it
+                                            mainViewModelCreateOrder.editLineOrderIndex = index
+                                            navController.navigate("${Destinations.EditOrderLine.route}/${typeId}")
                                         }
                                     )
                                 }

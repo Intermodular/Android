@@ -90,10 +90,8 @@ class MainViewModelCreateOrder : ViewModel() {
     var lineasPedidos: MutableList<LineaPedido> = mutableListOf()
     var lineasExtras: MutableList<LineaExtra> = mutableListOf()
     var editOrder = true
-    var editLineOrder: MutableList<LineaPedido> = arrayListOf()
-
-
-
+    var editLineOrder: LineaPedido = LineaPedido(Productos(0,"","", arrayListOf(),0f, arrayListOf(),"",0),0,"", arrayListOf(),0f,)
+    var editLineOrderIndex: Int = 0
 
 
 

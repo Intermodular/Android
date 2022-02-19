@@ -1,8 +1,10 @@
 package sainero.dani.intermodular.Views.Cobrador.CreateOrder
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -31,38 +34,65 @@ import sainero.dani.intermodular.DataClass.Tipos
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelPedidos
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
+import sainero.dani.intermodular.ViewsItems.confirmAlertDialog
+import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
 import java.lang.NumberFormatException
 
 @Composable
 fun MainEditOrderLine(
     mainViewModelCreateOrder: MainViewModelCreateOrder,
     viewModelTipos: ViewModelTipos,
-    viewModelProductos: ViewModelProductos,
-    viewModelPedidos: ViewModelPedidos,
-    productId: Int,
-    typeId: Int,
-    tableId: Int
+    typeId: Int
 ) {
 //Variables de ayuda
     val expanded = remember { mutableStateOf(false) }
-
-
+    val context = LocalContext.current
+    val getCompatibleExtras = remember { mutableStateOf(true)}
+    val firsthAcces = remember { mutableStateOf(true) }
+    if (firsthAcces.value){
+        mainViewModelCreateOrder.lineasExtras.clear()
+        firsthAcces.value = false
+    }
     //Textos
-    var description = rememberSaveable { mutableStateOf("") }
+    var description = rememberSaveable { mutableStateOf(mainViewModelCreateOrder.editLineOrder.anotaciones) }
 
-    var textQuantity = rememberSaveable{ mutableStateOf("1") }
+    var textQuantity = rememberSaveable{ mutableStateOf(mainViewModelCreateOrder.editLineOrder.cantidad.toString()) }
     var quantityError = remember { mutableStateOf(false) }
     val textOfQuantityError: String = "Debe ser un número entero"
 
+    var product: Productos = mainViewModelCreateOrder.editLineOrder.producto
+    var selectedType = remember { mutableStateOf(Tipos(0,"","", arrayListOf()))}
+    viewModelTipos.typeListResponse.forEach { if (it.name.equals(mainViewModelCreateOrder.editLineOrder.producto.type)) selectedType.value = it }
 
-    var product: Productos = Productos(0,"","", arrayListOf(),0f, arrayListOf(),"",0)
-    viewModelProductos.productListResponse.forEach { if (it._id.equals(productId)) product = it }
-    var selectedType: Tipos = Tipos(0,"","", arrayListOf())
-    viewModelTipos.typeListResponse.forEach { if (it._id.equals(typeId)) selectedType = it }
+    if (getCompatibleExtras.value) {
+        selectedType.value.compatibleExtras.forEach{mainViewModelCreateOrder.lineasExtras.add(LineaExtra(it,0))}
+        getCompatibleExtras.value = false
+    }
 
+
+
+    val (deleteItem,onValueChangeDeleteItem) = remember { mutableStateOf(false)}
+    if (deleteItem){
+        var title: String = "¿Seguro que desea eliminar la línea seleccionada?"
+        var subtitle: String = "No podrás volver a recuperarla"
+
+        confirmAlertDialog(
+            title = title,
+            subtitle = subtitle,
+            onValueChangeGoBack = onValueChangeDeleteItem,
+        ) {
+            if (it) {
+                //Eliminar línea
+                mainViewModelCreateOrder.lineasPedidos.removeAt(mainViewModelCreateOrder.editLineOrderIndex)
+                Toast.makeText(context,"La línea ha sido eliminada correctamente",Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -73,7 +103,7 @@ fun MainEditOrderLine(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            GlobalVariables.navController.popBackStack()
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -86,7 +116,7 @@ fun MainEditOrderLine(
                 actions = {
                     IconButton(
                         onClick = {
-
+                            onValueChangeDeleteItem(true)
                         }
                     ) {
                         Icon(
@@ -110,7 +140,7 @@ fun MainEditOrderLine(
                             DropdownMenuItem(
                                 onClick = {
                                     expanded.value = false
-                                    GlobalVariables.navController.navigate("${Destinations.ProductInformation.route}/${product._id}")
+                                    navController.navigate("${Destinations.ProductInformation.route}/${product._id}")
                                 }) {
                                 Text(text = "Ver información del producto")
                             }
@@ -118,16 +148,14 @@ fun MainEditOrderLine(
                     }
                 }
             )
-
         } ,
         content = {
-            LazyColumn(
-                content = {
-                    item {
-                        Column(
-                            verticalArrangement = Arrangement.Center
-                        ) {
-
+            Column(
+                verticalArrangement = Arrangement.Center
+            ) {
+                LazyColumn(
+                    content = {
+                        item {
                             Spacer(modifier = Modifier.padding(10.dp))
                             Column(
                                 verticalArrangement = Arrangement.SpaceBetween
@@ -136,18 +164,17 @@ fun MainEditOrderLine(
                                     modifier = Modifier.height(200.dp)
                                 ) {
                                     Image(
-                                        painter =  rememberImagePainter(
-                                            data =  if (!product.img.equals("")) "${product.img}" else "https://www.chollosocial.com/media/data/2019/11/678gf34.png",
+                                        painter = rememberImagePainter(
+                                            data = if (!product.img.equals("")) "${product.img}" else "https://www.chollosocial.com/media/data/2019/11/678gf34.png",
                                             builder = {
 
                                             }
                                         ),
-                                        contentDescription ="Imágen del producto",
+                                        contentDescription = "Imágen del producto",
                                         modifier = Modifier.fillMaxSize(),
                                         contentScale = ContentScale.Fit
                                     )
                                 }
-
                                 Box(
                                     modifier = Modifier.height(50.dp)
                                 ) {
@@ -182,86 +209,86 @@ fun MainEditOrderLine(
                                             .padding(start = 20.dp, end = 20.dp)
                                             .fillMaxWidth(),
                                     )
-
                                 }
                                 Spacer(modifier = Modifier.padding(10.dp))
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.Center,
                                 ) {
-                                TextField(
-                                    value = description.value,
-                                    onValueChange = { description.value = it },
-                                    label = { Text("Anotaciones") },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(100.dp)
-                                        .padding(PaddingValues(start = 20.dp, end = 20.dp)),
-
-                                    )
-                                }
-                            }
-
-                            selectedType.compatibleExtras.forEach {
-                                var numExtra = rememberSaveable { mutableStateOf("0") }
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 20.dp, bottom = 20.dp)
-                                ) {
-                                    IconButton(
-                                        onClick = {
-                                            //Restar 1
-                                            if (numExtra.value.toInt() > 0){
-                                                numExtra.value = (numExtra.value.toInt() - 1).toString()
-                                            }
-                                        }
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.remove_circle_outline),
-                                            contentDescription = "Less icon",
-                                            modifier = Modifier
-                                                .size(100.dp)
-                                                .padding(start = 20.dp)
-                                        )
-                                    }
-
                                     TextField(
-                                        value = numExtra.value,
-                                        onValueChange = { numExtra.value = it },
-                                        label = { Text(it.name, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()) },
-                                        modifier = Modifier
-                                            .width((LocalConfiguration.current.screenWidthDp / 2).dp)
-                                            .height(60.dp)
-                                            .padding(PaddingValues(start = 20.dp, end = 20.dp)),
-                                        enabled = false,
-                                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+                                        value = description.value,
+                                        onValueChange = { description.value = it },
+                                        label = { Text("Anotaciones") },
+                                         modifier = Modifier
+                                             .fillMaxWidth()
+                                             .height(100.dp)
+                                             .padding(PaddingValues(start = 20.dp, end = 20.dp)),
                                     )
-
-                                    IconButton(
-                                        onClick = {
-                                            //Sumar 1
-                                            if (numExtra.value.toInt() + 1 < 10){
-                                                numExtra.value = (numExtra.value.toInt() + 1).toString()
-                                            }
-                                        }
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.add_circle_outline),
-                                            contentDescription = "More icon",
-                                            modifier = Modifier
-                                                .size(100.dp)
-                                                .padding(end = 20.dp)
-                                        )
-                                    }
                                 }
-                                val lineaExtra : LineaExtra = LineaExtra(it,numExtra.value.toInt())
-
-                                if (selectedType.compatibleExtras.size != mainViewModelCreateOrder.lineasExtras.size) mainViewModelCreateOrder.lineasExtras.add(lineaExtra)
                             }
+                        }
+                        itemsIndexed(mainViewModelCreateOrder.editLineOrder.lineasExtra) { index, it ->
+                            var numExtra = rememberSaveable { mutableStateOf(it.cantidad.toString()) }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 20.dp, bottom = 20.dp)
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        if (numExtra.value.toInt() > 0) {
+                                            numExtra.value = (numExtra.value.toInt() - 1).toString()
+                                            mainViewModelCreateOrder.lineasExtras.get(index).cantidad = numExtra.value.toInt()
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.remove_circle_outline),
+                                        contentDescription = "Less icon",
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                            .padding(start = 20.dp)
+                                    )
+                                }
+                                TextField(
+                                    value = numExtra.value,
+                                    onValueChange = { numExtra.value = it },
+                                    label = {
+                                        Text(
+                                            "${it.extra.name} (${it.extra.price})",
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .width((LocalConfiguration.current.screenWidthDp / 2).dp)
+                                        .height(60.dp)
+                                        .padding(PaddingValues(start = 20.dp, end = 20.dp)),
+                                    enabled = false,
+                                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+                                )
+                                IconButton(
+                                    onClick = {
+                                        if (numExtra.value.toInt() + 1 < 10) {
+                                            numExtra.value = (numExtra.value.toInt() + 1).toString()
+                                            mainViewModelCreateOrder.lineasExtras.get(index).cantidad = numExtra.value.toInt()
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.add_circle_outline),
+                                        contentDescription = "More icon",
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                            .padding(end = 20.dp)
+                                    )
+                                }
+                            }
+
+                        }
+                         item {
                             Row(
                                 Modifier
                                     .fillMaxWidth()
@@ -274,7 +301,7 @@ fun MainEditOrderLine(
                                 ) {
                                     Button(
                                         onClick = {
-                                            GlobalVariables.navController.popBackStack()
+                                            navController.popBackStack()
                                         },
                                         colors = ButtonDefaults.buttonColors(
                                             backgroundColor = Color.White,
@@ -301,6 +328,7 @@ fun MainEditOrderLine(
                                 ) {
                                     Button(
                                         onClick = {
+
                                             var linePrice = mainViewModelCreateOrder.calculateLinePrice(
                                                 mainViewModelCreateOrder = mainViewModelCreateOrder,
                                                 product = product,
@@ -315,10 +343,10 @@ fun MainEditOrderLine(
                                                 lineasExtra = mainViewModelCreateOrder.lineasExtras.toMutableList()
                                             )
 
-                                            mainViewModelCreateOrder.lineasPedidos.add(lineaDePedido)
-                                            mainViewModelCreateOrder.lineasExtras.clear()
-                                            GlobalVariables.navController.popBackStack()
+                                            mainViewModelCreateOrder.lineasPedidos[mainViewModelCreateOrder.editLineOrderIndex] = lineaDePedido
 
+                                            Toast.makeText(context,"Ha sido actualizado correctamente",Toast.LENGTH_SHORT).show()
+                                            navController.popBackStack()
                                         },
                                         colors = ButtonDefaults.buttonColors(
                                             backgroundColor = Color.White,
@@ -335,16 +363,13 @@ fun MainEditOrderLine(
                                             .height(50.dp)
                                     ) {
                                         Text(text = "Guardar")
-
                                     }
                                 }
-
                             }
-
                         }
                     }
-                }
-            )
+                )
+            }
         }
     )
 }

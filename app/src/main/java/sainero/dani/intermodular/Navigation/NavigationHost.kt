@@ -225,6 +225,7 @@ fun NavigationHost(
         }
 
         composable(route = Destinations.NewZone.route) {
+            mainViewModelZone.getZoneList()
             MainNewZone(
                 mainViewModelZone = mainViewModelZone
             )
@@ -315,17 +316,25 @@ fun NavigationHost(
         }
 
         composable(
-            route = "${Destinations.EditOrder.route}/{tableId}",
-            arguments = listOf(navArgument("tableId"){type = NavType.IntType})
+            route = "${Destinations.EditOrder.route}/{tableId}/{typeId}",
+            arguments = listOf(
+                navArgument("tableId"){type = NavType.IntType},
+                navArgument("typeId"){type = NavType.IntType}
+            )
 
         ){
-            val id = it.arguments?.getInt("tableId")
-            requireNotNull(id)
+
+            val tableId = it.arguments?.getInt("tableId")
+            val typeId = it.arguments?.getInt("typeId")
+            requireNotNull(tableId)
+            requireNotNull(typeId)
+
             MainEditOrder(
                 mainViewModelCreateOrder = mainViewModelCreateOrder,
-                tableId = id,
+                tableId = tableId,
                 viemModelPedidos = viewModelPedidos,
-                viewModelMesas = viewModelMesas
+                viewModelMesas = viewModelMesas,
+                typeId = typeId
             )
         }
 
@@ -358,30 +367,16 @@ fun NavigationHost(
         }
 
         composable(
-            route = "${Destinations.EditOrderLine.route}/{productId}/{typeId}/{tableId}",
-            arguments = listOf(
-                navArgument("productId"){type = NavType.IntType},
-                navArgument("typeId"){type = NavType.IntType},
-                navArgument("tableId"){type = NavType.IntType}
-            )
-
+            route = "${Destinations.EditOrderLine.route}/{typeId}",
+            arguments = listOf(navArgument("typeId"){type = NavType.IntType})
         ){
-            val productId = it.arguments?.getInt("productId")
-            val typeId = it.arguments?.getInt("typeId")
-            val tableId = it.arguments?.getInt("tableId")
-
-            requireNotNull(productId)
+            var typeId = it.arguments?.getInt("typeId")
             requireNotNull(typeId)
-            requireNotNull(tableId)
-
+            viewModelTipos.getTypesList()
             MainEditOrderLine(
                 mainViewModelCreateOrder = mainViewModelCreateOrder,
-                viewModelProductos = viewModelProductos,
                 viewModelTipos = viewModelTipos,
-                productId = productId,
-                typeId = typeId,
-                tableId = tableId,
-                viewModelPedidos = viewModelPedidos
+                typeId = typeId
             )
         }
 
