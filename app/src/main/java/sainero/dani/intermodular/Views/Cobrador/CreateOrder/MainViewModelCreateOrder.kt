@@ -32,17 +32,19 @@ class MainViewModelCreateOrder : ViewModel() {
         }
 
     }//Métodos get
-    fun getOrderByTableWithDelay(id: Int, onValueFinish: () -> Unit) {
+    fun getOrderByTableWithDelay(id: Int, onValueFinish: (Boolean) -> Unit) {
         viewModelScope.launch {
             val apiService = ApiServiceOrder.getInstance()
             try {
                 val result = apiService.getOrderByTable(id)
                 if (result.isSuccessful){
                     orderByTable = result.body()!!
-                    onValueFinish()
+                    onValueFinish(true)
                 }
-                else
+                else{
+                    onValueFinish(false)
                     Log.d("Error: upload order","Error: upload order")
+                }
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }

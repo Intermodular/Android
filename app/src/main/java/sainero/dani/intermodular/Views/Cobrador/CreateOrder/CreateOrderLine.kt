@@ -330,7 +330,7 @@ fun MainCreateOrderLine(
                                                 anotaciones = description.value,
                                                 cantidad = if (!textQuantity.value.equals("")) textQuantity.value.toInt() else 1,
                                                 costeLinea = linePrice,
-                                                lineasExtra = mainViewModelCreateOrder.lineasExtras.toMutableList()
+                                                lineasExtras = mainViewModelCreateOrder.lineasExtras.toMutableList()
                                             )
 
                                             mainViewModelCreateOrder.lineasPedidos.add(lineaDePedido)

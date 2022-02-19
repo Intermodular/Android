@@ -227,7 +227,7 @@ fun MainEditOrderLine(
                                 }
                             }
                         }
-                        itemsIndexed(mainViewModelCreateOrder.editLineOrder.lineasExtra) { index, it ->
+                        itemsIndexed(mainViewModelCreateOrder.editLineOrder.lineasExtras) { index, it ->
                             var numExtra = rememberSaveable { mutableStateOf(it.cantidad.toString()) }
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -340,7 +340,7 @@ fun MainEditOrderLine(
                                                 anotaciones = description.value,
                                                 cantidad = if (!textQuantity.value.equals("")) textQuantity.value.toInt() else 1,
                                                 costeLinea = linePrice,
-                                                lineasExtra = mainViewModelCreateOrder.lineasExtras.toMutableList()
+                                                lineasExtras = mainViewModelCreateOrder.lineasExtras.toMutableList()
                                             )
 
                                             mainViewModelCreateOrder.lineasPedidos[mainViewModelCreateOrder.editLineOrderIndex] = lineaDePedido
