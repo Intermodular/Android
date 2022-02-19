@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import sainero.dani.intermodular.Api.ApiServiceOrder
 import sainero.dani.intermodular.Api.ApiServiceZone
 import sainero.dani.intermodular.DataClass.*
+import java.lang.NumberFormatException
 
 class MainViewModelCreateOrder : ViewModel() {
 
@@ -98,7 +99,29 @@ class MainViewModelCreateOrder : ViewModel() {
 
 
 
+    //Validaciones
+    fun isInteger(
+        text:String
+    ): Boolean {
+        try {
+            text.toInt()
+        } catch (e: NumberFormatException) {
+            return false
+        }
+        return true
+    }
 
+
+    fun calculateLinePrice(
+        mainViewModelCreateOrder: MainViewModelCreateOrder,
+        product: Productos,
+        textQuantity: Int
+    ): Float {
+        var priceTotalExtras = 0f
+        mainViewModelCreateOrder.lineasExtras.forEach{ priceTotalExtras += (it.extra.price * it.cantidad)}
+        var linePrice: Float = (product.price + priceTotalExtras) * textQuantity
+        return linePrice
+    }
 
 
 

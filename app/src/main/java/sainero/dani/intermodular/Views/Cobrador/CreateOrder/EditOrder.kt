@@ -53,7 +53,6 @@ fun MainEditOrder(
     //Variables
     var (refresh, onValueChangeRefresh) = rememberSaveable { mutableStateOf(true) }
 
-
     Scaffold(
 
         content = {
@@ -151,15 +150,12 @@ private fun CreateContent(
                                             onValueChangeDeleteLane(true)
                                         },
                                         onTap = { Offset ->
-                                            val idLineaPedido =
-                                                mainViewModelCreateOrder.lineasPedidos.indexOf(
-                                                    it
-                                                )
+                                            val idLineaPedido = mainViewModelCreateOrder.lineasPedidos.indexOf(it)
+                                            
+                                            //navController.navigate("${Destinations.EditOrder.route}/${}/${}")
                                         }
                                     )
                                 }
-
-
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.Start

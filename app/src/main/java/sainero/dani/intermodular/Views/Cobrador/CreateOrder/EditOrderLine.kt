@@ -1,9 +1,5 @@
 package sainero.dani.intermodular.Views.Cobrador.CreateOrder
 
-import android.os.Bundle
-import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -24,40 +21,33 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import sainero.dani.intermodular.DataClass.*
+import sainero.dani.intermodular.DataClass.LineaExtra
+import sainero.dani.intermodular.DataClass.LineaPedido
+import sainero.dani.intermodular.DataClass.Productos
+import sainero.dani.intermodular.DataClass.Tipos
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.R
-import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.ViewModels.ViewModelPedidos
 import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.ViewModels.ViewModelTipos
 import java.lang.NumberFormatException
 
-class CreateOrderLine : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
-
 @Composable
-fun MainCreateOrderLine(
+fun MainEditOrderLine(
     mainViewModelCreateOrder: MainViewModelCreateOrder,
-    viewModelProductos: ViewModelProductos,
     viewModelTipos: ViewModelTipos,
+    viewModelProductos: ViewModelProductos,
     viewModelPedidos: ViewModelPedidos,
     productId: Int,
     typeId: Int,
     tableId: Int
 ) {
-    //Variables de ayuda
-    val expanded = remember { mutableStateOf(false)}
+//Variables de ayuda
+    val expanded = remember { mutableStateOf(false) }
 
 
     //Textos
@@ -76,47 +66,58 @@ fun MainCreateOrderLine(
 
     Scaffold(
         topBar = {
-             TopAppBar(
-                 title = {
-                     Text(text = "Editar producto",color = Color.White)
-                 },
-                 navigationIcon = {
-                     IconButton(
-                         onClick = {
-                             navController.popBackStack()
-                         }
-                     ) {
-                         Icon(
-                             Icons.Filled.ArrowBack,
-                             contentDescription = "",
-                             tint = Color.White
-                         )
-                     }
-                 },
-                 actions = {
-                     Box (Modifier.wrapContentSize()){
-                         IconButton(onClick = {
-                             expanded.value = true
-                         }) {
-                             Icon(
-                                 Icons.Filled.MoreVert,
-                                 contentDescription = "More icon",
-                                 tint = Color.White
-                             )
-                         }
+            TopAppBar(
+                title = {
+                    Text(text = "Editar producto",color = Color.White)
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            GlobalVariables.navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
 
-                         DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
-                             DropdownMenuItem(
-                                 onClick = {
-                                     expanded.value = false
-                                     navController.navigate("${Destinations.ProductInformation.route}/${product._id}")
-                                 }) {
-                                 Text(text = "Ver información del producto")
-                             }
-                         }
-                     }
-                 }
-             )
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Eliminar empleado",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                    }
+                    Box (Modifier.wrapContentSize()){
+                        IconButton(onClick = {
+                            expanded.value = true
+                        }) {
+                            Icon(
+                                Icons.Filled.MoreVert,
+                                contentDescription = "More icon",
+                                tint = Color.White
+                            )
+                        }
+
+                        DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    expanded.value = false
+                                    GlobalVariables.navController.navigate("${Destinations.ProductInformation.route}/${product._id}")
+                                }) {
+                                Text(text = "Ver información del producto")
+                            }
+                        }
+                    }
+                }
+            )
 
         } ,
         content = {
@@ -188,17 +189,16 @@ fun MainCreateOrderLine(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.Center,
                                 ) {
+                                TextField(
+                                    value = description.value,
+                                    onValueChange = { description.value = it },
+                                    label = { Text("Anotaciones") },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(100.dp)
+                                        .padding(PaddingValues(start = 20.dp, end = 20.dp)),
 
-                                    TextField(
-                                        value = description.value,
-                                        onValueChange = { description.value = it },
-                                        label = { Text("Anotaciones") },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(100.dp)
-                                            .padding(PaddingValues(start = 20.dp, end = 20.dp)),
-
-                                        )
+                                    )
                                 }
                             }
 
@@ -274,7 +274,7 @@ fun MainCreateOrderLine(
                                 ) {
                                     Button(
                                         onClick = {
-                                            navController.popBackStack()
+                                            GlobalVariables.navController.popBackStack()
                                         },
                                         colors = ButtonDefaults.buttonColors(
                                             backgroundColor = Color.White,
@@ -317,7 +317,7 @@ fun MainCreateOrderLine(
 
                                             mainViewModelCreateOrder.lineasPedidos.add(lineaDePedido)
                                             mainViewModelCreateOrder.lineasExtras.clear()
-                                            navController.popBackStack()
+                                            GlobalVariables.navController.popBackStack()
 
                                         },
                                         colors = ButtonDefaults.buttonColors(
@@ -347,12 +347,4 @@ fun MainCreateOrderLine(
             )
         }
     )
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview22() {
-
 }
