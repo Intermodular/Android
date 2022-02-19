@@ -482,8 +482,8 @@ private fun confirmCreateOrder(
                 confirmButton = {
                     Button(
                         onClick = {
-                            var updateTable = Mesas(state = "Ocupada",number = table.number,numChair = table.numChair,zone = table.zone,_id = table._id)
-                            viewModelMesas.editMesa(updateTable)
+                            //var updateTable = Mesas(state = "Ocupada",number = table.number,numChair = table.numChair,zone = table.zone,_id = table._id)
+                            //viewModelMesas.editMesa(updateTable)
 
                             mainViewModelCreateOrder.pedido = Pedidos(idMesa = table._id,lineasPedido = arrayListOf(),_id = 0)
                             mainViewModelCreateOrder.uploadOrder(order = mainViewModelCreateOrder.pedido)

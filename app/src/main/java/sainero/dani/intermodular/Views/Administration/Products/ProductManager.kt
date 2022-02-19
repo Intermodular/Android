@@ -161,7 +161,7 @@ private fun filterContentByName(
     ) {
 
         for (i in allProducts) {
-            if (i.name.contains(filterName)) {
+            if (i.name.lowercase().contains(filterName)) {
                 item {
                     Card(modifier = Modifier
                         .padding(8.dp, 4.dp)

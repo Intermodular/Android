@@ -370,7 +370,6 @@ fun MainEditProduct(
                                 modifier = Modifier
                                     .padding(start = 10.dp, end = 20.dp)
                             ) {
-                                Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                                 Text(text = "Revertir cambios", fontSize = 15.sp)
                             }
 
@@ -414,7 +413,6 @@ fun MainEditProduct(
                                 modifier = Modifier
                                     .padding(start = 10.dp, end = 20.dp)
                             ) {
-                                Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                                 Text(text = "Guardar cambios", fontSize = 15.sp)
                             }
                         }

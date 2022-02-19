@@ -118,15 +118,13 @@ fun MainEditEmployee(
     }
     //Ventana
     Scaffold(
-
         scaffoldState = scaffoldState,
-
         topBar = {
             TopAppBar(
                 title = {
                     Text(text = "Edición de empleado",color = Color.White)
                 },
-                backgroundColor = Color.Blue,
+                backgroundColor = MaterialTheme.colors.primary,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     IconButton(
@@ -414,7 +412,6 @@ fun MainEditEmployee(
                                 ) {
                                     Text(text = "Guardar cambios", fontSize = 15.sp)
                                 }
-
                             }
                         }
                     }

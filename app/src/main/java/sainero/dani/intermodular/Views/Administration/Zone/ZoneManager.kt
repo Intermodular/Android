@@ -77,7 +77,7 @@ fun MainZoneManager(
                 onTextChange = {
                     mainViewModelSearchBar.updateSearchTextState(newValue = it)
                     aplicateFilter.value = false
-                    filter = it
+                    filter = it.lowercase()
                     aplicateFilter.value = true
                 },
                 onCloseClicked = {
@@ -85,7 +85,7 @@ fun MainZoneManager(
                 },
                 onSearchClicked = {
                     aplicateFilter.value = false
-                    filter = it
+                    filter = it.lowercase()
                     aplicateFilter.value = true
                 },
                 onSearchTriggered = {
@@ -120,7 +120,7 @@ private fun filterContentByName(allZones: List<Zonas>, filterName: String) {
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {
         for (i in allZones) {
-            if (i.name.contains(filterName)) {
+            if (i.name.lowercase().contains(filterName)) {
                 item {
                     Card(modifier = Modifier
                         .padding(8.dp, 4.dp)

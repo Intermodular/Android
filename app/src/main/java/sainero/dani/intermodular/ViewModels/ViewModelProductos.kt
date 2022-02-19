@@ -23,7 +23,6 @@ class ViewModelProductos: ViewModel() {
 
             try {
                 val productList = apiService.getproducts()
-
                 productListResponse = productList
 
             } catch (e: Exception) {
@@ -41,6 +40,8 @@ class ViewModelProductos: ViewModel() {
                 val respuesta = apiService.getProductById(id)
                 if (respuesta.isSuccessful)
                     product = respuesta.body()!!
+                else
+                    Log.d("Error","Error")
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }

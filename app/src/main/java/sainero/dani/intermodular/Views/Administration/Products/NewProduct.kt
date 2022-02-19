@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -157,70 +158,84 @@ fun MainNewProduct(
 
         },
         content = {
-            Spacer(modifier = Modifier.padding(10.dp))
+
             Column(
-                Modifier
-                    .padding(start = 10.dp)
-                    .fillMaxWidth()
+                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp),
             ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxHeight(0.9f),
 
-                createRowListWithErrorMesaje(
-                    text = "Nombre",
-                    value = textName,
-                    onValueChange = onValueChangeName,
-                    validateError = mainViewModelProductos::isValidNameOfProduct,
-                    errorMesaje = nameOfNameError,
-                    changeError = nameErrorChange,
-                    error = nameError,
-                    mandatory = true,
-                    KeyboardType = KeyboardType.Text
+                    content = {
+                        item {
+                            Spacer(modifier = Modifier.padding(10.dp))
+                            createRowListWithErrorMesaje(
+                                text = "Nombre",
+                                value = textName,
+                                onValueChange = onValueChangeName,
+                                validateError = mainViewModelProductos::isValidNameOfProduct,
+                                errorMesaje = nameOfNameError,
+                                changeError = nameErrorChange,
+                                error = nameError,
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Text
+                            )
+                        }
+                        item {
+                            textType.value = selectedDropDownMenu("Tipo",allTypesNames)
+                            dropDownMenuWithNavigation(
+                                text = "Ingredientes",
+                                suggestions = mainViewModelIngredients._ingredients,
+                                navigate = "${Destinations.Ingredient.route}/${0}"
+                            )
+                        }
+                        item {
+                            createRowListWithErrorMesaje(
+                                text = "Coste",
+                                value = textCost,
+                                onValueChange = onValueChangeCost,
+                                validateError = mainViewModelProductos::isValidCostOfProduct,
+                                errorMesaje = costOfNameError,
+                                changeError = costErrorChange,
+                                error = costError,
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Number
+                            )
+                        }
+                        item {
+                            dropDownMenuWithNavigation(
+                                text = "Especificaciones",
+                                suggestions = mainViewModelEspecifications._especifications,
+                                navigate = "${Destinations.Especifications.route}/${0}"
+                            )
+                        }
+                        item {
+                            Spacer(modifier = Modifier.padding(top = 8.dp))
+                            createRowList(
+                                text = "Imágen",
+                                value = textImg,
+                                onValueChange =  onValueChangeImg,
+                                enable = true,
+                                KeyboardType = KeyboardType.Text
+                            )
+                        }
+                        item {
+                            createRowListWithErrorMesaje(
+                                text = "Stock",
+                                value = textStock,
+                                onValueChange = onValueChangeStock,
+                                validateError = mainViewModelProductos::isValidStockOfProduct,
+                                errorMesaje = stockOfNameError,
+                                changeError = stockErrorChange,
+                                error = stockError,
+                                mandatory = false,
+                                KeyboardType = KeyboardType.Number
+                            )
+                            Spacer(modifier = Modifier.padding(10.dp))
+                        }
+                    }
                 )
-
-                textType.value = selectedDropDownMenu("Tipo",allTypesNames)
-                dropDownMenuWithNavigation(
-                    text = "Ingredientes",
-                    suggestions = mainViewModelIngredients._ingredients,
-                    navigate = "${Destinations.Ingredient.route}/${0}"
-                )
-
-                createRowListWithErrorMesaje(
-                    text = "Coste",
-                    value = textCost,
-                    onValueChange = onValueChangeCost,
-                    validateError = mainViewModelProductos::isValidCostOfProduct,
-                    errorMesaje = costOfNameError,
-                    changeError = costErrorChange,
-                    error = costError,
-                    mandatory = true,
-                    KeyboardType = KeyboardType.Number
-                )
-
-                dropDownMenuWithNavigation(
-                    text = "Especificaciones",
-                    suggestions = mainViewModelEspecifications._especifications,
-                    navigate = "${Destinations.Especifications.route}/${0}"
-                )
-
-                createRowList(
-                    text = "Imágen",
-                    value = textImg,
-                    onValueChange =  onValueChangeImg,
-                    enable = true,
-                    KeyboardType = KeyboardType.Text
-                )
-
-                createRowListWithErrorMesaje(
-                    text = "Stock",
-                    value = textStock,
-                    onValueChange = onValueChangeStock,
-                    validateError = mainViewModelProductos::isValidStockOfProduct,
-                    errorMesaje = stockOfNameError,
-                    changeError = stockErrorChange,
-                    error = stockError,
-                    mandatory = false,
-                    KeyboardType = KeyboardType.Number
-                )
-                Spacer(modifier = Modifier.padding(10.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -246,12 +261,6 @@ fun MainNewProduct(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Resetear campos",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                         Text(text = "Resetear campos", fontSize = 15.sp)
                     }
 
@@ -299,18 +308,11 @@ fun MainNewProduct(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Done,
-                            contentDescription = "Crear producto",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                         Text(text = "Crear producto", fontSize = 15.sp)
                     }
 
                 }
             }
-
         }
     )
 }
