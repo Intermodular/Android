@@ -8,8 +8,10 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -75,6 +77,7 @@ private fun CreateContent(
     ){
     var selectedTable = remember{ Mesas(_id = 0,state = "Libre",number = 0,numChair = 0,zone = "")}
     viewModelMesas.mesasListResponse.forEach { if (it._id.equals(tableId)) selectedTable = it}
+    var indexItem : MutableState<Int> = remember{ mutableStateOf(0)}
     var (deleteLane,onValueChangeDeleteLane) = remember { mutableStateOf(false) }
     var lineaPedidoSeleccionada = remember {
         mutableStateOf(LineaPedido(Productos(0,"","", arrayListOf(),0f,
@@ -90,9 +93,14 @@ private fun CreateContent(
             onValueChangeGoBack = onValueChangeDeleteLane,
         ) {
             if (it) {
-                mainViewModelCreateOrder.lineasPedidos.remove(lineaPedidoSeleccionada.value)
-                onValueChangeRefresh(false)
-                onValueChangeRefresh(true)
+                //mainViewModelCreateOrder.lineasPedidos.remove(lineaPedidoSeleccionada.value)
+
+                mainViewModelCreateOrder.lineasPedidos.removeAt(indexItem.value)
+                lineaPedidoSeleccionada.value = LineaPedido(Productos(0,"","", arrayListOf(),0f,
+                    arrayListOf(),"",0),0,"", arrayListOf(),0f)
+                //mainViewModelCreateOrder.lineasPedidos.removeAt(lineaPedidoSeleccionada)
+                //onValueChangeRefresh(false)
+                //onValueChangeRefresh(true)
                 //lineaPedidoSeleccionada.value = (LineaPedido(Productos(0,"","", arrayListOf(),0f,arrayListOf(),"",0),0,"", arrayListOf(),0f))
                 onValueChangeDeleteLane(false)
                 //navController.popBackStack()
@@ -132,8 +140,7 @@ private fun CreateContent(
                     //Spacer(modifier = Modifier.padding(start = 55.dp, bottom = 20.dp))
                 }
             }
-            mainViewModelCreateOrder.lineasPedidos.forEach{
-                item {
+                itemsIndexed(mainViewModelCreateOrder.lineasPedidos) { index, it ->
                     Column(
                         //verticalArrangement = Arrangement.SpaceAround,
                         //horizontalAlignment = Alignment.CenterHorizontally
@@ -146,8 +153,8 @@ private fun CreateContent(
                                 .pointerInput(Unit) {
                                     detectTapGestures(
                                         onLongPress = { Offset ->
-                                            lineaPedidoSeleccionada.value = it
-
+                                            lineaPedidoSeleccionada.value = mainViewModelCreateOrder.lineasPedidos.get(index)
+                                            indexItem.value = index
                                             onValueChangeDeleteLane(true)
                                         },
                                         onTap = { Offset ->
@@ -193,7 +200,7 @@ private fun CreateContent(
                     }
 
                 }
-            }
+
             item {
                 Button(
                     onClick = {
