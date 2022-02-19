@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -108,7 +109,6 @@ fun MainEditZone(
                             tint = Color.White
                         )
                     }
-
                 },
                 navigationIcon = {
                     IconButton(
@@ -124,109 +124,105 @@ fun MainEditZone(
                     }
                 }
             )
-
         },
         content = {
-            Spacer(modifier = Modifier.padding(10.dp))
             Column(
-                Modifier
-                    .padding(start = 10.dp)
-                    .fillMaxWidth()
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxHeight(0.9f)
+                        .padding(start = 20.dp,end = 20.dp),
+                    content ={
+                        item {
+                            createRowListWithErrorMesaje(
+                                text = "Nombre",
+                                value = textName,
+                                onValueChange = onValueChangeName,
+                                validateError = mainViewModelZone::isValidNameOfZone,
+                                errorMesaje = nameOfNameError,
+                                changeError = nameErrorChange,
+                                error = nameError,
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Text
+                            )
+                        }
+                        item {
+                            createRowList(
+                                text = "NºMesas",
+                                value = textNºmesas,
+                                onValueChange = onValueChangeNºmesas,
+                                enable = false,
+                                KeyboardType = KeyboardType.Number
+                            )
+                        }
+                        item {
+                            Spacer(modifier = Modifier.padding(10.dp))
 
-                createRowListWithErrorMesaje(
-                    text = "Nombre",
-                    value = textName,
-                    onValueChange = onValueChangeName,
-                    validateError = mainViewModelZone::isValidNameOfZone,
-                    errorMesaje = nameOfNameError,
-                    changeError = nameErrorChange,
-                    error = nameError,
-                    mandatory = true,
-                    KeyboardType = KeyboardType.Text
-
+                        }
+                    }
                 )
-
-                createRowList(
-                    text = "NºMesas",
-                    value = textNºmesas,
-                    onValueChange = onValueChangeNºmesas,
-                    enable = false,
-                    KeyboardType = KeyboardType.Number
-                )
-
-
-                Spacer(modifier = Modifier.padding(10.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                Column(
+                    Modifier
+                        .padding(start = 10.dp)
+                        .fillMaxWidth()
                 ) {
-                    Button(
-                        onClick = {
-                            textName = ""
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
-                        contentPadding = PaddingValues(
-                            start = 10.dp,
-                            top = 6.dp,
-                            end = 10.dp,
-                            bottom = 6.dp
-                        ),
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 20.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly,
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Revertir cambios",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                        Text(text = "Revertir cambios", fontSize = 15.sp)
+                        Button(
+                            onClick = {
+                                textName = ""
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.White,
+                                contentColor = Color.Blue
+                            ),
+                            contentPadding = PaddingValues(
+                                start = 10.dp,
+                                top = 6.dp,
+                                end = 10.dp,
+                                bottom = 6.dp
+                            ),
+                            modifier = Modifier
+                                .padding(start = 10.dp, end = 20.dp)
+                        ) {
+                            Text(text = "Revertir cambios", fontSize = 15.sp)
+                        }
+
+
+                        Button(
+                            onClick = {
+                                if (mainViewModelZone.checkAllValidations(textNameOfZone = textName)) {
+                                    val editZone = Zonas(_id = _id,name = textName,nºTables = textNºmesas.toInt())
+                                    mainViewModelZone.editZone(zone = editZone)
+                                    showToast.value = true
+                                    textOfToast.value = "La zona se ha modificado correctamente"
+
+                                } else {
+                                    showToast.value = true
+                                    textOfToast.value = "Debes de rellenar todos los campos correctamente"
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.White,
+                                contentColor = Color.Blue
+                            ),
+                            contentPadding = PaddingValues(
+                                start = 10.dp,
+                                top = 6.dp,
+                                end = 10.dp,
+                                bottom = 6.dp
+                            ),
+                            modifier = Modifier
+                                .padding(start = 10.dp, end = 20.dp)
+                        ) {
+                            Text(text = "Guardar cambios", fontSize = 15.sp)
+                        }
                     }
-
-
-
-                    Button(
-                        onClick = {
-                            if (mainViewModelZone.checkAllValidations(textNameOfZone = textName)) {
-                                val editZone = Zonas(_id = _id,name = textName,nºTables = textNºmesas.toInt())
-                                mainViewModelZone.editZone(zone = editZone)
-                                showToast.value = true
-                                textOfToast.value = "La zona se ha modificado correctamente"
-
-                            } else {
-                                showToast.value = true
-                                textOfToast.value = "Debes de rellenar todos los campos correctamente"
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
-                        contentPadding = PaddingValues(
-                            start = 10.dp,
-                            top = 6.dp,
-                            end = 10.dp,
-                            bottom = 6.dp
-                        ),
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 20.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Done,
-                            contentDescription = "Guardar cambios",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                        Text(text = "Guardar cambios", fontSize = 15.sp)
-                    }
-
                 }
             }
-
         }
     )
 }

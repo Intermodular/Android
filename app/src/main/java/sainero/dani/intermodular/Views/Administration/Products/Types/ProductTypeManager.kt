@@ -78,7 +78,7 @@ fun MainProductTypeManager(
                 onTextChange = {
                     mainViewModelSearchBar.updateSearchTextState(newValue = it)
                     aplicateFilter.value = false
-                    filter = it
+                    filter = it.lowercase()
                     aplicateFilter.value = true
                 },
                 onCloseClicked = {
@@ -86,7 +86,7 @@ fun MainProductTypeManager(
                 },
                 onSearchClicked = {
                     aplicateFilter.value = false
-                    filter = it
+                    filter = it.lowercase()
                     aplicateFilter.value = true
                 },
                 onSearchTriggered = {
@@ -128,7 +128,7 @@ private fun filterContentByName(
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {
         for (i in allTypes) {
-            if (i.name.contains(filterName)) {
+            if (i.name.lowercase().contains(filterName)) {
                 item {
                     Card(modifier = Modifier
                         .padding(8.dp, 4.dp)

@@ -358,6 +358,34 @@ fun NavigationHost(
         }
 
         composable(
+            route = "${Destinations.EditOrderLine.route}/{productId}/{typeId}/{tableId}",
+            arguments = listOf(
+                navArgument("productId"){type = NavType.IntType},
+                navArgument("typeId"){type = NavType.IntType},
+                navArgument("tableId"){type = NavType.IntType}
+            )
+
+        ){
+            val productId = it.arguments?.getInt("productId")
+            val typeId = it.arguments?.getInt("typeId")
+            val tableId = it.arguments?.getInt("tableId")
+
+            requireNotNull(productId)
+            requireNotNull(typeId)
+            requireNotNull(tableId)
+
+            MainEditOrderLine(
+                mainViewModelCreateOrder = mainViewModelCreateOrder,
+                viewModelProductos = viewModelProductos,
+                viewModelTipos = viewModelTipos,
+                productId = productId,
+                typeId = typeId,
+                tableId = tableId,
+                viewModelPedidos = viewModelPedidos
+            )
+        }
+
+        composable(
             route = "${Destinations.CreateOrderWithOrder.route}/{tableId}",
             arguments = listOf(
                 navArgument("tableId") { type = NavType.IntType },
@@ -378,6 +406,7 @@ fun NavigationHost(
                 mainViewModelCreateOrder = mainViewModelCreateOrder
             )
         }
+
 
         composable(
             route = Destinations.ProductInformation.route + "/{productId}",

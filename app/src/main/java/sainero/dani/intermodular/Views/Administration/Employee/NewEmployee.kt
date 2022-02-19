@@ -33,6 +33,7 @@ import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelUsers
+import sainero.dani.intermodular.ViewsItems.createRowList
 import java.util.regex.Pattern
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.dropDownMenu
@@ -180,7 +181,7 @@ fun MainNewEmployee(
                             )
                          }
                         item{
-                            // No obligatorio
+
                             createRowListWithErrorMesaje(
                                 text = "Fecha Nacimiento",
                                 value = textFnacUser,
@@ -228,7 +229,17 @@ fun MainNewEmployee(
                                 )
                         }
                         item {
-                            Spacer(modifier = Modifier.padding(9.dp))
+                            Spacer(modifier = Modifier.padding(8.dp))
+                            createRowList(
+                                text = "Dirección",
+                                value = textAddress,
+                                onValueChange = onValueChangeAddress,
+                                enable = true,
+                                KeyboardType = KeyboardType.Text
+                            )
+                        }
+                        item {
+                            Spacer(modifier = Modifier.padding(10.dp))
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -242,6 +253,7 @@ fun MainNewEmployee(
                                         onValueChangeFnacUser("")
                                         onValueChangeUserUser("")
                                         onValueChangeEmailUser("")
+                                        onValueChangeAddress("")
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = Color.White,
@@ -256,11 +268,6 @@ fun MainNewEmployee(
                                     modifier = Modifier
                                         .padding(start = 10.dp, end = 20.dp)
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowBack,
-                                        contentDescription = "Revertir cambios",
-                                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                                    )
                                     Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                                     Text(text = "Revertir cambios", fontSize = 15.sp)
                                 }
@@ -317,17 +324,10 @@ fun MainNewEmployee(
                                     modifier = Modifier
                                         .padding(start = 10.dp, end = 20.dp)
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Done,
-                                        contentDescription = "Guardar cambios",
-                                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                                    )
                                     Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                                     Text(text = "Guardar cambios", fontSize = 15.sp)
                                 }
                                 Spacer(modifier = Modifier.padding(10.dp))
-
-
                             }
                         }
                     }

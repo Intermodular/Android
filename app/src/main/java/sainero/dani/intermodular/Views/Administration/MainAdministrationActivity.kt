@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,7 +51,7 @@ fun MainAdministrationActivityView() {
                 title = {
                     Text(text = "Administración", color = Color.White)
                 },
-                backgroundColor = Color.Blue,
+                backgroundColor = MaterialTheme.colors.secondaryVariant,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     Box (Modifier.wrapContentSize()){
@@ -77,7 +78,6 @@ fun MainAdministrationActivityView() {
                             DropdownMenuItem(
                                 onClick = {
                                     expanded.value = false
-                                    val navBuilder: NavOptionsBuilder
                                     navController.navigate(Destinations.Login.route){
                                         popUpTo(0)
                                     }
@@ -93,8 +93,7 @@ fun MainAdministrationActivityView() {
         content = {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White),
+                    .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
@@ -115,21 +114,22 @@ fun MainAdministrationActivityView() {
                     onClick = {
                         navController?.navigate(Destinations.EmployeeManager.route)
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.White,
-                        contentColor = Color.Blue
-                    ),
                     modifier = Modifier
                         .padding(start = 40.dp, end = 40.dp)
                         .fillMaxWidth()
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Gestionar Empleados",
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                    Text(text = "Gestionar Empleados", fontSize = 20.sp)
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Gestionar Empleados",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
+                        Text(text = "Gestionar Empleados", fontSize = 20.sp, textAlign = TextAlign.Left)
+                    }
                 }
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -138,21 +138,22 @@ fun MainAdministrationActivityView() {
                     onClick = {
                         navController?.navigate(Destinations.ZoneManager.route)
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.White,
-                        contentColor = Color.Blue
-                    ),
                     modifier = Modifier
                         .padding(start = 40.dp, end = 40.dp)
                         .fillMaxWidth()
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Place,
-                        contentDescription = "Gestionar Zonas/Mesas",
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                    Text(text = "Gestionar Zonas/Mesas", fontSize = 20.sp)
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Place,
+                            contentDescription = "Gestionar Zonas",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
+                        Text(text = "Gestionar Zona/Mesa", fontSize = 20.sp, textAlign = TextAlign.Left)
+                    }
                 }
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -161,21 +162,23 @@ fun MainAdministrationActivityView() {
                     onClick = {
                         navController?.navigate(Destinations.ProductManager.route)
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.White,
-                        contentColor = Color.Blue
-                    ),
                     modifier = Modifier
                         .padding(start = 40.dp, end = 40.dp)
                         .fillMaxWidth()
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Gestionar Productos",
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                    Text(text = "Gestionar Productos", fontSize = 20.sp)
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Gestionar Productos/Tipos",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
+                        Text(text = "Gestionar Productos", fontSize = 20.sp, textAlign = TextAlign.Left)
+                    }
+
                 }
             }
         }

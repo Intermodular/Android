@@ -30,6 +30,7 @@ sealed class Destinations (
     object  NewExtras: Destinations("Administration.Products.Types.NewExtras")
     object  EditOrder: Destinations("Cobrador.CreateOrder.EditOrder")
     object  CreateOrderLine: Destinations("Cobrador.CreateOrder.CreateOrderLine")
+    object  EditOrderLine: Destinations("Cobrador.CreateOrder.EditOrderLine")
     object  ProductInformation: Destinations("Cobrador.ProductInformation")
 
 

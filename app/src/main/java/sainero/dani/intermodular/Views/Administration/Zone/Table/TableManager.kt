@@ -74,7 +74,7 @@ fun MainTableManager(
                 onTextChange = {
                     mainViewModelSearchBar.updateSearchTextState(newValue = it)
                     aplicateFilter.value = false
-                    filter = it
+                    filter = it.lowercase()
                     aplicateFilter.value = true
                 },
                 onCloseClicked = {
@@ -82,7 +82,7 @@ fun MainTableManager(
                 },
                 onSearchClicked = {
                     aplicateFilter.value = false
-                    filter = it
+                    filter = it.lowercase()
                     aplicateFilter.value = true
                 },
                 onSearchTriggered = {
@@ -118,7 +118,7 @@ fun filtercontentbyname(allMesas: List<Mesas>, filterName: String){
         contentPadding = PaddingValues(start = 30.dp , end = 30.dp)
     ) {
         for (i in allMesas) {
-            if (i.zone.contains(filterName)) {
+            if (i.number.toString().contains(filterName)) {
                 item {
                     Card(modifier = Modifier
                         .padding(8.dp, 4.dp)
@@ -248,7 +248,7 @@ private fun SearchAppBar(
             .fillMaxWidth()
             .height(56.dp),
         elevation = AppBarDefaults.TopAppBarElevation,
-        color = Color.Blue//MaterialTheme.colors.primary
+        color = Color.Blue
     ) {
         TextField(modifier = Modifier
             .fillMaxWidth(),
@@ -260,7 +260,7 @@ private fun SearchAppBar(
                 Text(
                     modifier = Modifier
                         .alpha(ContentAlpha.medium),
-                    text = "Search by name...",
+                    text = "Search by number...",
                     color = Color.White
                 )
             },

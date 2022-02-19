@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -134,41 +135,47 @@ fun MainProductNewType(
 
         },
         content = {
-            Spacer(modifier = Modifier.padding(10.dp))
             Column(
-                Modifier
-                    .padding(start = 10.dp)
-                    .fillMaxWidth()
+                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
             ) {
-
-                createRowListWithErrorMesaje(
-                    text = "Name",
-                    value = textName,
-                    onValueChange = onValueChangeName,
-                    validateError = mainViewModelTypes::isValidNameOfType,
-                    errorMesaje = textOfNameError,
-                    changeError = nameErrorChange,
-                    error = nameError,
-                    mandatory = true,
-                    KeyboardType = KeyboardType.Text
+                LazyColumn(
+                    modifier = Modifier.fillMaxHeight(0.9f),
+                    content = {
+                        item {
+                            Spacer(modifier = Modifier.padding(10.dp))
+                            createRowListWithErrorMesaje(
+                                text = "Name",
+                                value = textName,
+                                onValueChange = onValueChangeName,
+                                validateError = mainViewModelTypes::isValidNameOfType,
+                                errorMesaje = textOfNameError,
+                                changeError = nameErrorChange,
+                                error = nameError,
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Text
+                            )
+                        }
+                        item {
+                            mainViewModelExtras._extras.forEach{allNamesOfExtras.add(it.name)}
+                            dropDownMenuWithNavigation(
+                                text = "Extras",
+                                suggestions = allNamesOfExtras,
+                                navigate = "${Destinations.NewExtras.route}",
+                            )
+                        }
+                        item {
+                            Spacer(modifier = Modifier.padding(top = 8.dp))
+                            createRowList(
+                                text = "Img",
+                                value = textImg,
+                                onValueChange = onValueChangeImg,
+                                enable = true,
+                                KeyboardType = KeyboardType.Text
+                            )
+                        }
+                    }
                 )
-
-                mainViewModelExtras._extras.forEach{allNamesOfExtras.add(it.name)}
-                dropDownMenuWithNavigation(
-                    text = "Extras",
-                    suggestions = allNamesOfExtras,
-                    navigate = "${Destinations.NewExtras.route}",
-                )
-
-                createRowList(
-                    text = "Img",
-                    value = textImg,
-                    onValueChange = onValueChangeImg,
-                    enable = true,
-                    KeyboardType = KeyboardType.Text
-                )
-
-
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -193,12 +200,6 @@ fun MainProductNewType(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Revertir cambios",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                         Text(text = "Revertir cambios", fontSize = 15.sp)
                     }
 
@@ -232,17 +233,12 @@ fun MainProductNewType(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Done,
-                            contentDescription = "Guardar cambios",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                         Text(text = "Guardar cambios", fontSize = 15.sp)
                     }
 
                 }
             }
+            
         }
     )
 }

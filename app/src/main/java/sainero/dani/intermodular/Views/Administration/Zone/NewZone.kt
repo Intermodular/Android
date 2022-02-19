@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -82,35 +83,42 @@ fun MainNewZone(
 
         },
         content = {
-            Spacer(modifier = Modifier.padding(10.dp))
             Column(
-                Modifier
-                    .padding(start = 10.dp)
-                    .fillMaxWidth()
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxHeight(0.9f)
+                        .padding(start = 20.dp, end = 20.dp),
+                    content = {
+                        item {
+                            createRowListWithErrorMesaje(
+                                text = "Nombre",
+                                value = textName,
+                                onValueChange = onValueChangeName,
+                                validateError = mainViewModelZone::isValidNameOfZone,
+                                errorMesaje = nameOfNameError,
+                                changeError = nameErrorChange,
+                                error = nameError,
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Text
 
-                createRowListWithErrorMesaje(
-                    text = "Nombre",
-                    value = textName,
-                    onValueChange = onValueChangeName,
-                    validateError = mainViewModelZone::isValidNameOfZone,
-                    errorMesaje = nameOfNameError,
-                    changeError = nameErrorChange,
-                    error = nameError,
-                    mandatory = true,
-                    KeyboardType = KeyboardType.Text
-
+                            )
+                        }
+                        item {
+                            createRowList(
+                                text = "NºMesas",
+                                value = textNºmesas,
+                                onValueChange = onValueChangeNºmesas,
+                                enable = false,
+                                KeyboardType = KeyboardType.Number
+                            )
+                        }
+                        item {
+                            Spacer(modifier = Modifier.padding(10.dp))
+                        }
+                    }
                 )
-                createRowList(
-                    text = "NºMesas",
-                    value = textNºmesas,
-                    onValueChange = onValueChangeNºmesas,
-                    enable = false,
-                    KeyboardType = KeyboardType.Number
-                )
-
-
-                Spacer(modifier = Modifier.padding(10.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -132,12 +140,6 @@ fun MainNewZone(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Revertir cambios",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                         Text(text = "Revertir cambios", fontSize = 15.sp)
                     }
 
@@ -153,7 +155,7 @@ fun MainNewZone(
                                 showToast.value = true
                                 textOfToast.value = "Debes de rellenar todos los campos correctamente"
                             }
-                          },
+                        },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.White,
                             contentColor = Color.Blue
@@ -167,18 +169,11 @@ fun MainNewZone(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Done,
-                            contentDescription = "Guardar cambios",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                         Text(text = "Guardar cambios", fontSize = 15.sp)
                     }
-
                 }
+                Spacer(modifier = Modifier.padding(10.dp))
             }
-
         }
     )
 }

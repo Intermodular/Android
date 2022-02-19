@@ -63,8 +63,7 @@ fun LoginMain(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.padding(10.dp))

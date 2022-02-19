@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -81,7 +82,7 @@ fun MainNewTable(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            GlobalVariables.navController.popBackStack()
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -95,56 +96,63 @@ fun MainNewTable(
 
         },
         content = {
-            Spacer(modifier = Modifier.padding(10.dp))
             Column(
-                Modifier
-                    .padding(start = 10.dp)
-                    .fillMaxWidth()
+                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp),
             ) {
-
-                createRowListWithErrorMesaje(
-                    text = "NºMesa",
-                    value = textNumber,
-                    onValueChange = onValueChangeNumber,
-                    validateError = mainViewModelTable::isInteger,
-                    errorMesaje = nameOfNumberError,
-                    changeError = numberErrorChange,
-                    error = numberError,
-                    mandatory = true,
-                    KeyboardType = KeyboardType.Number
-
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxHeight(0.9f),
+                    content = {
+                        item {
+                            Spacer(modifier = Modifier.padding(5.dp))
+                            createRowListWithErrorMesaje(
+                                text = "NºMesa",
+                                value = textNumber,
+                                onValueChange = onValueChangeNumber,
+                                validateError = mainViewModelTable::isInteger,
+                                errorMesaje = nameOfNumberError,
+                                changeError = numberErrorChange,
+                                error = numberError,
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Number
+                            )
+                        }
+                        item {
+                            var allNamesOfZone:MutableList<String> = mutableListOf()
+                            mainViewModelTable.zonesListResponse.forEach { allNamesOfZone.add(it.name) }
+                            onValueChangeZone(
+                                selectedDropDownMenu(
+                                    text = "Zona",
+                                    suggestions = allNamesOfZone
+                                )
+                            )
+                        }
+                        item {
+                            Spacer(modifier = Modifier.padding(top = 8.dp))
+                            createRowListWithErrorMesaje(
+                                text = "NºSillas",
+                                value = textNºChairs,
+                                onValueChange = onValueChangeNºChairs,
+                                validateError = mainViewModelTable::isInteger,
+                                errorMesaje = numChairsOfNumberError,
+                                changeError = numChairsErrorChange,
+                                error = numChairsError,
+                                mandatory = false,
+                                KeyboardType = KeyboardType.Number
+                            )
+                        }
+                        item {
+                            onValueChangeState(
+                                selectedDropDownMenu(
+                                    text = "Estado",
+                                    suggestions = listOfTextState
+                                )
+                            )
+                            Spacer(modifier = Modifier.padding(10.dp))
+                        }
+                    }
                 )
-
-                var allNamesOfZone:MutableList<String> = mutableListOf()
-                mainViewModelTable.zonesListResponse.forEach { allNamesOfZone.add(it.name) }
-                onValueChangeZone(
-                    selectedDropDownMenu(
-                        text = "Zona",
-                        suggestions = allNamesOfZone
-                    )
-                )
-
-                createRowListWithErrorMesaje(
-                    text = "NºSillas",
-                    value = textNºChairs,
-                    onValueChange = onValueChangeNºChairs,
-                    validateError = mainViewModelTable::isInteger,
-                    errorMesaje = numChairsOfNumberError,
-                    changeError = numChairsErrorChange,
-                    error = numChairsError,
-                    mandatory = false,
-                    KeyboardType = KeyboardType.Number
-
-                )
-
-                onValueChangeState(
-                    selectedDropDownMenu(
-                        text = "Estado",
-                        suggestions = listOfTextState
-                    )
-                )
-
-                Spacer(modifier = Modifier.padding(10.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -169,18 +177,11 @@ fun MainNewTable(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Revertir cambios",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                         Text(text = "Revertir cambios", fontSize = 15.sp)
                     }
 
                     Button(
                         onClick = {
-
                             if(
                                 mainViewModelTable.checkAllValidations(
                                     textNºChairs = textNºChairs,
@@ -217,18 +218,10 @@ fun MainNewTable(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Done,
-                            contentDescription = "Guardar cambios",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                         Text(text = "Guardar cambios", fontSize = 15.sp)
                     }
-
                 }
             }
-
         }
     )
 }
