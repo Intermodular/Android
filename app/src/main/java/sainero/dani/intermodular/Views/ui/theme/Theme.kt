@@ -15,9 +15,9 @@ private val DarkColorPalette = darkColors(
 )
 
 private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200,
+    primary = ColoresPersonalizados.primary,
+    primaryVariant = ColoresPersonalizados.secondary,
+    secondary = ColoresPersonalizados.secondary,
     background = BackgroundGrey,
     /*onPrimary = testCorrect,
     secondaryVariant = testCorrect,*/

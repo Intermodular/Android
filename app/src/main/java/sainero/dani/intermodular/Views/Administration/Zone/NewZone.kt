@@ -61,7 +61,6 @@ fun MainNewZone(
                 title = {
                     Text(text = "Nueva Zona",color = Color.White)
                 },
-                backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
 

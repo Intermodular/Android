@@ -104,7 +104,6 @@ fun MainAccessToTables(
                     title = {
                         Text(text = "Menú de mesas", color = Color.White)
                     },
-                    backgroundColor = Color.Blue,
                     elevation = AppBarDefaults.TopAppBarElevation,
                     actions = {
                         Box(Modifier.wrapContentSize()) {
@@ -312,8 +311,8 @@ private fun selectedDropDownMenu(
 
 private fun checkState(state: String): Color {
     when(state){
-        "Libre" -> return Color.Green
-        "Ocupada" -> return Color.Red
+        "Libre" -> return Color(0xFF4CB944)
+        "Ocupada" -> return Color(0xFFCC444B)
         "Reservada" -> return Color.Yellow
         else -> {
             Color.White
@@ -417,7 +416,7 @@ private fun createTables(
                         contentPadding = PaddingValues(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = checkState(i.state),
-                            contentColor = Color.Blue
+                            contentColor = Color.Black
                         )
                     ) {
                         Column(

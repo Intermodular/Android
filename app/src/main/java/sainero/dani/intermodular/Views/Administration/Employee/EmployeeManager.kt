@@ -102,7 +102,8 @@ fun MainEmployeeManager(
                 FloatingActionButton(
                     onClick = {
                         navController.navigate(Destinations.NewEmployee.route)
-                    }
+                    },
+                    backgroundColor = Color(0xFF001d3d)
                 ) {
                     Text("+")
                 }
@@ -259,7 +260,6 @@ fun DefaultAppBar(onSearchClicked: () -> Unit) {
             }
 
         },
-        backgroundColor = Color.Blue,
         navigationIcon = {
             IconButton(
                 onClick = {

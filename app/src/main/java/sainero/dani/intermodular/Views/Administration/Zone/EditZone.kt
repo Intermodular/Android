@@ -95,7 +95,6 @@ fun MainEditZone(
                 title = {
                     Text(text = "Edición de Zona",color = Color.White)
                 },
-                backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     IconButton(

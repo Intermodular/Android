@@ -93,7 +93,6 @@ fun MainNewEmployee(
                 title = {
                     Text(text = "Nuevo empleado",color = Color.White)
                 },
-                backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
 

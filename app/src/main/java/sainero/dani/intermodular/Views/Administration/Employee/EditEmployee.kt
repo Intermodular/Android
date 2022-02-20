@@ -307,7 +307,7 @@ fun MainEditEmployee(
                                         surname =  selectedUser.surname,
                                         fnac =  selectedUser.fnac,
                                         user =  selectedUser.user,
-                                        password =  selectedUser.password,
+                                        password =  "1234",
                                         rol =  selectedUser.rol,
                                         email =  selectedUser.email,
                                         newUser = true,

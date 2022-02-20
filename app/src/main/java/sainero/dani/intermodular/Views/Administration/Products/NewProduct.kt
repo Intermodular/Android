@@ -135,7 +135,6 @@ fun MainNewProduct(
                 title = {
                     Text(text = "Nuevo producto",color = Color.White)
                 },
-                backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
 
