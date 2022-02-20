@@ -1,19 +1,16 @@
 package sainero.dani.intermodular.Navigation
 
 
-import android.os.Bundle
-import android.os.Parcelable
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import sainero.dani.intermodular.DataClass.Tipos
-import sainero.dani.intermodular.Utils.DragAndDrop.MainDragAndDrop
 import sainero.dani.intermodular.Utils.DragAndDrop.MainFunDragAndDrop
 import sainero.dani.intermodular.Views.*
 import sainero.dani.intermodular.Views.Administration.Employee.MainEditEmployee
@@ -52,6 +49,7 @@ import sainero.dani.intermodular.Views.Cobrador.CreateOrder.*
 import sainero.dani.intermodular.Views.Cobrador.MainProductInformation
 import sainero.dani.intermodular.Views.Login.MainViewModelLogin
 
+@RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
 @Composable
@@ -297,19 +295,12 @@ fun NavigationHost(
             )
         }
 
-
-        //////
-
-
-
-
         //Cobrador
 
         composable(route = Destinations.AccessToTables.route) {
-            viewModelMesas.getMesaList()
+            mainViewModelCreateOrder.getMesaList{}
             viewModelZonas.getZoneList()
             MainAccessToTables(
-                viewModelMesas = viewModelMesas,
                 viewModelZonas = viewModelZonas,
                 mainViewModelCreateOrder = mainViewModelCreateOrder
             )
@@ -328,7 +319,7 @@ fun NavigationHost(
             val typeId = it.arguments?.getInt("typeId")
             requireNotNull(tableId)
             requireNotNull(typeId)
-
+            mainViewModelCreateOrder.getMesaList {}
             MainEditOrder(
                 mainViewModelCreateOrder = mainViewModelCreateOrder,
                 tableId = tableId,

@@ -25,7 +25,7 @@ class MainViewModelProducts: ViewModel() {
             val apiService = ApiServiceProduct.getInstance()
 
             try {
-                val productList = apiService.getproducts()
+                val productList = apiService.getProducts()
 
                 productListResponse = productList
 

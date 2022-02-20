@@ -9,7 +9,7 @@ import sainero.dani.intermodular.DataClass.Productos
 interface ApiServiceProduct {
 
     @GET("productos")
-    suspend fun getproducts() : List<Productos>
+    suspend fun getProducts() : List<Productos>
 
     @GET("producto/id/{id}")
     suspend fun getProductById(

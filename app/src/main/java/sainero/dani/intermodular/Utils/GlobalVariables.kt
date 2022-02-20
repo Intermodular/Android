@@ -14,7 +14,7 @@ import sainero.dani.intermodular.DataClass.Users
 class GlobalVariables {
      companion object {
          lateinit var navController: NavHostController
-         lateinit var currentUser: Users
+         var currentValidateUser: Users = Users(0, address = "", dni = "", email = "", fnac = "", name = "", newUser = false, password = "", phoneNumber = "", rol = "", surname = "", user = "")
          var textRows: MutableList<String> = mutableListOf()
          var userListResponse: List <Users> by mutableStateOf ( listOf ())
          lateinit var test: String

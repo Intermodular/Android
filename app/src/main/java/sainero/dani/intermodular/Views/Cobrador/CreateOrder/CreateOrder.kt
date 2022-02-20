@@ -96,7 +96,7 @@ fun MainCreateOrderWithOrder(
 
     //Variables de ayuda
     var state = remember { mutableStateOf(0)}
-    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
+    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     var nameOfSelectedType = remember { mutableStateOf(allTypesNames[0])}
     var selectedType = remember { mutableStateOf(Tipos(0,"","", arrayListOf()))}
     allTypes.forEach { if (it.name.equals(nameOfSelectedType.value)) selectedType.value = it }
@@ -370,8 +370,15 @@ private fun getAllFilterEspecifications(
 
 
 @Composable
-private fun LabelledCheckbox(labelText: String,isCheckedValue: Boolean,onValueChangeCheked: (Boolean) -> Unit) {
-    Row(modifier = Modifier.padding(8.dp)) {
+private fun LabelledCheckbox(
+    labelText: String,
+    isCheckedValue: Boolean,
+    onValueChangeCheked: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier.padding(start = 30.dp,8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
 
 
         Checkbox(
@@ -380,14 +387,16 @@ private fun LabelledCheckbox(labelText: String,isCheckedValue: Boolean,onValueCh
             enabled = true,
             colors = CheckboxDefaults.colors(Color.Blue)
         )
+        Spacer(modifier = Modifier.padding(2.dp))
         Text(
             text = "${labelText}",
             modifier = Modifier
                 .clickable{
                     onValueChangeCheked(if (isCheckedValue) false else true)
-                }
+                },
+            fontSize = 25.sp
         )
-        Spacer(modifier = Modifier.padding(2.dp))
+        Spacer(modifier = Modifier.padding(25.dp))
     }
 }
 

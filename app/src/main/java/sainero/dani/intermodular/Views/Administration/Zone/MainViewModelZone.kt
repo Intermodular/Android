@@ -102,7 +102,7 @@ class MainViewModelZone: ViewModel() {
     }
 
     //Validaciones
-    fun isValidNameOfZone(text: String) = Pattern.compile("^[^()]{1,14}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+    fun isValidNameOfZone(text: String) = Pattern.compile("^[^()]{1,10}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 
     fun checkAllValidations (
         textNameOfZone: String,
