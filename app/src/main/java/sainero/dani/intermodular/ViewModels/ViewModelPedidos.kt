@@ -84,12 +84,12 @@ class ViewModelPedidos: ViewModel() {
     //Métodos Delete
     var deleteOrder: Pedidos by mutableStateOf (Pedidos(_id = 0,idMesa = 0,lineasPedido = arrayListOf()))
 
-    fun deleteOrder(id: Int) {
+    fun deleteOrder(id: Int, idMesa:Int) {
         viewModelScope.launch {
             val apiService = ApiServiceOrder.getInstance()
 
             try {
-                val result = apiService.deleteOrder(id)
+                val result = apiService.deleteOrder(id, idMesa = idMesa)
                 if (result.isSuccessful)
                     deleteOrder = result.body()!!
                 else

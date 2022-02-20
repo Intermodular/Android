@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.sp
 import sainero.dani.intermodular.Navigation.Destinations
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
@@ -34,9 +36,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.*
+import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainViewModelCreateOrder
 import sainero.dani.intermodular.Views.Login.MainViewModelLogin
 
 
@@ -179,7 +183,6 @@ fun LoginMain(
                                         navController.navigate(Destinations.AccessToTables.route)
                                 }
                             }
-
                         }
                         if (!correctUser.value) Toast.makeText(context, "El usuario o la contraseña son incorrectos",Toast.LENGTH_SHORT).show()
                     }

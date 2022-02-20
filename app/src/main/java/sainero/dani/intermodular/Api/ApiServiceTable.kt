@@ -9,7 +9,7 @@ import sainero.dani.intermodular.DataClass.Mesas
 interface ApiServiceTable {
 
     @GET("mesas")
-    suspend fun getTables() : List<Mesas>
+    suspend fun getTables() : Response<List<Mesas>>
 
     @GET("mesa/id/{id}")
     suspend fun getTableById(

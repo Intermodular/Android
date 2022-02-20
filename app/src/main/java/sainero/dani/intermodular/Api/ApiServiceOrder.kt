@@ -31,9 +31,10 @@ interface ApiServiceOrder {
         @Body order : Pedidos
     ) : Response<Pedidos>
 
-    @DELETE("pedido/id/{id}")
+    @DELETE("pedido/id/{id}/idMesa/{idMesa}")
     suspend fun deleteOrder(
-        @Path("id") id:Int
+        @Path("id") id: Int,
+        @Path("idMesa") idMesa: Int
     ): Response<Pedidos>
 
     companion object {

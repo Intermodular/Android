@@ -1,39 +1,38 @@
 package sainero.dani.intermodular.Views.Cobrador.CreateOrder
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import sainero.dani.intermodular.DataClass.LineaPedido
-import sainero.dani.intermodular.DataClass.Mesas
-import sainero.dani.intermodular.DataClass.Pedidos
-import sainero.dani.intermodular.DataClass.Productos
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import sainero.dani.intermodular.DataClass.*
 import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelPedidos
@@ -94,6 +93,8 @@ private fun CreateContent(
     var (deleteLane,onValueChangeDeleteLane) = remember { mutableStateOf(false) }
     var lineaPedidoSeleccionada = remember { mutableStateOf(LineaPedido(Productos(0,"","", arrayListOf(),0f, arrayListOf(),"",0),0,"", arrayListOf(),0f))}
     val expanded = remember { mutableStateOf(false)}
+    val current = LocalContext.current
+    var (changeOrderToAnotherTable,onValueChangeChangeOrderToAnotherTable) = remember { mutableStateOf(false) }
 
     if (deleteLane) {
         var title: String = "¿Seguro que desea eliminar la linea de pedido seleccionada?"
@@ -111,11 +112,17 @@ private fun CreateContent(
             }
         }
     }
+    if (changeOrderToAnotherTable) {
+        changeOrderToAnotherTable(
+            onValueChangeChangeOrderToAnotherTable = onValueChangeChangeOrderToAnotherTable,
+            mainViewModelCreateOrder = mainViewModelCreateOrder
+        )
+    }
     Scaffold(
          topBar = {
               TopAppBar(
                   title = {
-                      Text(text = "Pedido mesa ${selectedTable._id}", fontSize = 20.sp)
+                      Text(text = "Pedido mesa ${selectedTable.number}", fontSize = 20.sp)
                   },
                   navigationIcon = {
                       IconButton(
@@ -148,6 +155,7 @@ private fun CreateContent(
                               DropdownMenuItem(
                                   onClick = {
                                       expanded.value = false
+                                      onValueChangeChangeOrderToAnotherTable(true)
                                   }) {
                                   Text(text = "Mover Pedido de mesa")
                               }
@@ -155,13 +163,28 @@ private fun CreateContent(
                                   onClick = {
                                       expanded.value = false
                                   }) {
-                                  Text(text = "Borrar pedido")
+                                  Text(text = "Marcar pedido como cobrado")
                               }
                               DropdownMenuItem(
                                   onClick = {
+                                      mainViewModelCreateOrder.lineasPedidos.clear()
+                                      mainViewModelCreateOrder.lineasExtras.clear()
+                                      Toast.makeText(current,"El pedido se ha vaciado correctamente",Toast.LENGTH_SHORT).show()
+                                      navController.popBackStack()
                                       expanded.value = false
                                   }) {
-                                  Text(text = "Marcar pedido como cobrado")
+                                  Text(text = "Vaciar pedido")
+                              }
+                              DropdownMenuItem(
+                                  onClick = {
+                                      mainViewModelCreateOrder.deleteOrder(id = mainViewModelCreateOrder.pedido._id,mainViewModelCreateOrder.pedido.idMesa)
+                                          Toast.makeText(current,"El pedido ha sido eliminado correctamente",Toast.LENGTH_SHORT).show()
+                                          navController.navigate(Destinations.AccessToTables.route) {
+                                              popUpTo(Destinations.Login.route)
+                                          }
+                                      expanded.value = false
+                                  }) {
+                                  Text(text = "Borrar pedido")
                               }
                           }
                       }
@@ -177,7 +200,7 @@ private fun CreateContent(
                      Modifier.fillMaxHeight(0.9f),
                      content = {
                          item {
-                             Spacer(modifier = Modifier.padding(20.dp))
+                             Spacer(modifier = Modifier.padding(10.dp))
                              Row(
                                  modifier = Modifier
                                      .fillMaxWidth()
@@ -227,7 +250,8 @@ private fun CreateContent(
                                                  onTap = { Offset ->
                                                      //val idLineaPedido = mainViewModelCreateOrder.lineasPedidos.indexOf(it)
                                                      mainViewModelCreateOrder.editLineOrder = it
-                                                     mainViewModelCreateOrder.editLineOrderIndex = index
+                                                     mainViewModelCreateOrder.editLineOrderIndex =
+                                                         index
                                                      navController.navigate("${Destinations.EditOrderLine.route}/${typeId}")
                                                  }
                                              )
@@ -276,7 +300,15 @@ private fun CreateContent(
                              idMesa = tableId
                          )
 
-                         mainViewModelCreateOrder.editOrder(mainViewModelCreateOrder.pedido)
+                         mainViewModelCreateOrder.editOrder(mainViewModelCreateOrder.pedido) {
+                             navController.navigate(Destinations.AccessToTables.route) {
+                                 popUpTo(Destinations.Login.route)
+                             }
+                             Toast.makeText(
+                                 current, "El pedido ha sido transladado correctamente",
+                                 Toast.LENGTH_SHORT
+                             ).show()
+                         }
                          navController.navigate(Destinations.AccessToTables.route) {
                              popUpTo(0)
                          }
@@ -308,6 +340,129 @@ private fun CreateContent(
 
          }
     )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun changeOrderToAnotherTable(
+    onValueChangeChangeOrderToAnotherTable: (Boolean) -> Unit,
+    mainViewModelCreateOrder: MainViewModelCreateOrder
+) {
+    val createTables = remember{ mutableStateOf(false)}
+    MaterialTheme {
+        Dialog(
+            onDismissRequest = {
+                onValueChangeChangeOrderToAnotherTable(false)
+            },
+            properties = DialogProperties(
+
+            ),
+            content = {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White)
+                    ){
+                    mainViewModelCreateOrder.getMesaList {
+                        createTables.value = true
+                    }
+
+                    if (createTables.value) {
+                        createTables(
+                            mainViewModelCreateOrder = mainViewModelCreateOrder,
+                            onValueChangeDisableAlert = onValueChangeChangeOrderToAnotherTable,
+                        )
+                    }
+                }
+            }
+        )
+    }
+}
+
+
+
+
+@ExperimentalFoundationApi
+@Composable
+private fun createTables(
+    mainViewModelCreateOrder: MainViewModelCreateOrder,
+    onValueChangeDisableAlert:  (Boolean) -> Unit
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    var current = LocalContext.current
+
+    Column(
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Text(text = "Eligue la mesa a la que desea enviar el pedido", fontSize = 20.sp)
+        LazyVerticalGrid(
+            cells = GridCells.Adaptive(120.dp),
+            contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
+        ) {
+            mainViewModelCreateOrder.mesasListResponse.forEach { item ->
+                item {
+                    Box(
+                        Modifier
+                            .padding(10.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                onValueChangeDisableAlert(false)
+                                    mainViewModelCreateOrder.getOrderByTableWithDelay(id = item._id) {
+                                    if (it) {
+                                        Toast.makeText(current,"La mesa seleccionada ya tiene un pedido",Toast.LENGTH_SHORT).show()
+                                    }
+                                    else {
+                                         mainViewModelCreateOrder.deleteOrder(
+                                             id = mainViewModelCreateOrder.pedido._id,
+                                             idMesa = mainViewModelCreateOrder.pedido.idMesa
+                                         )
+
+                                        mainViewModelCreateOrder.pedido = Pedidos(
+                                            _id = mainViewModelCreateOrder.pedido._id,
+                                            idMesa = item._id,
+                                            lineasPedido = mainViewModelCreateOrder.lineasPedidos
+                                        )
+
+                                        mainViewModelCreateOrder.uploadOrder(mainViewModelCreateOrder.pedido){}
+                                        navController.navigate(Destinations.AccessToTables.route) {
+                                            popUpTo(Destinations.Login.route)
+                                        }
+                                        Toast.makeText(current,"El pedido ha sido transladado correctamente",Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            },
+                            modifier = Modifier,
+                            contentPadding = PaddingValues(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = if (item.state.equals("Libre")) Color.Green else Color.Red,
+                                contentColor = Color.Blue
+                            )
+                        ) {
+                            Column(
+                                verticalArrangement = Arrangement.SpaceAround
+                            ) {
+                                Text(
+                                    text = "${item.zone} (${item.numChair})",
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.fillMaxSize(),
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(
+                                    text = item.number.toString(),
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.fillMaxSize(),
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(modifier = Modifier.padding(4.dp))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)

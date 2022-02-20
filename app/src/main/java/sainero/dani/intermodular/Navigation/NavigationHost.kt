@@ -1,19 +1,14 @@
 package sainero.dani.intermodular.Navigation
 
 
-import android.os.Bundle
-import android.os.Parcelable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import sainero.dani.intermodular.DataClass.Tipos
-import sainero.dani.intermodular.Utils.DragAndDrop.MainDragAndDrop
 import sainero.dani.intermodular.Utils.DragAndDrop.MainFunDragAndDrop
 import sainero.dani.intermodular.Views.*
 import sainero.dani.intermodular.Views.Administration.Employee.MainEditEmployee
@@ -297,12 +292,6 @@ fun NavigationHost(
             )
         }
 
-
-        //////
-
-
-
-
         //Cobrador
 
         composable(route = Destinations.AccessToTables.route) {
@@ -328,7 +317,9 @@ fun NavigationHost(
             val typeId = it.arguments?.getInt("typeId")
             requireNotNull(tableId)
             requireNotNull(typeId)
+            mainViewModelCreateOrder.getMesaList {
 
+            }
             MainEditOrder(
                 mainViewModelCreateOrder = mainViewModelCreateOrder,
                 tableId = tableId,

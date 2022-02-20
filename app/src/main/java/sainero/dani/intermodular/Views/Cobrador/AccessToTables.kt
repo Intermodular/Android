@@ -3,9 +3,7 @@ package sainero.dani.intermodular.Views.Cobrador
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -17,10 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.focus.focusOrder
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -405,9 +400,9 @@ private fun createTables(
                                 if (it) {
                                     mainViewModelCreateOrder.editOrder = true
                                     mainViewModelCreateOrder.lineasPedidos = arrayListOf()
+                                    mainViewModelCreateOrder.pedido = mainViewModelCreateOrder.orderByTable
                                     mainViewModelCreateOrder.lineasPedidos = mainViewModelCreateOrder.orderByTable.lineasPedido
                                     navController.navigate("${Destinations.CreateOrderWithOrder.route}/${i._id}")
-
                                 }
                                 else {
                                     onValueChangeDisableAlert(true)
@@ -475,12 +470,19 @@ private fun confirmCreateOrder(
                             //viewModelMesas.editMesa(updateTable)
 
                             mainViewModelCreateOrder.pedido = Pedidos(idMesa = table._id,lineasPedido = arrayListOf(),_id = 0)
-                            mainViewModelCreateOrder.uploadOrder(order = mainViewModelCreateOrder.pedido)
+                            mainViewModelCreateOrder.uploadOrder(order = mainViewModelCreateOrder.pedido) {
+                                mainViewModelCreateOrder.deleteOrder(
+                                    id = mainViewModelCreateOrder.pedido._id,
+                                    idMesa = mainViewModelCreateOrder.pedido.idMesa
+                                )
+                            }
 
                             mainViewModelCreateOrder.editOrder = false
 
                             mainViewModelCreateOrder.lineasPedidos = arrayListOf()
-                            mainViewModelCreateOrder.getOrderByTable(id = table._id)
+                            mainViewModelCreateOrder.getOrderByTable(id = table._id){
+                                mainViewModelCreateOrder.pedido = mainViewModelCreateOrder.orderByTable
+                            }
 
                             navController.navigate("${Destinations.CreateOrderWithOrder.route}/${table._id}")
 

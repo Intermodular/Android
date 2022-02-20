@@ -21,9 +21,14 @@ class ViewModelMesas: ViewModel()  {
             val apiService = ApiServiceTable.getInstance()
 
             try {
-                val mesasList = apiService.getTables()
-                mesasListResponse = mesasList
 
+                val result = apiService.getTables()
+                if (result.isSuccessful) {
+                    mesasListResponse = result.body()!!
+                }
+                else {
+                    Log.d("Error to get tables","Error to get tables")
+                }
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }
