@@ -1,9 +1,11 @@
 package sainero.dani.intermodular.Views
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import sainero.dani.intermodular.ViewModels.*
@@ -46,6 +48,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModelProductos by viewModels<MainViewModelProducts>()
     private val mainViewModelLogin by viewModels<MainViewModelLogin>()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +69,7 @@ class MainActivity : ComponentActivity() {
                 mainViewModelTable.getZoneList()
                 mainViewModelTypes.getTypesList()
                 mainViewModelProductos.getProductList()
+                mainViewModelCreateOrder.getMesaList {  }
 
                 ////
                 NavigationHost(

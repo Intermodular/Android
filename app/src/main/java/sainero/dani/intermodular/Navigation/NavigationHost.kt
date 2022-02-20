@@ -1,6 +1,8 @@
 package sainero.dani.intermodular.Navigation
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -47,6 +49,7 @@ import sainero.dani.intermodular.Views.Cobrador.CreateOrder.*
 import sainero.dani.intermodular.Views.Cobrador.MainProductInformation
 import sainero.dani.intermodular.Views.Login.MainViewModelLogin
 
+@RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
 @Composable
@@ -295,10 +298,9 @@ fun NavigationHost(
         //Cobrador
 
         composable(route = Destinations.AccessToTables.route) {
-            viewModelMesas.getMesaList()
+            mainViewModelCreateOrder.getMesaList{}
             viewModelZonas.getZoneList()
             MainAccessToTables(
-                viewModelMesas = viewModelMesas,
                 viewModelZonas = viewModelZonas,
                 mainViewModelCreateOrder = mainViewModelCreateOrder
             )
@@ -317,9 +319,7 @@ fun NavigationHost(
             val typeId = it.arguments?.getInt("typeId")
             requireNotNull(tableId)
             requireNotNull(typeId)
-            mainViewModelCreateOrder.getMesaList {
-
-            }
+            mainViewModelCreateOrder.getMesaList {}
             MainEditOrder(
                 mainViewModelCreateOrder = mainViewModelCreateOrder,
                 tableId = tableId,

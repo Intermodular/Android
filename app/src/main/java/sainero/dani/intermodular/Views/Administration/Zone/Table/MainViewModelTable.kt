@@ -36,15 +36,19 @@ class MainViewModelTable: ViewModel() {
         }
     }
 
-    var table: List <Mesas> by mutableStateOf(listOf())
+    var table: Mesas = Mesas(0,"",0,"",0,)
 
     fun getMesaById(id:Int) {
         viewModelScope.launch {
             val apiService = ApiServiceTable.getInstance()
 
             try {
-                val mesaById = apiService.getTableById(id)
-                table = mesaById
+                val result = apiService.getTableById(id)
+                if (result.isSuccessful) {
+                    table = result.body()!!
+                }
+                else
+                    Log.d("Error to get mesa","Error to get mesa")
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }

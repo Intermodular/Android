@@ -5,36 +5,37 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import sainero.dani.intermodular.DataClass.Productos
+import sainero.dani.intermodular.DataClass.Ticket
 
-interface ApiServiceProduct {
+interface ApiServiceTickets {
 
-    @GET("productos")
-    suspend fun getProducts() : List<Productos>
+    @GET("tickets")
+    suspend fun getTickets() : List<Ticket>
 
-    @GET("producto/id/{id}")
-    suspend fun getProductById(
+    @GET("ticket/id/{id}")
+    suspend fun getTicketById(
         @Path("id") id: Int
-    ): Response<Productos>
+    ): Response<Ticket>
 
-    @POST("producto")
-    suspend fun uploadProduct(
-        @Body product: Productos,
-    ) : Response<Productos>
+    @POST("ticket")
+    suspend fun uploadTicket(
+        @Body product: Ticket,
+    ) : Response<Ticket>
 
-    @PUT("producto")
-    suspend fun editProduct(
-        @Body product: Productos
-    ): Response<Productos>
+    @PUT("ticket")
+    suspend fun editTicket(
+        @Body ticket: Ticket
+    ): Response<Ticket>
 
-    @DELETE("producto/id/{id}")
-    suspend fun deleteProduct(
+    @DELETE("ticket/id/{id}")
+    suspend fun deleteTicket(
         @Path("id") id:Int
-    ): Response<Productos>
+    ): Response<Ticket>
 
     companion object {
-        private var apiService: ApiServiceProduct? = null
+        private var apiService: ApiServiceTickets? = null
 
-        fun getInstance() : ApiServiceProduct {
+        fun getInstance() : ApiServiceTickets {
             if (apiService == null) {
                 apiService = Retrofit.Builder()
                     //Cambiar el puerto al 8080
@@ -42,7 +43,7 @@ interface ApiServiceProduct {
                     //.baseUrl("http://192.168.1.136:3000/api/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
-                    .create(ApiServiceProduct::class.java)
+                    .create(ApiServiceTickets::class.java)
             }
             return apiService!!
         }

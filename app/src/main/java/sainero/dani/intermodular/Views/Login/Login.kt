@@ -39,6 +39,7 @@ import kotlinx.coroutines.*
 import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.DataClass.Users
 import sainero.dani.intermodular.R
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.currentValidateUser
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainViewModelCreateOrder
 import sainero.dani.intermodular.Views.Login.MainViewModelLogin
@@ -177,6 +178,7 @@ fun LoginMain(
                                     onValueChangeNewPassword(true)
                                     selectedUser = it
                                 } else {
+                                    currentValidateUser = it
                                     if (it.rol.equals("Administrador"))
                                         showAlertDialog.value = true
                                     else

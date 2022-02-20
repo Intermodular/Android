@@ -51,7 +51,7 @@ fun MainAdministrationActivityView() {
                 title = {
                     Text(text = "Administración", color = Color.White)
                 },
-                backgroundColor = MaterialTheme.colors.secondaryVariant,
+                backgroundColor = MaterialTheme.colors.primary,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     Box (Modifier.wrapContentSize()){

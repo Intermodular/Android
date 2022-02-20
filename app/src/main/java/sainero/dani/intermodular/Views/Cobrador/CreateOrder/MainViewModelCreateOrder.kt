@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import sainero.dani.intermodular.Api.ApiServiceOrder
 import sainero.dani.intermodular.Api.ApiServiceTable
+import sainero.dani.intermodular.Api.ApiServiceTickets
 import sainero.dani.intermodular.Api.ApiServiceZone
 import sainero.dani.intermodular.DataClass.*
 import java.lang.NumberFormatException
@@ -39,7 +40,6 @@ class MainViewModelCreateOrder : ViewModel() {
     fun getMesaList(onValueFinish: () -> Unit) {
         viewModelScope.launch {
             val apiService = ApiServiceTable.getInstance()
-
             try {
                 val result = apiService.getTables()
                 if (result.isSuccessful) {
@@ -56,6 +56,23 @@ class MainViewModelCreateOrder : ViewModel() {
         }
     }
 
+    var table: Mesas = Mesas(0,"",0,"",0,)
+    fun getMesaById(id:Int, onValueFinish: () -> Unit) {
+        viewModelScope.launch {
+            val apiService = ApiServiceTable.getInstance()
+            try {
+                val result = apiService.getTableById(id)
+                if (result.isSuccessful) {
+                    table = result.body()!!
+                    onValueFinish()
+                }
+                else
+                    Log.d("Error to get mesa","Error to get mesa")
+            } catch (e: Exception) {
+                errorMessage = e.message.toString()
+            }
+        }
+    }
     fun getOrderByTableWithDelay(id: Int, onValueFinish: (Boolean) -> Unit) {
         viewModelScope.launch {
             val apiService = ApiServiceOrder.getInstance()
@@ -84,10 +101,27 @@ class MainViewModelCreateOrder : ViewModel() {
 
             try {
                 val result = apiService.uploadOrder(order)
-                val x = result.body()!!
                 if (result.isSuccessful) {
                     newOrder = result.body()!!
                     onValueFinish()
+                }
+                else
+                    Log.d("Error: upload order","Error: upload order")
+            } catch (e: Exception) {
+                errorMessage = e.message.toString()
+            }
+        }
+    }
+
+    var newTicket: MutableList<Ticket> = mutableListOf()
+    fun uploadTicket(ticket: Ticket) {
+        viewModelScope.launch {
+            val apiService = ApiServiceTickets.getInstance()
+
+            try {
+                val result = apiService.uploadTicket(ticket)
+                if (result.isSuccessful) {
+                    newTicket[0] = result.body()!!
                 }
                 else
                     Log.d("Error: upload order","Error: upload order")
@@ -116,6 +150,25 @@ class MainViewModelCreateOrder : ViewModel() {
         }
     }
 
+    var editMesa: MutableList<Mesas> = mutableListOf()
+    fun editMesa(mesa: Mesas, onValueFinish: () -> Unit) {
+        viewModelScope.launch {
+            val apiService = ApiServiceTable.getInstance()
+
+            try {
+                val result = apiService.editTable(mesa = mesa)
+
+                if (result.isSuccessful) {
+                    editMesa.add(result.body()!!)
+                    onValueFinish()
+                }
+                else
+                    Log.d("Error: edit table","Error: edit table")
+            } catch (e: Exception) {
+                errorMessage = e.message.toString()
+            }
+        }
+    }
     //Métodos Delete
     var deleteOrder: Pedidos by mutableStateOf (Pedidos(_id = 0,idMesa = 0,lineasPedido = arrayListOf()))
 
@@ -169,6 +222,11 @@ class MainViewModelCreateOrder : ViewModel() {
         return linePrice
     }
 
+    fun calculateTotalPrice():Float {
+        var totalPrice = 0f
+        lineasPedidos.forEach{totalPrice += it.costeLinea}
+        return totalPrice
+    }
 
 
 

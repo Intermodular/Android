@@ -1,12 +1,16 @@
 package sainero.dani.intermodular.Views.Cobrador
 
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -16,7 +20,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -25,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sainero.dani.intermodular.DataClass.*
 import sainero.dani.intermodular.Navigation.Destinations
@@ -48,26 +55,30 @@ class AccessToTables : ComponentActivity() {
 @ExperimentalFoundationApi
 @Composable
 fun MainAccessToTables(
-    viewModelMesas: ViewModelMesas,
     viewModelZonas: ViewModelZonas,
     mainViewModelCreateOrder: MainViewModelCreateOrder
 ) {
-    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
-    var scaffoldStateFilter = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
+    var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
+    var scaffoldStateFilter = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
 
     val (disableAlert,onValueChangeDisableAlert) = remember { mutableStateOf(false) }
 
     val (selectedTable,onValueChangeSelectedTable) = remember { mutableStateOf(Mesas(_id = 0,zone = "",numChair = 0,number =0,state = ""))}
 
     if (disableAlert) {
-        confirmCreateOrder(onValueChangeDisableAlert = onValueChangeDisableAlert,mainViewModelCreateOrder = mainViewModelCreateOrder,table = selectedTable,viewModelMesas = viewModelMesas)
+        confirmCreateOrder(
+            onValueChangeDisableAlert = onValueChangeDisableAlert,
+            mainViewModelCreateOrder = mainViewModelCreateOrder,
+            table = selectedTable,
+        )
     }
+    val (refreshTables, onValueChangeRefreshTables) = remember { mutableStateOf(true) }
 
     val expanded = remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     //Consulta BD
-    var allTables: List<Mesas> = viewModelMesas.mesasListResponse
+    var allTables: List<Mesas> = mainViewModelCreateOrder.mesasListResponse
     var allZones: List<Zonas> = viewModelZonas.zonesListResponse
 
     //Filters
@@ -93,6 +104,13 @@ fun MainAccessToTables(
 
     ) {
         Scaffold(
+            snackbarHost = { state -> MySnackHost(
+                state = state,
+                mainViewModelCreateOrder = mainViewModelCreateOrder,
+                selectedTable = selectedTable,
+                onValueChangeRefreshTables = onValueChangeRefreshTables,
+                onValueChangeSelectedTable = onValueChangeSelectedTable
+            ) },
             scaffoldState = scaffoldState,
             topBar = {
                 TopAppBar(
@@ -229,16 +247,19 @@ fun MainAccessToTables(
                 Column(
                     verticalArrangement = Arrangement.Center
                 ) {
-                    filterByAllFilters(
-                        allTables = allTables,
-                        nºMesasFilter = nºMesa,
-                        zoneFilter = textSelectedZone.value,
-                        stateFilter = textState.value,
-                        dinersFilter = nºComensales,
-                        mainViewModelCreateOrder = mainViewModelCreateOrder,
-                        onValueChangeDisableAlert = onValueChangeDisableAlert,
-                        onValueChangeSelectedTable = onValueChangeSelectedTable
-                    )
+                    if (refreshTables) {
+                        filterByAllFilters(
+                            allTables = allTables,
+                            nºMesasFilter = nºMesa,
+                            zoneFilter = textSelectedZone.value,
+                            stateFilter = textState.value,
+                            dinersFilter = nºComensales,
+                            mainViewModelCreateOrder = mainViewModelCreateOrder,
+                            onValueChangeDisableAlert = onValueChangeDisableAlert,
+                            onValueChangeSelectedTable = onValueChangeSelectedTable,
+                            scaffoldState = scaffoldState,
+                        )
+                    }
                 }
             },
         )
@@ -328,7 +349,8 @@ private fun filterByAllFilters(
     dinersFilter: String,
     mainViewModelCreateOrder : MainViewModelCreateOrder,
     onValueChangeDisableAlert: (Boolean) -> Unit,
-    onValueChangeSelectedTable: (Mesas) -> Unit
+    onValueChangeSelectedTable: (Mesas) -> Unit,
+    scaffoldState: ScaffoldState,
 ) {
 
     //Obtener todas las mesas (Luego le vamos restando las que no cumplan la condición)
@@ -337,6 +359,7 @@ private fun filterByAllFilters(
     allTables.forEach { allFilterTables.add(it) }
     var listOfAllFilterTables: List<Mesas> = mutableListOf()
     allFilterTables.sortedBy {it.number}
+
     if (!nºMesasFilter.equals("")) {
         allFilterTables.forEach{
             if (it.number.equals(nºMesasFilter.toInt())) listOfAllFilterTables = listOf(it)
@@ -368,7 +391,16 @@ private fun filterByAllFilters(
         if(!dinersFilter.equals("")) listOfAllFilterTables = allFilterTables.sortedBy {it.numChair}
         else listOfAllFilterTables = allFilterTables
     }
-    createTables(allFilterTables = listOfAllFilterTables,mainViewModelCreateOrder = mainViewModelCreateOrder,onValueChangeDisableAlert = onValueChangeDisableAlert,onValueChangeSelectedTable = onValueChangeSelectedTable)
+
+
+        createTables(
+            allFilterTables = listOfAllFilterTables,
+            mainViewModelCreateOrder = mainViewModelCreateOrder,
+            onValueChangeDisableAlert = onValueChangeDisableAlert,
+            onValueChangeSelectedTable = onValueChangeSelectedTable,
+            scaffoldState = scaffoldState,
+        )
+
 }
 
 @ExperimentalFoundationApi
@@ -377,76 +409,111 @@ private fun createTables(
     allFilterTables: List<Mesas>,
     mainViewModelCreateOrder: MainViewModelCreateOrder,
     onValueChangeDisableAlert:  (Boolean) -> Unit,
-    onValueChangeSelectedTable: (Mesas) -> Unit
+    onValueChangeSelectedTable: (Mesas) -> Unit,
+    scaffoldState: ScaffoldState
 ) {
     var showMenu by remember { mutableStateOf(false) }
+    val tableOptions = remember { mutableStateOf(false) }
 
     LazyVerticalGrid(
         cells = GridCells.Adaptive(120.dp),
-        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
+        contentPadding = PaddingValues(start = 30.dp, end = 30.dp, bottom = 30.dp, top = 20.dp)
     ) {
         for (i in allFilterTables) {
             item {
-                Box(
-                    Modifier
-                        .padding(10.dp)
-
-                ) {
-                    Button(
-                        onClick = {
-
-                            onValueChangeSelectedTable(i)
-                            mainViewModelCreateOrder.getOrderByTableWithDelay(id = i._id) {
-                                if (it) {
-                                    mainViewModelCreateOrder.editOrder = true
-                                    mainViewModelCreateOrder.lineasPedidos = arrayListOf()
-                                    mainViewModelCreateOrder.pedido = mainViewModelCreateOrder.orderByTable
-                                    mainViewModelCreateOrder.lineasPedidos = mainViewModelCreateOrder.orderByTable.lineasPedido
-                                    navController.navigate("${Destinations.CreateOrderWithOrder.route}/${i._id}")
-                                }
-                                else {
-                                    onValueChangeDisableAlert(true)
-                                }
-
-                            }
-
-
-                        },
-                        modifier = Modifier,
-                        contentPadding = PaddingValues(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = checkState(i.state),
-                            contentColor = Color.Blue
-                        )
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.SpaceAround
-                        ) {
-                            Text(
-                                text = "${i.zone} (${i.numChair})",
-                                fontSize = 10.sp,
-                                modifier = Modifier.fillMaxSize(),
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                text = i.number.toString(),
-                                fontSize = 20.sp,
-                                modifier = Modifier.fillMaxSize(),
-                                textAlign = TextAlign.Center
-                            )
-
-                            Spacer(modifier = Modifier.padding(4.dp))
-                        }
-                    }
-                }
+                printTable(
+                    mainViewModelCreateOrder = mainViewModelCreateOrder,
+                    onValueChangeDisableAlert = onValueChangeDisableAlert,
+                    onValueChangeSelectedTable = onValueChangeSelectedTable,
+                    table = i,
+                    scaffoldState = scaffoldState
+                )
             }
         }
     }
 }
 
 @Composable
+private fun printTable(
+    mainViewModelCreateOrder: MainViewModelCreateOrder,
+    onValueChangeDisableAlert:  (Boolean) -> Unit,
+    onValueChangeSelectedTable: (Mesas) -> Unit,
+    table: Mesas,
+    scaffoldState: ScaffoldState
+) {
+    val current = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    Card(
+        Modifier
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = { Offset ->
+                        onValueChangeSelectedTable(table)
+                        scope.launch {
+                            when (
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = "Cambiar estado de la mesa",
+                                    actionLabel = "Ok"
+                                )
+                            ) {
+                                SnackbarResult.Dismissed ->
+                                    Log.d("Track", "Dismissed")
+                                SnackbarResult.ActionPerformed ->
+                                    Log.d("Track", "Action!")
+                            }
+                        }
+                    },
+                    onTap = { Offset ->
+                        onValueChangeSelectedTable(table)
+                        mainViewModelCreateOrder.getOrderByTableWithDelay(id = table._id) {
+                            if (it) {
+                                mainViewModelCreateOrder.editOrder = true
+                                mainViewModelCreateOrder.lineasPedidos = arrayListOf()
+                                mainViewModelCreateOrder.pedido =
+                                    mainViewModelCreateOrder.orderByTable
+                                mainViewModelCreateOrder.lineasPedidos =
+                                    mainViewModelCreateOrder.orderByTable.lineasPedido
+                                navController.navigate("${Destinations.CreateOrderWithOrder.route}/${table._id}")
+                            } else {
+                                onValueChangeDisableAlert(true)
+                            }
+                        }
+                    }
+                )
+            }
+            .padding(PaddingValues(10.dp)),
+            backgroundColor = checkState(table.state),
+            elevation = 6.dp,
+            shape = RoundedCornerShape(8.dp),
+        ) {
+        Column(
+            verticalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Spacer(modifier = Modifier.padding(5.dp))
+            Text(
+                text = "${table.zone} (${table.numChair})",
+                fontSize = 10.sp,
+                modifier = Modifier.fillMaxSize(),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+
+            Text(
+                text = table.number.toString(),
+                fontSize = 20.sp,
+                modifier = Modifier.fillMaxSize(),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.padding(8.dp))
+        }
+    }
+}
+
+
+@Composable
 private fun confirmCreateOrder(
-    viewModelMesas: ViewModelMesas,
     table: Mesas,
     onValueChangeDisableAlert: (Boolean) -> Unit,
     mainViewModelCreateOrder: MainViewModelCreateOrder
@@ -466,8 +533,6 @@ private fun confirmCreateOrder(
                 confirmButton = {
                     Button(
                         onClick = {
-                            //var updateTable = Mesas(state = "Ocupada",number = table.number,numChair = table.numChair,zone = table.zone,_id = table._id)
-                            //viewModelMesas.editMesa(updateTable)
 
                             mainViewModelCreateOrder.pedido = Pedidos(idMesa = table._id,lineasPedido = arrayListOf(),_id = 0)
                             mainViewModelCreateOrder.uploadOrder(order = mainViewModelCreateOrder.pedido) {
@@ -512,6 +577,73 @@ private fun confirmCreateOrder(
         }
     }
 }
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun MySnackHost(
+    state: SnackbarHostState,
+    mainViewModelCreateOrder: MainViewModelCreateOrder,
+    selectedTable: Mesas,
+    onValueChangeRefreshTables: (Boolean) -> Unit,
+    onValueChangeSelectedTable: (Mesas) -> Unit,
+) {
+    var current = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    SnackbarHost(
+        hostState = state,
+        snackbar = { snackbarData: SnackbarData ->
+            Card(
+                shape = RoundedCornerShape(8.dp),
+                border = BorderStroke(2.dp, Color.White),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = snackbarData.message)
+                        Spacer(modifier = Modifier.padding(start = 90.dp))
+                        Button(
+                            onClick = {
+                                //Ejecutar
+                                var editMesa = Mesas(
+                                    _id = selectedTable._id,
+                                    zone = selectedTable.zone,
+                                    state = if(selectedTable.state.equals("Ocupada")) "Libre" else "Ocupada",
+                                    numChair = selectedTable.numChair,
+                                    number = selectedTable.number
+                                )
+
+                                mainViewModelCreateOrder.editMesa(editMesa){}
+                                navController.navigate(Destinations.AccessToTables.route) {
+                                    popUpTo(Destinations.Login.route)
+                                }
+                            }
+                        ) {
+                            Text(text = snackbarData.actionLabel.toString())
+                        }
+                    }
+                }
+            }
+        }
+    )
+}
+
+
+
+
+
+
+
 
 @Preview(showBackground = true)
 @ExperimentalFoundationApi

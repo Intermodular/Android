@@ -1,6 +1,8 @@
 package sainero.dani.intermodular.Views.ui.theme
 
 import androidx.compose.material.Typography
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight

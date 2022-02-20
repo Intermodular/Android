@@ -1,9 +1,11 @@
 package sainero.dani.intermodular.Views.Cobrador.CreateOrder
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,10 +35,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import sainero.dani.intermodular.DataClass.*
 import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.currentValidateUser
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelPedidos
 import sainero.dani.intermodular.ViewsItems.confirmAlertDialog
+import java.time.LocalDateTime
+import java.util.*
 import kotlin.math.roundToLong
 
 class EditOrder : ComponentActivity() {
@@ -48,6 +53,7 @@ class EditOrder : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainEditOrder(
     mainViewModelCreateOrder: MainViewModelCreateOrder,
@@ -78,6 +84,7 @@ fun MainEditOrder(
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun CreateContent(
     mainViewModelCreateOrder: MainViewModelCreateOrder,
@@ -161,9 +168,32 @@ private fun CreateContent(
                               }
                               DropdownMenuItem(
                                   onClick = {
+                                      val pedido: Pedidos = Pedidos(
+                                          _id = mainViewModelCreateOrder.pedido._id,
+                                          lineasPedido = mainViewModelCreateOrder.lineasPedidos.toMutableList(),
+                                          idMesa = mainViewModelCreateOrder.pedido.idMesa
+                                      )
+
+                                      val ticket: Ticket = Ticket(
+                                          _id = 0,
+                                          empleado = currentValidateUser,
+                                          costeTotal = mainViewModelCreateOrder.calculateTotalPrice(),
+                                          lineasPedido = pedido.lineasPedido,
+                                          metodoPago = "Tarjeta",
+                                          numMesa = selectedTable.number,
+                                          fechaYHoraDePago = LocalDateTime.now().toString()
+                                      )
+
+                                      mainViewModelCreateOrder.uploadTicket(ticket = ticket)
+                                      mainViewModelCreateOrder.deleteOrder(mainViewModelCreateOrder.pedido._id,mainViewModelCreateOrder.pedido.idMesa)
+                                      navController.navigate(Destinations.AccessToTables.route) {
+                                          popUpTo(Destinations.Login.route)
+                                      }
+                                      Toast.makeText(current,"El pedido ha sido pagado correctamente",Toast.LENGTH_SHORT).show()
+
                                       expanded.value = false
                                   }) {
-                                  Text(text = "Marcar pedido como cobrado")
+                                  Text(text = "Marcar pedido como cobrado con tarjeta")
                               }
                               DropdownMenuItem(
                                   onClick = {
@@ -240,18 +270,14 @@ private fun CreateContent(
                                          .pointerInput(Unit) {
                                              detectTapGestures(
                                                  onLongPress = { Offset ->
-                                                     lineaPedidoSeleccionada.value =
-                                                         mainViewModelCreateOrder.lineasPedidos.get(
-                                                             index
-                                                         )
+                                                     lineaPedidoSeleccionada.value = mainViewModelCreateOrder.lineasPedidos.get(index)
                                                      indexItem.value = index
                                                      onValueChangeDeleteLane(true)
                                                  },
                                                  onTap = { Offset ->
                                                      //val idLineaPedido = mainViewModelCreateOrder.lineasPedidos.indexOf(it)
                                                      mainViewModelCreateOrder.editLineOrder = it
-                                                     mainViewModelCreateOrder.editLineOrderIndex =
-                                                         index
+                                                     mainViewModelCreateOrder.editLineOrderIndex = index
                                                      navController.navigate("${Destinations.EditOrderLine.route}/${typeId}")
                                                  }
                                              )

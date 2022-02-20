@@ -35,15 +35,19 @@ class ViewModelMesas: ViewModel()  {
         }
     }
 
-    var table: List <Mesas> by mutableStateOf(listOf())
+    var table: Mesas = Mesas(0,"",0,"",0,)
 
     fun getMesaById(id:Int) {
         viewModelScope.launch {
             val apiService = ApiServiceTable.getInstance()
 
             try {
-                val mesaById = apiService.getTableById(id)
-                table = mesaById
+                val result = apiService.getTableById(id)
+                if (result.isSuccessful) {
+                    table = result.body()!!
+                }
+                else
+                    Log.d("Error to get mesa","Error to get mesa")
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }
@@ -75,8 +79,9 @@ class ViewModelMesas: ViewModel()  {
 
             try {
                 val result = apiService.editTable(mesa = mesa)
+                getMesaList()
                 if (result.isSuccessful)
-                    newMesa.add(result.body()!!)
+                    editMesa.add(result.body()!!)
                 else
                     Log.d("Error: edit table","Error: edit table")
             } catch (e: Exception) {

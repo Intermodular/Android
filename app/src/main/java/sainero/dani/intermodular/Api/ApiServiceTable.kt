@@ -14,7 +14,7 @@ interface ApiServiceTable {
     @GET("mesa/id/{id}")
     suspend fun getTableById(
         @Path("id") id: Int
-    ): List<Mesas>
+    ): Response<Mesas>
 
     @POST("mesa")
     suspend fun uploadTable(
