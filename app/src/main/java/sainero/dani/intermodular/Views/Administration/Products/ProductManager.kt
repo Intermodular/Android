@@ -268,7 +268,6 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                 }
             }
         },
-        backgroundColor = Color.Blue,
         navigationIcon = {
             IconButton(
                 onClick = {

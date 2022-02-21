@@ -283,7 +283,7 @@ fun MainCreateOrderLine(
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(end = 40.dp, start = 40.dp, bottom = 30.dp),
+                                    .padding(end = 40.dp, start = 40.dp, bottom = 30.dp, top = 20.dp),
 
                                 ) {
                                 Row(
@@ -294,10 +294,6 @@ fun MainCreateOrderLine(
                                         onClick = {
                                             navController.popBackStack()
                                         },
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = Color.White,
-                                            contentColor = Color.Blue
-                                        ),
                                         contentPadding = PaddingValues(
                                             start = 10.dp,
                                             top = 6.dp,
@@ -339,10 +335,6 @@ fun MainCreateOrderLine(
                                             navController.popBackStack()
 
                                         },
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = Color.White,
-                                            contentColor = Color.Blue
-                                        ),
                                         contentPadding = PaddingValues(
                                             start = 10.dp,
                                             top = 6.dp,

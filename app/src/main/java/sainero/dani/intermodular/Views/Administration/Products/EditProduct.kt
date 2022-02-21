@@ -200,7 +200,6 @@ fun MainEditProduct(
                 title = {
                     Text(text = "Edición de productos",color = Color.White)
                 },
-                backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     IconButton(onClick = {

@@ -95,7 +95,6 @@ fun MainEditZone(
                 title = {
                     Text(text = "Edición de Zona",color = Color.White)
                 },
-                backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     IconButton(
@@ -175,10 +174,6 @@ fun MainEditZone(
                             onClick = {
                                 textName = ""
                             },
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Color.White,
-                                contentColor = Color.Blue
-                            ),
                             contentPadding = PaddingValues(
                                 start = 10.dp,
                                 top = 6.dp,
@@ -205,10 +200,6 @@ fun MainEditZone(
                                     textOfToast.value = "Debes de rellenar todos los campos correctamente"
                                 }
                             },
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Color.White,
-                                contentColor = Color.Blue
-                            ),
                             contentPadding = PaddingValues(
                                 start = 10.dp,
                                 top = 6.dp,
@@ -216,7 +207,7 @@ fun MainEditZone(
                                 bottom = 6.dp
                             ),
                             modifier = Modifier
-                                .padding(start = 10.dp, end = 20.dp)
+                                .padding(start = 20.dp, end = 20.dp)
                         ) {
                             Text(text = "Guardar cambios", fontSize = 15.sp)
                         }
