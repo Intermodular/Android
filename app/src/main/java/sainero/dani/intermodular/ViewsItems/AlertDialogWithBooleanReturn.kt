@@ -30,10 +30,6 @@ fun confirmAlertDialog(
                         onClick = {
                             onFinishAlertDialog(true)
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        ),
                     ) {
                         Text("Aceptar")
                     }
@@ -44,10 +40,6 @@ fun confirmAlertDialog(
                             onFinishAlertDialog(false)
                             onValueChangeGoBack(false)
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        )
                     ) {
                         Text("Cancelar")
                     }

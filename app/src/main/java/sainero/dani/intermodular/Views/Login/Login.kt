@@ -59,7 +59,9 @@ fun LoginMain(
 
     //Text
     var textUser by rememberSaveable { mutableStateOf("") }
+
     var textPassword by rememberSaveable { mutableStateOf("") }
+    var passwordError = remember { mutableStateOf(false) }
 
     //Utils
     val color = remember { mutableStateOf(Color.White) }
@@ -139,7 +141,7 @@ fun LoginMain(
             Text(
                 text = assistiveElementText,
                 color = assistiveElementColor,
-                style = MaterialTheme.typography.overline,
+                style = MaterialTheme.typography.caption,
                 modifier = Modifier.padding(start = 50.dp, end = 50.dp)
             )
 
@@ -149,6 +151,8 @@ fun LoginMain(
                 value = textPassword,
                 onValueChange = {
                     textPassword = it
+                    passwordError.value = !mainViewModelLogin.isValidPassword(it)
+
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Gray,
@@ -168,6 +172,7 @@ fun LoginMain(
                         Icon(painter = vector, contentDescription = description)
                     }
                 },
+                isError = passwordError.value,
                 singleLine = true,
                 label = { Text("Contraseña") },
                 modifier = Modifier
@@ -181,6 +186,19 @@ fun LoginMain(
                         }
                         false
                     }
+            )
+            val assistiveElementText2 = if (passwordError.value) "La contraseña debe ser alfanumérica y de 8 caracteres mínimo" else ""
+            val assistiveElementColor2 = if (passwordError.value) {
+                MaterialTheme.colors.error
+            } else {
+                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+            }
+
+            Text(
+                text = assistiveElementText2,
+                color = assistiveElementColor2,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 50.dp, end = 50.dp)
             )
 
             Spacer(modifier = Modifier.padding(30.dp))
@@ -233,8 +251,6 @@ fun LoginMain(
                             }
                             true
                         }
-
-
             ) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
@@ -269,24 +285,21 @@ private fun newPassword(
     mainViewModelLogin: MainViewModelLogin,
     user: Users
 ) {
-    var textPassword by rememberSaveable { mutableStateOf("") }
-    var textPasswor2 by rememberSaveable { mutableStateOf("") }
     var hidden by remember { mutableStateOf(true) }
     var hidden2 by remember { mutableStateOf(true) }
     val showAlertDialog = remember { mutableStateOf(false) }
     val value = remember { mutableStateOf("")}
-    val error = remember{ mutableStateOf(false)}
     val focusRequester = remember { FocusRequester() }
     val focusRequester2 = remember { FocusRequester() }
     val current = LocalContext.current
+
+    var textPassword by rememberSaveable { mutableStateOf("") }
+    var passwordError = remember { mutableStateOf(false) }
 
     Dialog(
         onDismissRequest = {
             onValueChangeNewPassword(false)
         },
-        properties = DialogProperties(
-
-        ),
         content = {
             Column(
                 //verticalArrangement = Arrangement.SpaceAround,
@@ -317,11 +330,11 @@ private fun newPassword(
                         value = textPassword,
                         onValueChange = {
                             textPassword = it
-                            //Patrones de validación de contraseña
+                            passwordError.value = !mainViewModelLogin.isValidPassword(it)
                         },
                         placeholder = { Text(text = "Nueva contraseña") },
                         label = { Text(text = "Contraseña") },
-                        isError = error.value,
+                        isError = passwordError.value,
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                         visualTransformation = if (hidden) PasswordVisualTransformation() else VisualTransformation.None,
                         trailingIcon = {
@@ -345,14 +358,14 @@ private fun newPassword(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     OutlinedTextField(
-                        value = textPasswor2,
+                        value = textPassword,
                         onValueChange = { it2 ->
-                            textPasswor2 = it2
-                            //Patrones de validación de contraseña
+                            textPassword = it2
+                            passwordError.value = !mainViewModelLogin.isValidPassword(it2)
                         },
                         placeholder = { Text(text = "Repetir contraseña") },
                         label = { Text(text = "Repetir Contraseña") },
-                        isError = error.value,
+                        isError = passwordError.value,
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                         visualTransformation = if (hidden2) PasswordVisualTransformation() else VisualTransformation.None,
                         trailingIcon = {
@@ -371,8 +384,8 @@ private fun newPassword(
                             .fillMaxWidth()
                             .focusRequester(focusRequester2)
                     )
-                    val assistiveElementText = if (error.value) "La contraseña no es válida" else  "*Obligatorio"
-                    val assistiveElementColor = if (error.value) {
+                    val assistiveElementText = if (passwordError.value) "La contraseña no es válida" else  "*Obligatorio"
+                    val assistiveElementColor = if (passwordError.value) {
                         MaterialTheme.colors.error
                     } else {
                         MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
@@ -474,26 +487,6 @@ private fun adminAlertDestination() {
 }
 
 
-fun Modifier.firstBaselineToTop(
-    firstBaselineToTop: Dp
-) = layout { measurable, constraints ->
-    // Measure the composable
-    val placeable = measurable.measure(constraints)
-
-    // Check the composable has a first baseline
-    check(placeable[FirstBaseline] != AlignmentLine.Unspecified)
-    val firstBaseline = placeable[FirstBaseline]
-
-    // Height of the composable with padding - first baseline
-    val placeableY = firstBaselineToTop.roundToPx() - firstBaseline
-    val height = placeable.height + placeableY
-    layout(placeable.width, height) {
-        // Where the composable gets placed
-        placeable.placeRelative(0, placeableY)
-    }
-}
-
-//Contraseña 8 caracteres y solo caracteres alfanumeriscos y "_"
 
 
 @Preview

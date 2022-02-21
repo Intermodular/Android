@@ -36,6 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sainero.dani.intermodular.DataClass.*
 import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.currentValidateUser
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
@@ -127,28 +128,30 @@ fun MainAccessToTables(
                             }) {
                                 Icon(
                                     Icons.Filled.MoreVert,
-                                    contentDescription = "Localized description"
+                                    contentDescription = "Localized description",
+                                    tint = Color.White
                                 )
                             }
 
                             DropdownMenu(
                                 expanded = expanded.value,
                                 onDismissRequest = { expanded.value = false }) {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        expanded.value = false
-                                        navController.navigate(Destinations.MainAdministrationActivity.route)
-                                    }) {
-                                    Text(text = "Entrar como Administrador")
+                                if (currentValidateUser.rol.equals("Administrador")){
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            expanded.value = false
+                                            navController.navigate(Destinations.MainAdministrationActivity.route)
+                                        }) {
+                                        Text(text = "Entrar como Administrador")
+                                    }
+                                    Divider()
                                 }
-                                Divider()
                                 DropdownMenuItem(
                                     onClick = {
                                         expanded.value = false
                                         navController.navigate(Destinations.Login.route) {
                                             popUpTo(0)
                                         }
-
                                     }) {
                                     Text(text = "Cerrar sesión")
                                 }
@@ -161,7 +164,11 @@ fun MainAccessToTables(
                                 scope.launch { scaffoldState.drawerState.open() }
                             }
                         ) {
-                            Icon(Icons.Filled.Menu, contentDescription = "")
+                            Icon(
+                                Icons.Filled.Menu,
+                                contentDescription = "",
+                                tint = Color.White
+                            )
                         }
                     }
                 )
@@ -190,11 +197,8 @@ fun MainAccessToTables(
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
                                 )
-
                             }
                             Spacer(modifier = Modifier.padding(10.dp))
-
-
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -522,7 +526,10 @@ private fun confirmCreateOrder(
 ) {
     MaterialTheme {
 
-        Column {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             AlertDialog(
                 onDismissRequest = {
                 },
@@ -533,44 +540,44 @@ private fun confirmCreateOrder(
                     Text("")
                 },
                 confirmButton = {
-                    Button(
-                        onClick = {
-
-                            mainViewModelCreateOrder.pedido = Pedidos(idMesa = table._id,lineasPedido = arrayListOf(),_id = 0)
-                            mainViewModelCreateOrder.uploadOrder(order = mainViewModelCreateOrder.pedido) {
-                                mainViewModelCreateOrder.deleteOrder(
-                                    id = mainViewModelCreateOrder.pedido._id,
-                                    idMesa = mainViewModelCreateOrder.pedido.idMesa
-                                )
-                            }
-
-                            mainViewModelCreateOrder.editOrder = false
-
-                            mainViewModelCreateOrder.lineasPedidos = arrayListOf()
-                            mainViewModelCreateOrder.getOrderByTable(id = table._id){
-                                mainViewModelCreateOrder.pedido = mainViewModelCreateOrder.orderByTable
-                            }
-
-                            navController.navigate("${Destinations.CreateOrderWithOrder.route}/${table._id}")
-
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        ),
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Aceptar")
+                        Button(
+                            onClick = {
+                                mainViewModelCreateOrder.pedido = Pedidos(idMesa = table._id,lineasPedido = arrayListOf(),_id = 0)
+                                mainViewModelCreateOrder.uploadOrder(order = mainViewModelCreateOrder.pedido) {
+                                    mainViewModelCreateOrder.deleteOrder(
+                                        id = mainViewModelCreateOrder.pedido._id,
+                                        idMesa = mainViewModelCreateOrder.pedido.idMesa
+                                    )
+                                }
+
+                                mainViewModelCreateOrder.editOrder = false
+
+                                mainViewModelCreateOrder.lineasPedidos = arrayListOf()
+                                mainViewModelCreateOrder.getOrderByTable(id = table._id){
+                                    mainViewModelCreateOrder.pedido = mainViewModelCreateOrder.orderByTable
+                                }
+
+                                navController.navigate("${Destinations.CreateOrderWithOrder.route}/${table._id}")
+
+                            },
+                            Modifier.align(Alignment.Start)
+                        ) {
+                            Text("Aceptar")
+                        }
                     }
+
                 },
                 dismissButton = {
                     Button(
                         onClick = {
                             onValueChangeDisableAlert(false)
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Blue,
-                            contentColor = Color.White
-                        )
+                        Modifier.align(Alignment.End)
+
                     ) {
                         Text("Cancelar")
                     }
