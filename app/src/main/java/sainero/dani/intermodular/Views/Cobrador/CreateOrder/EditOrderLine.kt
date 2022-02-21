@@ -11,9 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,10 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import sainero.dani.intermodular.DataClass.LineaExtra
-import sainero.dani.intermodular.DataClass.LineaPedido
-import sainero.dani.intermodular.DataClass.Productos
-import sainero.dani.intermodular.DataClass.Tipos
+import sainero.dani.intermodular.DataClass.*
 import sainero.dani.intermodular.Navigation.Destinations
 import sainero.dani.intermodular.R
 import sainero.dani.intermodular.Utils.GlobalVariables
@@ -53,10 +48,6 @@ fun MainEditOrderLine(
     val context = LocalContext.current
     val getCompatibleExtras = remember { mutableStateOf(true)}
     val firsthAcces = remember { mutableStateOf(true) }
-    if (firsthAcces.value){
-        mainViewModelCreateOrder.lineasExtras.clear()
-        firsthAcces.value = false
-    }
     //Textos
     var description = rememberSaveable { mutableStateOf(mainViewModelCreateOrder.editLineOrder.anotaciones) }
 
@@ -68,8 +59,16 @@ fun MainEditOrderLine(
     var selectedType = remember { mutableStateOf(Tipos(0,"","", arrayListOf()))}
     viewModelTipos.typeListResponse.forEach { if (it.name.equals(mainViewModelCreateOrder.editLineOrder.producto.type)) selectedType.value = it }
 
+
+
+    if (firsthAcces.value){
+        mainViewModelCreateOrder.lineasExtras.clear()
+        firsthAcces.value = false
+    }
+
     if (getCompatibleExtras.value) {
-        selectedType.value.compatibleExtras.forEach{mainViewModelCreateOrder.lineasExtras.add(LineaExtra(it,0))}
+        mainViewModelCreateOrder.editLineOrder.lineasExtras.forEach{lineaExtra -> mainViewModelCreateOrder.lineasExtras.add(lineaExtra) }
+        mainViewModelCreateOrder.saveEditLine()
         getCompatibleExtras.value = false
     }
 
@@ -216,7 +215,7 @@ fun MainEditOrderLine(
                                     horizontalArrangement = Arrangement.Center,
                                 ) {
                                     TextField(
-                                        value = description.value,
+                                        value = getCorrectFormatInAnotation(description.value),
                                         onValueChange = { description.value = it },
                                         label = { Text("Anotaciones") },
                                          modifier = Modifier
@@ -301,6 +300,7 @@ fun MainEditOrderLine(
                                 ) {
                                     Button(
                                         onClick = {
+                                            mainViewModelCreateOrder.restoreEditLine()
                                             navController.popBackStack()
                                         },
                                         colors = ButtonDefaults.buttonColors(
@@ -372,4 +372,9 @@ fun MainEditOrderLine(
             }
         }
     )
+}
+
+fun getCorrectFormatInAnotation(text: String): String {
+    var result = text.replace(",","\n")
+    return result
 }

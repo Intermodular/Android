@@ -325,9 +325,10 @@ fun MainCreateOrderLine(
                                                 textQuantity = if (!textQuantity.value.equals("")) textQuantity.value.toInt() else 1
                                             )
 
+
                                             var lineaDePedido = LineaPedido(
                                                 producto = product,
-                                                anotaciones = description.value,
+                                                anotaciones =  createEstructureOfAnotation(description.value),
                                                 cantidad = if (!textQuantity.value.equals("")) textQuantity.value.toInt() else 1,
                                                 costeLinea = linePrice,
                                                 lineasExtras = mainViewModelCreateOrder.lineasExtras.toMutableList()
@@ -364,6 +365,16 @@ fun MainCreateOrderLine(
     )
 }
 
+fun createEstructureOfAnotation(text: String) : String
+{
+    if (text.equals("")) return ""
+    var str = text
+    val list = str.split("\n")
+    var result: String = ""
+    list.forEach{if (!it.trim().equals("")) result += "${it},"}
+    return result.substring(0, result.length-1)
+
+}
 
 
 @Preview(showBackground = true)

@@ -112,6 +112,7 @@ fun MainAccessToTables(
                 onValueChangeSelectedTable = onValueChangeSelectedTable
             ) },
             scaffoldState = scaffoldState,
+            
             topBar = {
                 TopAppBar(
                     title = {
@@ -165,8 +166,9 @@ fun MainAccessToTables(
                     }
                 )
             },
-            drawerShape = MaterialTheme.shapes.large,
+            drawerShape = MaterialTheme.shapes.medium,
             drawerScrimColor= DrawerDefaults.scrimColor,
+
             drawerContent = {
                 Scaffold(
                     scaffoldState = scaffoldStateFilter,

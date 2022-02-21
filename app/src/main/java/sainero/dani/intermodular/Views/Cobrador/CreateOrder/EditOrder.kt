@@ -254,7 +254,6 @@ private fun CreateContent(
                                      textAlign = TextAlign.Right,
                                      modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
                                  )
-                                 //Spacer(modifier = Modifier.padding(start = 55.dp, bottom = 20.dp))
                              }
                          }
                          itemsIndexed(mainViewModelCreateOrder.lineasPedidos) { index, it ->
@@ -270,14 +269,18 @@ private fun CreateContent(
                                          .pointerInput(Unit) {
                                              detectTapGestures(
                                                  onLongPress = { Offset ->
-                                                     lineaPedidoSeleccionada.value = mainViewModelCreateOrder.lineasPedidos.get(index)
+                                                     lineaPedidoSeleccionada.value =
+                                                         mainViewModelCreateOrder.lineasPedidos.get(
+                                                             index
+                                                         )
                                                      indexItem.value = index
                                                      onValueChangeDeleteLane(true)
                                                  },
                                                  onTap = { Offset ->
                                                      //val idLineaPedido = mainViewModelCreateOrder.lineasPedidos.indexOf(it)
                                                      mainViewModelCreateOrder.editLineOrder = it
-                                                     mainViewModelCreateOrder.editLineOrderIndex = index
+                                                     mainViewModelCreateOrder.editLineOrderIndex =
+                                                         index
                                                      navController.navigate("${Destinations.EditOrderLine.route}/${typeId}")
                                                  }
                                              )
@@ -286,11 +289,14 @@ private fun CreateContent(
                                      Column(
                                          horizontalAlignment = Alignment.Start
                                      ) {
+                                         var string = "${it.producto.name}\n"
+
+                                         it.lineasExtras.forEach{if (it.cantidad > 0) string += "   EXTRA: ${it.extra.name}\n" }
                                          Text(
-                                             text = it.producto.name.toString(),
+                                             text = string,
                                              textAlign = TextAlign.Left,
                                              modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
-                                         )
+                                            )
                                      }
                                      Column(
                                          horizontalAlignment = Alignment.CenterHorizontally
