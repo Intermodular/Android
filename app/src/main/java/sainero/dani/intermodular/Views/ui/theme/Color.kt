@@ -12,7 +12,7 @@ val BackgroundGrey = Color(color = 0xFFF9F9F9)
 val testCorrect = Color(color = 0xFF133e80)
 
 val ColoresPersonalizados = lightColors(
-    primary = Color(0xFF001d3d),
+    primary = Color(0xFF003A3D),
     onPrimary = Color.Black,
     primaryVariant = Color(0xFF556656),
     secondary = Color(0xFF42EDA2),

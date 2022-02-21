@@ -316,10 +316,6 @@ fun MainEditEmployee(
                                     )
                                     mainViewModelEmployee.editUser(selectedUser)
                                 },
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
-                                    contentColor = Color.Blue
-                                ),
                                 contentPadding = PaddingValues(
                                     start = 10.dp,
                                     top = 6.dp,
@@ -351,10 +347,6 @@ fun MainEditEmployee(
                                         onValueChangeEmailUser(selectedUser.email)
                                         textRolUser.value = selectedUser.rol
                                     },
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color.White,
-                                        contentColor = Color.Blue
-                                    ),
                                     contentPadding = PaddingValues(
                                         start = 10.dp,
                                         top = 6.dp,
@@ -399,10 +391,6 @@ fun MainEditEmployee(
                                             showToast.value = true
                                         }
                                     },
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color.White,
-                                        contentColor = Color.Blue
-                                    ),
                                     contentPadding = PaddingValues(
                                         start = 10.dp,
                                         top = 6.dp,

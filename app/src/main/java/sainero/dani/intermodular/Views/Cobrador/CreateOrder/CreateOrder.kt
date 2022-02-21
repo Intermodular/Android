@@ -138,7 +138,7 @@ fun MainCreateOrderWithOrder(
                     ) {
                         Icon(Icons.Filled.Menu, contentDescription = "")
                     }
-                }
+                },
             )
         },
         drawerContent = {
@@ -202,6 +202,7 @@ fun MainCreateOrderWithOrder(
                     },
                     modifier = Modifier.wrapContentWidth(),
                     edgePadding = 16.dp,
+                    backgroundColor = Color(0xFFF9F9F9)
                 ) {
                     allTypesNames.forEachIndexed { index, title ->
                         Tab(
@@ -272,8 +273,7 @@ private fun createProducts(
 ) {
     LazyVerticalGrid(
         cells = GridCells.Adaptive(minSize = 128.dp),
-        contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
-
+        contentPadding = PaddingValues(start = 30.dp, end = 30.dp)
     ) {
         for (i in allProducts) {
             item {
