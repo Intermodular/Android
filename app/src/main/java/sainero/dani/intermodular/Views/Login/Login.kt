@@ -31,6 +31,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.layout.AlignmentLine
+import androidx.compose.ui.layout.FirstBaseline
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -38,6 +41,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.*
@@ -87,7 +91,7 @@ fun LoginMain(
                 //Tests
                 .clickable {
                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
-                    navController.navigate("${Destinations.ProductManager.route}")
+                    navController.navigate("${Destinations.AccessToTables.route}")
                     //navController.navigate("${Destinations.MainAdministrationActivity.route}")
                 }
         )
@@ -466,6 +470,26 @@ private fun adminAlertDestination() {
                 }
             )
         }
+    }
+}
+
+
+fun Modifier.firstBaselineToTop(
+    firstBaselineToTop: Dp
+) = layout { measurable, constraints ->
+    // Measure the composable
+    val placeable = measurable.measure(constraints)
+
+    // Check the composable has a first baseline
+    check(placeable[FirstBaseline] != AlignmentLine.Unspecified)
+    val firstBaseline = placeable[FirstBaseline]
+
+    // Height of the composable with padding - first baseline
+    val placeableY = firstBaselineToTop.roundToPx() - firstBaseline
+    val height = placeable.height + placeableY
+    layout(placeable.width, height) {
+        // Where the composable gets placed
+        placeable.placeRelative(0, placeableY)
     }
 }
 

@@ -64,7 +64,6 @@ fun dropDownMenuWithNavigation(
                         Modifier.clickable{
                             editItem.value = true
                             onClick()
-
                         })
                 }
             )

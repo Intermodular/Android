@@ -209,13 +209,15 @@ class MainViewModelCreateOrder : ViewModel() {
     var lineaExtrasTmp = mutableListOf<LineaExtra>()
 
     var editLineOrderIndex: Int = 0
+
     fun saveEditLine() {
         lineaExtrasTmp.clear()
-        editLineOrder.lineasExtras.forEach{lineaExtrasTmp.add(it)}
+        editLineOrder.lineasExtras.forEach{lineaExtrasTmp.add(LineaExtra(it.extra,it.cantidad))}
     }
 
     fun restoreEditLine() {
-        lineaExtrasTmp.forEach{lineasExtras.add(it)}
+        editLineOrder.lineasExtras.clear()
+        lineaExtrasTmp.forEach{editLineOrder.lineasExtras.add(LineaExtra(it.extra,it.cantidad))}
     }
 
     //Validaciones

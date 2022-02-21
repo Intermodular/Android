@@ -37,11 +37,11 @@ fun IntermodularTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable() () -> Unit
 ) {
-    val colors = if (darkTheme) {
+    val colors = /*if (darkTheme) {
         DarkColorPalette
     } else {
-        LightColorPalette
-    }
+    }*/
+    LightColorPalette
 
     MaterialTheme(
         colors = colors,

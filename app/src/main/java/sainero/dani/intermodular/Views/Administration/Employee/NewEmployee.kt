@@ -83,7 +83,6 @@ fun MainNewEmployee(
     var (textAddress, onValueChangeAddress) = rememberSaveable { mutableStateOf("") }
     val showToast = remember { mutableStateOf(false) }
     var toastMessage = rememberSaveable { mutableStateOf("")}
-    val context = LocalContext.current
 
 
     Scaffold(

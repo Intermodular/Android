@@ -25,7 +25,6 @@ fun dropDownMenu(
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(suggestions[0]) }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
-    var editItem = remember{ mutableStateOf(false) }
 
     val icon = if (expanded)
         Icons.Filled.KeyboardArrowUp

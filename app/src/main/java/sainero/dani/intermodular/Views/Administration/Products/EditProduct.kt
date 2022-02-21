@@ -254,7 +254,7 @@ fun MainEditProduct(
                         dropDownMenuWithNavigation(
                             text ="Ingredientes",
                             suggestions = ingredientes,
-                            onClick = { onClickIngredients(id)}
+                            onClick = { onClickIngredients(id) }
                         )
                     }
                     item {

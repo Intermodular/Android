@@ -14,12 +14,17 @@
         android:theme="@style/Theme.Intermodular"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Views.SplashScreen.SplashScreen"
+            android:exported="false"
+            android:label="@string/title_activity_splash_screen"
+            android:theme="@style/Theme.Intermodular" />
+        <activity
             android:name=".Views.Cobrador.ProductInformation"
             android:exported="false"
             android:label="@string/title_activity_product_information"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".Views.Cobrador.CreateOrder.ui.theme.CreateOrderLine"
+            android:name=".Views.Cobrador.CreateOrder.CreateOrderLine"
             android:exported="false"
             android:label="@string/title_activity_create_order_line"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
@@ -27,11 +32,6 @@
             android:name=".Views.Cobrador.CreateOrder.EditOrder"
             android:exported="false"
             android:label="@string/title_activity_edit_order"
-            android:theme="@style/Theme.Intermodular.NoActionBar" />
-        <activity
-            android:name=".Views.Administration.Products.Types.Extras.NewExtras"
-            android:exported="false"
-            android:label="@string/title_activity_new_extras"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
             android:name=".Views.Administration.Zone.Table.NewTable"
@@ -54,7 +54,7 @@
             android:label="@string/title_activity_extras"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".Views.Administration.Products.Types.ui.theme.ProductNewType"
+            android:name=".Views.Administration.Products.Types.ProductNewType"
             android:exported="false"
             android:label="@string/title_activity_product_new_typ"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
@@ -89,7 +89,7 @@
             android:label="@string/title_activity_product_edit_type"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
         <activity
-            android:name=".Views.Administration.Zone.ui.theme.NewZone"
+            android:name=".Views.Administration.Zone.NewZone"
             android:exported="false"
             android:label="@string/title_activity_new_zone"
             android:theme="@style/Theme.Intermodular.NoActionBar" />
