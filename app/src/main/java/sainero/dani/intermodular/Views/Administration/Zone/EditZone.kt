@@ -169,7 +169,11 @@ fun MainEditZone(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 15.dp, end = 10.dp)
                     ) {
+
                         Button(
                             onClick = {
                                 textName = ""
@@ -206,8 +210,6 @@ fun MainEditZone(
                                 end = 10.dp,
                                 bottom = 6.dp
                             ),
-                            modifier = Modifier
-                                .padding(start = 20.dp, end = 20.dp)
                         ) {
                             Text(text = "Guardar cambios", fontSize = 15.sp)
                         }

@@ -106,7 +106,8 @@ fun MainZoneManager(
             FloatingActionButton(
                 onClick = {
                    navController.navigate(Destinations.NewZone.route)
-                }
+                },
+                backgroundColor = MaterialTheme.colors.primary
             ) {
                 Text("+")
             }

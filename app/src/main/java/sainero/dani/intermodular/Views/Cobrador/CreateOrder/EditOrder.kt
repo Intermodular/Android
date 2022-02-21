@@ -354,10 +354,6 @@ private fun CreateContent(
                                  end = 20.dp
                              )
                          ),
-                     colors = ButtonDefaults.buttonColors(
-                         backgroundColor = Color.White,
-                         contentColor = Color.Blue
-                     ),
                      contentPadding = PaddingValues(
                          start = 10.dp,
                          top = 6.dp,

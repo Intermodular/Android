@@ -184,13 +184,11 @@ fun NavigationHost(
         }
 
         composable(
-            route = "${Destinations.Extras.route}/{productId}",
-            arguments = listOf(navArgument("productId"){type = NavType.IntType})
+            route = "${Destinations.Extras.route}",
+
         ){
-            val id = it.arguments?.getInt("productId")
-            requireNotNull(id)
             viewModelTipos.getTypesList()
-            MainExtras(mainViewModelExtras,id)
+            MainExtras(mainViewModelExtras)
         }
 
         composable(
@@ -274,8 +272,6 @@ fun NavigationHost(
             requireNotNull(id)
             viewModelProductos.getProductList()
             MainIngredient(
-                _id = id,
-                viewModelProductos = viewModelProductos,
                 mainViewModelIngredients = mainViewModelIngredients
             )
         }
@@ -312,9 +308,7 @@ fun NavigationHost(
                 navArgument("tableId"){type = NavType.IntType},
                 navArgument("typeId"){type = NavType.IntType}
             )
-
         ){
-
             val tableId = it.arguments?.getInt("tableId")
             val typeId = it.arguments?.getInt("typeId")
             requireNotNull(tableId)

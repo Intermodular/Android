@@ -1,14 +1,8 @@
 package sainero.dani.intermodular.Views.Administration.Products
 
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -17,24 +11,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
 import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Navigation.NavigationHost
 import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.ViewModels.ViewModelProductos
-import sainero.dani.intermodular.ViewModels.ViewModelTipos
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainViewModelIngredients
-import java.util.regex.Pattern
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
@@ -105,21 +92,21 @@ fun MainNewProduct(
         when (mainViewModelIngredients.ingredientsState){
             "New" -> {
                 mainViewModelIngredients._ingredients.clear()
-                mainViewModelIngredients._tmpIngredients.clear()
+                mainViewModelIngredients.tmpIngredients.clear()
                 mainViewModelIngredients.newsValuesIngredients.clear()
-                mainViewModelIngredients._tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
+                mainViewModelIngredients.tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
             }
             "Edit" -> {
                 mainViewModelIngredients.newsValuesIngredients.clear()
-                mainViewModelIngredients._ingredients = mainViewModelIngredients._tmpIngredients.toMutableList()
+                mainViewModelIngredients._ingredients = mainViewModelIngredients.tmpIngredients.toMutableList()
             }
             "Cancel" -> {
                 mainViewModelIngredients.newsValuesIngredients.clear()
-                mainViewModelIngredients._tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
+                mainViewModelIngredients.tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
             }
             else  ->{
                 mainViewModelIngredients.newsValuesIngredients.clear()
-                mainViewModelIngredients._tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
+                mainViewModelIngredients.tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
 
             }
         }
@@ -186,7 +173,7 @@ fun MainNewProduct(
                             dropDownMenuWithNavigation(
                                 text = "Ingredientes",
                                 suggestions = mainViewModelIngredients._ingredients,
-                                navigate = "${Destinations.Ingredient.route}/${0}"
+                                onClick = { onClickIngredients(0)}
                             )
                         }
                         item {
@@ -206,7 +193,7 @@ fun MainNewProduct(
                             dropDownMenuWithNavigation(
                                 text = "Especificaciones",
                                 suggestions = mainViewModelEspecifications._especifications,
-                                navigate = "${Destinations.Especifications.route}/${0}"
+                                onClick = {onClickEspecifications(0)}
                             )
                         }
                         item {
@@ -238,6 +225,9 @@ fun MainNewProduct(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 15.dp, end = 10.dp)
                 ) {
                     Button(
                         onClick = {
@@ -247,10 +237,6 @@ fun MainNewProduct(
                             textImg = ""
                             textStock = ""
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
                         contentPadding = PaddingValues(
                             start = 10.dp,
                             top = 6.dp,
@@ -260,12 +246,11 @@ fun MainNewProduct(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 20.dp)
                     ) {
-                        Text(text = "Resetear campos", fontSize = 15.sp)
+                        Text(text = "Revertir cambios", fontSize = 15.sp)
                     }
 
                     Button(
                         onClick = {
-
                             if (mainViewModelProductos.checkAllValidations(
                                     textName = textName,
                                     textPrice = textCost,
@@ -292,31 +277,29 @@ fun MainNewProduct(
                                 showToast.value = true
                                 textOfToast.value = "Debes de rellenar todos los campos correctamente"
                             }
-
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
                         contentPadding = PaddingValues(
                             start = 10.dp,
                             top = 6.dp,
                             end = 10.dp,
                             bottom = 6.dp
                         ),
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 20.dp)
                     ) {
-                        Text(text = "Crear producto", fontSize = 15.sp)
+                        Text(text = "Guardar cambios", fontSize = 15.sp)
                     }
-
                 }
             }
         }
     )
 }
 
+private fun onClickIngredients(id:Int){
+    navController.navigate("${Destinations.Ingredient.route}/${id}")
+}
 
+private fun onClickEspecifications(id: Int) {
+    navController.navigate("${Destinations.Especifications.route}/${id}")
+}
 
 @Preview(showBackground = true)
 @Composable

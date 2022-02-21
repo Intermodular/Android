@@ -103,7 +103,8 @@ fun MainTableManager(
             FloatingActionButton(
                 onClick = {
                     navController.navigate(Destinations.NewTable.route)
-                }
+                },
+                backgroundColor = MaterialTheme.colors.primary
             ) {
                 Text("+")
             }
@@ -218,7 +219,6 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                 )
             }
         },
-        backgroundColor = Color.Blue,
         navigationIcon = {
             IconButton(
                 onClick = {
@@ -248,7 +248,6 @@ private fun SearchAppBar(
             .fillMaxWidth()
             .height(56.dp),
         elevation = AppBarDefaults.TopAppBarElevation,
-        color = Color.Blue
     ) {
         TextField(modifier = Modifier
             .fillMaxWidth(),

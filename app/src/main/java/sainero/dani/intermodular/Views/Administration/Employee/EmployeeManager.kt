@@ -103,7 +103,8 @@ fun MainEmployeeManager(
                     onClick = {
                         navController.navigate(Destinations.NewEmployee.route)
                     },
-                    backgroundColor = Color(0xFF001d3d)
+                    backgroundColor = MaterialTheme.colors.primary
+
                 ) {
                     Text("+")
                 }

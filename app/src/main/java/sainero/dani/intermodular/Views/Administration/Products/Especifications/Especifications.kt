@@ -32,7 +32,11 @@ import sainero.dani.intermodular.ViewModels.ViewModelProductos
 import sainero.dani.intermodular.Views.Administration.Products.Types.*
 
 @Composable
-fun MainEspecifications(id: Int, viewModelProductos: ViewModelProductos, mainViewModelEspecifications: MainViewModelEspecifications) {
+fun MainEspecifications(
+    id: Int,
+    viewModelProductos: ViewModelProductos,
+    mainViewModelEspecifications: MainViewModelEspecifications
+) {
 
     //Consulta BD
     var selectedProduct = remember {viewModelProductos.product}
@@ -177,10 +181,6 @@ private fun createEspecifications(
                         mainViewModelEspecifications.especificationsState = "Cancel"
                         navController.popBackStack()
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.White,
-                        contentColor = Color.Blue
-                    ),
                     contentPadding = PaddingValues(
                         start = 10.dp,
                         top = 6.dp,
@@ -203,10 +203,6 @@ private fun createEspecifications(
                         navController.popBackStack()
 
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.White,
-                        contentColor = Color.Blue
-                    ),
                     contentPadding = PaddingValues(
                         start = 10.dp,
                         top = 6.dp,

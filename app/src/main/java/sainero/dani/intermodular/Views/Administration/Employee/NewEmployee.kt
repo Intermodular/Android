@@ -242,6 +242,7 @@ fun MainNewEmployee(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceEvenly,
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp, end = 10.dp)
                             ) {
                                 Button(
                                     onClick = {
@@ -254,20 +255,13 @@ fun MainNewEmployee(
                                         onValueChangeEmailUser("")
                                         onValueChangeAddress("")
                                     },
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color.White,
-                                        contentColor = Color.Blue
-                                    ),
                                     contentPadding = PaddingValues(
                                         start = 10.dp,
                                         top = 6.dp,
                                         end = 10.dp,
                                         bottom = 6.dp
                                     ),
-                                    modifier = Modifier
-                                        .padding(start = 10.dp, end = 20.dp)
                                 ) {
-                                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                                     Text(text = "Revertir cambios", fontSize = 15.sp)
                                 }
 
@@ -306,27 +300,16 @@ fun MainNewEmployee(
                                             showToast.value = true
                                             toastMessage.value = "Debes de rellenar todos los campos correctamente"
                                         }
-
-
-
                                     },
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color.White,
-                                        contentColor = Color.Blue
-                                    ),
                                     contentPadding = PaddingValues(
                                         start = 10.dp,
                                         top = 6.dp,
                                         end = 10.dp,
                                         bottom = 6.dp
                                     ),
-                                    modifier = Modifier
-                                        .padding(start = 10.dp, end = 20.dp)
                                 ) {
-                                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
                                     Text(text = "Guardar cambios", fontSize = 15.sp)
                                 }
-                                Spacer(modifier = Modifier.padding(10.dp))
                             }
                         }
                     }

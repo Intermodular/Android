@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import sainero.dani.intermodular.DataClass.Extras
 import androidx.lifecycle.ViewModel
 import sainero.dani.intermodular.DataClass.Tipos
+import java.lang.NumberFormatException
 
 class MainViewModelExtras : ViewModel() {
 
@@ -24,5 +25,16 @@ class MainViewModelExtras : ViewModel() {
     fun addExtras(newValue: Extras) {
         _extras.add(newValue)
     }
+
+    //Validaciones
+     fun isFloat(text: String): Boolean {
+        try {
+            text.toFloat()
+        } catch (e: NumberFormatException) {
+            return false
+        }
+        return true
+    }
+
 
 }

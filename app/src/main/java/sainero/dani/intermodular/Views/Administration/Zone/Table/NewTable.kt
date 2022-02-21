@@ -74,7 +74,6 @@ fun MainNewTable(
                 title = {
                     Text(text = "Nueva Mesa",color = Color.White)
                 },
-                backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
 
@@ -156,7 +155,9 @@ fun MainNewTable(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp, end = 10.dp)
                 ) {
+
                     Button(
                         onClick = {
                             onValueChangeZone("")
@@ -164,10 +165,6 @@ fun MainNewTable(
                             onValueChangeState("")
                             onValueChangeNumber("")
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
                         contentPadding = PaddingValues(
                             start = 10.dp,
                             top = 6.dp,
@@ -205,18 +202,12 @@ fun MainNewTable(
                             }
 
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
                         contentPadding = PaddingValues(
                             start = 10.dp,
                             top = 6.dp,
                             end = 10.dp,
                             bottom = 6.dp
                         ),
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 20.dp)
                     ) {
                         Text(text = "Guardar cambios", fontSize = 15.sp)
                     }

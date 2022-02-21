@@ -303,10 +303,6 @@ fun MainEditOrderLine(
                                             mainViewModelCreateOrder.restoreEditLine()
                                             navController.popBackStack()
                                         },
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = Color.White,
-                                            contentColor = Color.Blue
-                                        ),
                                         contentPadding = PaddingValues(
                                             start = 10.dp,
                                             top = 6.dp,
@@ -348,10 +344,6 @@ fun MainEditOrderLine(
                                             Toast.makeText(context,"Ha sido actualizado correctamente",Toast.LENGTH_SHORT).show()
                                             navController.popBackStack()
                                         },
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = Color.White,
-                                            contentColor = Color.Blue
-                                        ),
                                         contentPadding = PaddingValues(
                                             start = 10.dp,
                                             top = 6.dp,

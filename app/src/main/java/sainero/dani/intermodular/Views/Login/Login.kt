@@ -87,7 +87,8 @@ fun LoginMain(
                 //Tests
                 .clickable {
                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
-                    navController.navigate("${Destinations.AccessToTables.route}")
+                    navController.navigate("${Destinations.ProductManager.route}")
+                    //navController.navigate("${Destinations.MainAdministrationActivity.route}")
                 }
         )
         Column(

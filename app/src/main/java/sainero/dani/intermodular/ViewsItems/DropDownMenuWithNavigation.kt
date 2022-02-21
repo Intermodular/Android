@@ -16,13 +16,15 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import sainero.dani.intermodular.Utils.GlobalVariables
+import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
+import kotlin.reflect.KFunction1
 
 
 @Composable
 fun dropDownMenuWithNavigation(
     text: String,
     suggestions: List<String>,
-    navigate: String
+    onClick: () -> Unit
 ) {
 
     Spacer(modifier = Modifier.padding(4.dp))
@@ -61,7 +63,7 @@ fun dropDownMenuWithNavigation(
                         Icons.Default.Edit,"Edit ${text}",
                         Modifier.clickable{
                             editItem.value = true
-                            GlobalVariables.navController.navigate(navigate)
+                            onClick()
 
                         })
                 }

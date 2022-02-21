@@ -109,7 +109,8 @@ fun MainProductTypeManager(
                 onClick = {
                     mainViewModelExtras.extrasState = "New"
                     navController.navigate("${Destinations.ProductNewType.route}")
-                }
+                },
+                backgroundColor = MaterialTheme.colors.primary
             ) {
                 Text("+")
             }
@@ -231,7 +232,6 @@ private fun DefaultAppBar(onSearchClicked: () -> Unit) {
                 )
             }
         },
-        backgroundColor = Color.Blue,
         navigationIcon = {
             IconButton(
                 onClick = {
@@ -261,7 +261,6 @@ private fun SearchAppBar(
             .fillMaxWidth()
             .height(56.dp),
         elevation = AppBarDefaults.TopAppBarElevation,
-        color = Color.Blue//MaterialTheme.colors.primary
     ) {
         TextField(modifier = Modifier
             .fillMaxWidth(),

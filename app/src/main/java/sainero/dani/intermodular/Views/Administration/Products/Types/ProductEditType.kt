@@ -1,10 +1,6 @@
 package sainero.dani.intermodular.Views.Administration.Products.Types
 
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -23,11 +19,8 @@ import androidx.compose.ui.unit.sp
 import sainero.dani.intermodular.DataClass.Extras
 import sainero.dani.intermodular.DataClass.Tipos
 import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.ViewModels.ViewModelTipos
 import sainero.dani.intermodular.Views.Administration.Products.Types.Extras.MainViewModelExtras
-import java.util.regex.Pattern
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.createRowList
 import sainero.dani.intermodular.ViewsItems.dropDownMenuWithNavigation
@@ -142,7 +135,6 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                 title = {
                     Text(text = "Edición de Tipo",color = Color.White)
                 },
-                backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     IconButton(
@@ -153,7 +145,8 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Eliminar tipo",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                            modifier = Modifier.size(ButtonDefaults.IconSize),
+                            tint = Color.White
                         )
                     }
 
@@ -164,7 +157,8 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                         }) {
                             Icon(
                                 Icons.Filled.MoreVert,
-                                contentDescription = "More icon"
+                                contentDescription = "More icon",
+                                tint = Color.White
                             )
                         }
 
@@ -222,7 +216,7 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                             dropDownMenuWithNavigation(
                                 text = "Extras",
                                 suggestions = allNamesOfExtras,
-                                navigate = "${Destinations.Extras.route}/${id}",
+                                onClick = ::clickButtonExtras,
                             )
                         }
                         item {
@@ -242,6 +236,9 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 15.dp, end = 10.dp)
                 ) {
                     Button(
                         onClick = {
@@ -250,10 +247,6 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                             textCompatibleExtras = arrayListOf()
 
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
                         contentPadding = PaddingValues(
                             start = 10.dp,
                             top = 6.dp,
@@ -279,18 +272,12 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                             }
 
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
                         contentPadding = PaddingValues(
                             start = 10.dp,
                             top = 6.dp,
                             end = 10.dp,
                             bottom = 6.dp
                         ),
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 20.dp)
                     ) {
                         Text(text = "Guardar cambios", fontSize = 15.sp)
                     }
@@ -300,7 +287,9 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
     )
 }
 
-
+private fun clickButtonExtras(){
+    navController.navigate("${Destinations.Extras.route}")
+}
 
 
 @Preview(showBackground = true)

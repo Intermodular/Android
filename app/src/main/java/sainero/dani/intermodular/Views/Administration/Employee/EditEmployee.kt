@@ -324,7 +324,7 @@ fun MainEditEmployee(
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 20.dp, end = 20.dp)
+                                    .padding(start = 10.dp, end = 20.dp)
                             ) {
                                 Text(text = "Restablecer contraseña", fontSize = 15.sp)
                             }
@@ -334,7 +334,7 @@ fun MainEditEmployee(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceEvenly,
-                                modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp)
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp, end = 10.dp)
                             ) {
                                 Button(
                                     onClick = {
@@ -354,7 +354,6 @@ fun MainEditEmployee(
                                         bottom = 6.dp
                                     )
                                 ) {
-
                                     Text(text = "Revertir cambios", fontSize = 15.sp)
                                 }
 
