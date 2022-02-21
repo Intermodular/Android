@@ -115,7 +115,8 @@ fun MainProductManager(
                     mainViewModelEspecifications.especificationsState = "New"
                     mainViewModelIngredients.ingredientsState = "New"
                     navController.navigate(Destinations.NewProduct.route)
-                }
+                },
+                backgroundColor = MaterialTheme.colors.primary
             ) {
                 Text("+")
             }

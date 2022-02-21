@@ -97,7 +97,6 @@ fun MainEditTable(
                 title = {
                     Text(text = "Edición de Mesa",color = Color.White)
                 },
-                backgroundColor = Color.Blue,
                 elevation = AppBarDefaults.TopAppBarElevation,
                 actions = {
                     IconButton(onClick = {
@@ -187,7 +186,9 @@ fun MainEditTable(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp, end = 10.dp)
                 ) {
+
                     Button(
                         onClick = {
                             onValueChangeZone(selectedTable.zone)
@@ -195,10 +196,6 @@ fun MainEditTable(
                             onValueChangeState(selectedTable.state)
                             onValueChangeNumber(selectedTable.number.toString())
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
                         contentPadding = PaddingValues(
                             start = 10.dp,
                             top = 6.dp,
@@ -234,18 +231,12 @@ fun MainEditTable(
                                 textOfToast.value = "Debes de rellenar todos los campos correctamente"
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
                         contentPadding = PaddingValues(
                             start = 10.dp,
                             top = 6.dp,
                             end = 10.dp,
                             bottom = 6.dp
                         ),
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 20.dp)
                     ) {
                         Text(text = "Guardar cambios", fontSize = 15.sp)
                     }

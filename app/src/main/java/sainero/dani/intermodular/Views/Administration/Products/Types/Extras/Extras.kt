@@ -31,7 +31,7 @@ import java.lang.NumberFormatException
 import java.util.regex.Pattern
 
 @Composable
-fun MainExtras(mainViewModelExtras: MainViewModelExtras,idProduct: Int) {
+fun MainExtras(mainViewModelExtras: MainViewModelExtras) {
     val state = remember { mutableStateOf(0) }
 
     var scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
@@ -77,14 +77,14 @@ private fun createContent(
                     var selectedText by remember { mutableStateOf(extra.name) }
 
                     Row(
-                        modifier = Modifier.height(IntrinsicSize.Min),
-                        horizontalArrangement = Arrangement.Start
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         OutlinedTextField(
                             value =  selectedText,
                             modifier = Modifier
-                                .fillMaxWidth(0.7f)
-                                .fillMaxHeight(0.8f),
+                                .fillMaxWidth(0.6f)
+                                .padding(start = 10.dp, end = 10.dp),
                             onValueChange = {
                                 selectedText = it
                                 extra.name = selectedText
@@ -100,16 +100,17 @@ private fun createContent(
                         OutlinedTextField(
                             value =  selectedTextPrice,
                             modifier = Modifier
-                                .fillMaxWidth(0.7f)
-                                .fillMaxHeight(0.8f),
+                                .fillMaxWidth(0.7f),
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                             onValueChange = {
                                 if (it.equals("")) {
                                     selectedTextPrice = it
                                     extra.price = 0f
                                 } else {
-                                    if (isFloat(it) || it.equals("")) selectedTextPrice = it
-                                    extra.price = selectedTextPrice.toFloat()
+                                    if (mainViewModelExtras.isFloat(it)) {
+                                        selectedTextPrice = it
+                                        extra.price = selectedTextPrice.toFloat()
+                                    }
                                 }
                             },
                             placeholder = { Text(text = "Precio")},
@@ -128,9 +129,7 @@ private fun createContent(
                                 modifier = Modifier.size(ButtonDefaults.IconSize)
                             )
                         }
-
                     }
-
                 }
             }
         }
@@ -141,7 +140,11 @@ private fun createContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 15.dp, end = 10.dp)
                 ) {
                     Button(
                         modifier = Modifier.fillMaxSize(),
@@ -155,18 +158,25 @@ private fun createContent(
                     }
                 }
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 15.dp, end = 10.dp)
                 ) {
                     Button(
                         onClick = {
                             mainViewModelExtras.extrasState = "Cancel"
                             navController.popBackStack()
-/*
-                            navController.navigate("${Destinations.ProductEditType.route}/${idProduct}"){
-                                //popUpTo("${Destinations.Extras.route}/${idProduct}") { inclusive = true }
-                            }*/
-
-                        }
+                        },
+                        contentPadding = PaddingValues(
+                            start = 10.dp,
+                            top = 6.dp,
+                            end = 10.dp,
+                            bottom = 6.dp
+                        ),
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 20.dp)
                     ) {
                         Text(text = "Revertir cambios")
                     }
@@ -177,27 +187,22 @@ private fun createContent(
                             onValueChangeRefresh(true)
                             mainViewModelExtras.extrasState = "Edit"
                             navController.popBackStack()
-                            //navController.navigate("${Destinations.ProductEditType.route}/${idProduct}")
-                        }
+                        },
+                        contentPadding = PaddingValues(
+                            start = 10.dp,
+                            top = 6.dp,
+                            end = 10.dp,
+                            bottom = 6.dp
+                        ),
                     ) {
                         Text(text = "Guardar cambios")
                     }
                 }
             }
-
         }
     }
 }
 
-//Validaciones
-private fun isFloat(text: String): Boolean {
-    try {
-        text.toFloat()
-    } catch (e: NumberFormatException) {
-        return false
-    }
-    return true
-}
 
 @Preview(showBackground = true)
 @Composable

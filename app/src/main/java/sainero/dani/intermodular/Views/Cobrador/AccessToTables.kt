@@ -10,6 +10,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -112,6 +113,7 @@ fun MainAccessToTables(
                 onValueChangeSelectedTable = onValueChangeSelectedTable
             ) },
             scaffoldState = scaffoldState,
+            
             topBar = {
                 TopAppBar(
                     title = {
@@ -164,8 +166,9 @@ fun MainAccessToTables(
                     }
                 )
             },
-            drawerShape = MaterialTheme.shapes.large,
+            drawerShape = MaterialTheme.shapes.medium,
             drawerScrimColor= DrawerDefaults.scrimColor,
+
             drawerContent = {
                 Scaffold(
                     scaffoldState = scaffoldStateFilter,

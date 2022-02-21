@@ -188,6 +188,17 @@ class MainViewModelCreateOrder : ViewModel() {
         }
     }
 
+    //Funciones a la BD
+    fun createAndEditOrder(){
+        var pedido = Pedidos(
+            _id = pedido._id,
+            idMesa = pedido.idMesa,
+            lineasPedido = lineasPedidos
+        )
+        uploadOrder(pedido){}
+    }
+
+
 
     //Variables
     var pedido: Pedidos = Pedidos(0,0, arrayListOf())
@@ -195,8 +206,19 @@ class MainViewModelCreateOrder : ViewModel() {
     var lineasExtras: MutableList<LineaExtra> = mutableListOf()
     var editOrder = true
     var editLineOrder: LineaPedido = LineaPedido(Productos(0,"","", arrayListOf(),0f, arrayListOf(),"",0),0,"", arrayListOf(),0f,)
+    var lineaExtrasTmp = mutableListOf<LineaExtra>()
+
     var editLineOrderIndex: Int = 0
 
+    fun saveEditLine() {
+        lineaExtrasTmp.clear()
+        editLineOrder.lineasExtras.forEach{lineaExtrasTmp.add(LineaExtra(it.extra,it.cantidad))}
+    }
+
+    fun restoreEditLine() {
+        editLineOrder.lineasExtras.clear()
+        lineaExtrasTmp.forEach{editLineOrder.lineasExtras.add(LineaExtra(it.extra,it.cantidad))}
+    }
 
     //Validaciones
     fun isInteger(
@@ -210,7 +232,7 @@ class MainViewModelCreateOrder : ViewModel() {
         return true
     }
 
-
+    //Funciones de ayuda
     fun calculateLinePrice(
         mainViewModelCreateOrder: MainViewModelCreateOrder,
         product: Productos,

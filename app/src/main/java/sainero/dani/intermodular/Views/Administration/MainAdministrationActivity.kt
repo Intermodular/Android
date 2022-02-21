@@ -112,7 +112,7 @@ fun MainAdministrationActivityView() {
 
                 Button(
                     onClick = {
-                        navController?.navigate(Destinations.EmployeeManager.route)
+                        navController.navigate(Destinations.EmployeeManager.route)
                     },
                     modifier = Modifier
                         .padding(start = 40.dp, end = 40.dp)
@@ -136,7 +136,7 @@ fun MainAdministrationActivityView() {
 
                 Button(
                     onClick = {
-                        navController?.navigate(Destinations.ZoneManager.route)
+                        navController.navigate(Destinations.ZoneManager.route)
                     },
                     modifier = Modifier
                         .padding(start = 40.dp, end = 40.dp)
@@ -160,7 +160,7 @@ fun MainAdministrationActivityView() {
 
                 Button(
                     onClick = {
-                        navController?.navigate(Destinations.ProductManager.route)
+                        navController.navigate(Destinations.ProductManager.route)
                     },
                     modifier = Modifier
                         .padding(start = 40.dp, end = 40.dp)

@@ -48,6 +48,7 @@ import sainero.dani.intermodular.Views.Administration.Zone.Table.MainViewModelTa
 import sainero.dani.intermodular.Views.Cobrador.CreateOrder.*
 import sainero.dani.intermodular.Views.Cobrador.MainProductInformation
 import sainero.dani.intermodular.Views.Login.MainViewModelLogin
+import sainero.dani.intermodular.Views.SplashScreen.SplashScreenMain
 
 @RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalComposeUiApi
@@ -55,7 +56,6 @@ import sainero.dani.intermodular.Views.Login.MainViewModelLogin
 @Composable
 fun NavigationHost(
     mainViewModelSearchBar: MainViewModelSearchBar,
-    viewModelUsers: ViewModelUsers,
     viewModelExtras: ViewModelExtras,
     viewModelMesas: ViewModelMesas,
     viewModelNominas: ViewModelNominas,
@@ -78,8 +78,12 @@ fun NavigationHost(
 
     NavHost(
         navController = navController,
-        startDestination = Destinations.Login.route
+        startDestination = Destinations.SplashScreen.route
     ){
+
+        composable(route = Destinations.SplashScreen.route){
+            SplashScreenMain()
+        }
 
         composable(route = Destinations.Login.route){
             LoginMain(mainViewModelLogin = mainViewModelLogin)
@@ -184,13 +188,11 @@ fun NavigationHost(
         }
 
         composable(
-            route = "${Destinations.Extras.route}/{productId}",
-            arguments = listOf(navArgument("productId"){type = NavType.IntType})
+            route = "${Destinations.Extras.route}",
+
         ){
-            val id = it.arguments?.getInt("productId")
-            requireNotNull(id)
             viewModelTipos.getTypesList()
-            MainExtras(mainViewModelExtras,id)
+            MainExtras(mainViewModelExtras)
         }
 
         composable(
@@ -274,8 +276,6 @@ fun NavigationHost(
             requireNotNull(id)
             viewModelProductos.getProductList()
             MainIngredient(
-                _id = id,
-                viewModelProductos = viewModelProductos,
                 mainViewModelIngredients = mainViewModelIngredients
             )
         }
@@ -312,9 +312,7 @@ fun NavigationHost(
                 navArgument("tableId"){type = NavType.IntType},
                 navArgument("typeId"){type = NavType.IntType}
             )
-
         ){
-
             val tableId = it.arguments?.getInt("tableId")
             val typeId = it.arguments?.getInt("typeId")
             requireNotNull(tableId)

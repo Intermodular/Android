@@ -32,6 +32,6 @@ sealed class Destinations (
     object  CreateOrderLine: Destinations("Cobrador.CreateOrder.CreateOrderLine")
     object  EditOrderLine: Destinations("Cobrador.CreateOrder.EditOrderLine")
     object  ProductInformation: Destinations("Cobrador.ProductInformation")
-
+    object  SplashScreen: Destinations("SplashScreen.SplashScreen")
 
 }

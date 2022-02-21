@@ -61,7 +61,6 @@ private fun createContent(mainViewModelExtras: MainViewModelExtras, onValueChang
 Column(
     verticalArrangement = Arrangement.SpaceEvenly
 ) {
-
     LazyColumn(
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
     ) {
@@ -74,16 +73,14 @@ Column(
                     var selectedText by remember { mutableStateOf(extra.name) }
 
                     Row(
-                        modifier = Modifier
-                            .height(IntrinsicSize.Min),
                         horizontalArrangement = Arrangement.Start,
-
+                        verticalAlignment = Alignment.CenterVertically
                         ) {
                         OutlinedTextField(
                             value =  selectedText,
                             modifier = Modifier
-                                .fillMaxWidth(0.7f)
-                                .fillMaxHeight(0.8f),
+                                .fillMaxWidth(0.6f)
+                                .padding(start = 10.dp, end = 10.dp),
                             onValueChange = {
                                 selectedText = it
                                 extra.name = selectedText
@@ -94,21 +91,22 @@ Column(
 
                         Spacer(modifier = Modifier.padding(3.dp))
 
-                        //Validar campos
+
                         var selectedTextPrice by remember { mutableStateOf(extra.price.toString()) }
                         OutlinedTextField(
                             value =  selectedTextPrice,
                             modifier = Modifier
-                                .fillMaxWidth(0.7f)
-                                .fillMaxHeight(0.8f),
+                                .fillMaxWidth(0.7f),
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                             onValueChange = {
                                 if (it.equals("")) {
                                     selectedTextPrice = it
                                     extra.price = 0f
                                 } else {
-                                    if (isFloat(it) || it.equals("")) selectedTextPrice = it
-                                    extra.price = selectedTextPrice.toFloat()
+                                    if (mainViewModelExtras.isFloat(it)) {
+                                        selectedTextPrice = it
+                                        extra.price = selectedTextPrice.toFloat()
+                                    }
                                 }
                             },
                             placeholder = { Text(text = "Precio")},
@@ -133,68 +131,77 @@ Column(
                 }
             }
         }
-    }
+        item {
+            Spacer(modifier = Modifier.padding(6.dp))
 
-    Spacer(modifier = Modifier.padding(6.dp))
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    mainViewModelExtras.addTmpExtras(Extras("",0f))
-                    onValueChangeRefresh(false)
-                    onValueChangeRefresh(true)
-                }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Añadir Extra")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp, end = 10.dp)
+                ) {
+                    Button(
+                        modifier = Modifier.fillMaxSize(),
+                        onClick = {
+                            mainViewModelExtras.addTmpExtras(Extras("",0f))
+                            onValueChangeRefresh(false)
+                            onValueChangeRefresh(true)
+                        }
+                    ) {
+                        Text(text = "Añadir Extra")
+                    }
+                }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 15.dp, end = 10.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                mainViewModelExtras.extrasState = "Cancel"
+                                navController.popBackStack()
+                            },
+                            contentPadding = PaddingValues(
+                                start = 10.dp,
+                                top = 6.dp,
+                                end = 10.dp,
+                                bottom = 6.dp
+                        ),
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 20.dp)
+                        ) {
+                            Text(text = "Revertir cambio")
+                        }
+                        Button(
+                            onClick = {
+                                //Guardar cambios
+                                onValueChangeRefresh(false)
+                                onValueChangeRefresh(true)
+                                mainViewModelExtras.extrasState = "Edit"
+                                navController.popBackStack()
+                            },
+                            contentPadding = PaddingValues(
+                                start = 10.dp,
+                                top = 6.dp,
+                                end = 10.dp,
+                                bottom = 6.dp
+                            ),
+                        ) {
+                            Text(text = "Guardar cambios")
+                        }
+                     }
+                }
             }
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                onClick = {
-                    mainViewModelExtras.extrasState = "Cancel"
-                    navController.popBackStack()
-                       //navController.navigate("${Destinations.ProductNewType.route}/cancel")
-
-                }
-            ) {
-                Text(text = "Revertir cambio")
-            }
-            Button(
-                onClick = {
-                    //Guardar cambios
-                    onValueChangeRefresh(false)
-                    onValueChangeRefresh(true)
-                    mainViewModelExtras.extrasState = "Edit"
-                    navController.popBackStack()
-                    //navController.navigate("${Destinations.ProductNewType.route}/edit")
-                }
-            ) {
-                Text(text = "Guardar cambios")
-            }
-        }
     }
 }
 
-}
 
-//Validaciones
-private fun isFloat(text: String): Boolean {
-    try {
-        text.toFloat()
-    } catch (e: NumberFormatException) {
-        return false
-    }
-    return true
-}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview20() {

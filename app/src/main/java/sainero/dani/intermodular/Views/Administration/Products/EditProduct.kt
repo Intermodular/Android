@@ -1,21 +1,11 @@
 package sainero.dani.intermodular.Views.Administration.Products
 
-import android.content.Context
-import android.net.Uri
-import android.os.Bundle
-import android.widget.NumberPicker
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -24,48 +14,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius.Companion.Zero
-import androidx.compose.ui.geometry.Offset.Companion.Zero
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
-import com.bumptech.glide.util.Util
 import sainero.dani.intermodular.DataClass.Productos
 import sainero.dani.intermodular.Navigation.Destinations
-import sainero.dani.intermodular.Navigation.NavigationHost
-import sainero.dani.intermodular.R
-import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.ViewModels.ViewModelProductos
-import sainero.dani.intermodular.ViewModels.ViewModelTipos
-import sainero.dani.intermodular.Views.Administration.Employee.*
 import sainero.dani.intermodular.Views.Administration.Products.Especifications.MainViewModelEspecifications
 import sainero.dani.intermodular.Views.Administration.Products.Ingredients.MainViewModelIngredients
 import sainero.dani.intermodular.ViewsItems.*
-import java.io.File
-import java.util.function.ToDoubleBiFunction
-import java.util.regex.Pattern
 
 
 @Composable
@@ -152,22 +115,22 @@ fun MainEditProduct(
         when (mainViewModelIngredients.ingredientsState){
             "New" -> {
                 mainViewModelIngredients._ingredients.clear()
-                mainViewModelIngredients._tmpIngredients.clear()
+                mainViewModelIngredients.tmpIngredients.clear()
                 mainViewModelIngredients.newsValuesIngredients.clear()
                 selectedProduct.ingredients.forEach{ mainViewModelIngredients.addIngredient(it) }
-                mainViewModelIngredients._tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
+                mainViewModelIngredients.tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
             }
             "Edit" -> {
                 mainViewModelIngredients.newsValuesIngredients.clear()
-                mainViewModelIngredients._ingredients = mainViewModelIngredients._tmpIngredients.toMutableList()
+                mainViewModelIngredients._ingredients = mainViewModelIngredients.tmpIngredients.toMutableList()
             }
             "Cancel" -> {
                 mainViewModelIngredients.newsValuesIngredients.clear()
-                mainViewModelIngredients._tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
+                mainViewModelIngredients.tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
             }
             else  ->{
                 mainViewModelIngredients.newsValuesIngredients.clear()
-                mainViewModelIngredients._tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
+                mainViewModelIngredients.tmpIngredients = mainViewModelIngredients._ingredients.toMutableList()
             }
         }
         aplicateState.value = false
@@ -293,7 +256,7 @@ fun MainEditProduct(
                         dropDownMenuWithNavigation(
                             text ="Ingredientes",
                             suggestions = ingredientes,
-                            navigate = "${Destinations.Ingredient.route}/${id}"
+                            onClick = { onClickIngredients(id) }
                         )
                     }
                     item {
@@ -315,7 +278,7 @@ fun MainEditProduct(
                         dropDownMenuWithNavigation(
                             text = "Especificaciones",
                             suggestions = especification,
-                            navigate = "${Destinations.Especifications.route}/${id}"
+                            onClick = { onClickEspecifications(id)}
                         )
                     }
 
@@ -349,6 +312,9 @@ fun MainEditProduct(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 15.dp, end = 10.dp)
                         ) {
                             Button(
                                 onClick = {
@@ -358,10 +324,6 @@ fun MainEditProduct(
                                     textImg = ""
                                     textStock = ""
                                 },
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
-                                    contentColor = Color.Blue
-                                ),
                                 contentPadding = PaddingValues(
                                     start = 10.dp,
                                     top = 6.dp,
@@ -401,23 +363,16 @@ fun MainEditProduct(
                                         textOfToast.value = "Debes de rellenar todos los campos correctamente"
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
-                                    contentColor = Color.Blue
-                                ),
                                 contentPadding = PaddingValues(
                                     start = 10.dp,
                                     top = 6.dp,
                                     end = 10.dp,
                                     bottom = 6.dp
                                 ),
-                                modifier = Modifier
-                                    .padding(start = 10.dp, end = 20.dp)
                             ) {
                                 Text(text = "Guardar cambios", fontSize = 15.sp)
                             }
                         }
-                        Spacer(modifier = Modifier.padding(20.dp))
                     }
                 }
             )
@@ -426,6 +381,13 @@ fun MainEditProduct(
 
 }
 
+private fun onClickIngredients(id:Int){
+    navController.navigate("${Destinations.Ingredient.route}/${id}")
+}
+
+private fun onClickEspecifications(id: Int) {
+    navController.navigate("${Destinations.Especifications.route}/${id}")
+}
 
 @Preview(showBackground = true)
 @Composable

@@ -33,7 +33,6 @@ class MainActivity : ComponentActivity() {
     private val viewModelPedidos by viewModels<ViewModelPedidos>()
     private val viewModelProductos by viewModels<ViewModelProductos>()
     private val viewModelTipos by viewModels<ViewModelTipos>()
-    private val viewModelUsers by viewModels<ViewModelUsers>()
     private val viewModelZonas by viewModels<ViewModelZonas>()
     private val mainViewModelCreateOrder by viewModels<MainViewModelCreateOrder>()
 
@@ -54,7 +53,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             IntermodularTheme {
-                viewModelUsers.getUserList()
                 viewModelProductos.getProductList()
                 viewModelZonas.getZoneList()
                 viewModelExtras.getExtrasList()
@@ -74,7 +72,6 @@ class MainActivity : ComponentActivity() {
                 ////
                 NavigationHost(
                     mainViewModelSearchBar,
-                    viewModelUsers,
                     viewModelExtras,
                     viewModelMesas,
                     viewModelNominas,
