@@ -234,12 +234,14 @@ fun MainEditProduct(
                 Modifier
                     .padding(start = 10.dp)
                     .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
                 content = {
                     item {
                         Spacer(modifier = Modifier.padding(10.dp))
                         Column(
                             verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
 
                         ) {
                             Card(

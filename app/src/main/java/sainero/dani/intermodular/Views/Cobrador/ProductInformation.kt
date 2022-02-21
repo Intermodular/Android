@@ -135,7 +135,7 @@ private fun createIngredientes(product: Productos) {
         Text(
             text = "Ingredientes:",
             fontSize = 20.sp,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
         //Spacer(modifier = Modifier.padding(20.dp))
@@ -160,12 +160,13 @@ private fun createIngredientes(product: Productos) {
 @Composable
 private fun createEspecifications(product: Productos) {
     Column(
-        verticalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.padding(20.dp)
     ) {
         Text(
             text = "Especificaciones:",
             fontSize = 20.sp,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
 
