@@ -95,7 +95,7 @@ fun LoginMain(
                 //Tests
                 .clickable {
                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
-                    navController.navigate("${Destinations.MainAdministrationActivity.route}")
+                    //navController.navigate("${Destinations.MainAdministrationActivity.route}")
                     //navController.navigate("${Destinations.MainAdministrationActivity.route}")
                 }
         )

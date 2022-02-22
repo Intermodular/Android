@@ -57,7 +57,6 @@ import java.time.LocalDateTime
 @Composable
 fun NavigationHost(
     mainViewModelSearchBar: MainViewModelSearchBar,
-    viewModelExtras: ViewModelExtras,
     viewModelMesas: ViewModelMesas,
     viewModelNominas: ViewModelNominas,
     viewModelPedidos: ViewModelPedidos,
@@ -180,7 +179,6 @@ fun NavigationHost(
             val id = it.arguments?.getInt("typeId")
             requireNotNull(id)
             mainViewModelTypes.getTypesList()
-            viewModelExtras.getExtrasList()
             MainProductEditType(
                 id = id,
                 mainViewModelExtras = mainViewModelExtras,

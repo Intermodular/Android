@@ -27,7 +27,6 @@ import sainero.dani.intermodular.Views.ui.theme.IntermodularTheme
 class MainActivity : ComponentActivity() {
     private val mainViewModelSearchBar: MainViewModelSearchBar by viewModels()
 
-    private val viewModelExtras by viewModels<ViewModelExtras>()
     private val viewModelMesas by viewModels<ViewModelMesas>()
     private val viewModelNominas by viewModels<ViewModelNominas>()
     private val viewModelPedidos by viewModels<ViewModelPedidos>()
@@ -55,7 +54,6 @@ class MainActivity : ComponentActivity() {
             IntermodularTheme {
                 viewModelProductos.getProductList()
                 viewModelZonas.getZoneList()
-                viewModelExtras.getExtrasList()
                 viewModelMesas.getMesaList()
                 viewModelTipos.getTypesList()
                 viewModelPedidos.getOrderList()
@@ -73,7 +71,6 @@ class MainActivity : ComponentActivity() {
 
                 NavigationHost(
                     mainViewModelSearchBar,
-                    viewModelExtras,
                     viewModelMesas,
                     viewModelNominas,
                     viewModelPedidos,
