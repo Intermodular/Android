@@ -94,7 +94,7 @@ fun LoginMain(
                 //Tests
                 .clickable {
                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
-                    navController.navigate("${Destinations.AccessToTables.route}")
+                    navController.navigate("${Destinations.MainAdministrationActivity.route}")
                     //navController.navigate("${Destinations.MainAdministrationActivity.route}")
                 }
         )
@@ -152,8 +152,6 @@ fun LoginMain(
                 value = textPassword,
                 onValueChange = {
                     textPassword = it
-                    passwordError.value = !mainViewModelLogin.isValidPassword(it)
-
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Gray,
@@ -166,14 +164,13 @@ fun LoginMain(
                 trailingIcon = {
                     IconButton(onClick = { hidden = !hidden }) {
                         val vector = painterResource(
-                            if (hidden) R.drawable.ic_visibility
-                            else R.drawable.ic_visibility_off
+                            if (hidden) R.drawable.ic_visibility_off
+                            else R.drawable.ic_visibility
                         )
                         val description = if (hidden) "Ocultar contraseña" else "Revelar contraseña"
                         Icon(painter = vector, contentDescription = description)
                     }
                 },
-                isError = passwordError.value,
                 singleLine = true,
                 label = { Text("Contraseña") },
                 modifier = Modifier
@@ -188,19 +185,7 @@ fun LoginMain(
                         false
                     }
             )
-            val assistiveElementText2 = if (passwordError.value) "La contraseña debe ser alfanumérica y de 8 caracteres mínimo" else ""
-            val assistiveElementColor2 = if (passwordError.value) {
-                MaterialTheme.colors.error
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            }
 
-            Text(
-                text = assistiveElementText2,
-                color = assistiveElementColor2,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = 50.dp, end = 50.dp)
-            )
 
             Spacer(modifier = Modifier.padding(30.dp))
             OutlinedButton(
@@ -226,33 +211,43 @@ fun LoginMain(
                         when (it.action) {
                             MotionEvent.ACTION_DOWN -> {
                                 color.value = Color(0xFF003A3D)
-                                colorback.value = Color.White }
-                            MotionEvent.ACTION_UP-> {
+                                colorback.value = Color.White
+                            }
+                            MotionEvent.ACTION_UP -> {
                                 color.value = Color.White
                                 colorback.value = Color.Black
                                 correctUser.value = false
-                                    mainViewModelLogin.getUserList{
-                                        mainViewModelLogin.userListResponse.forEach{
+                                mainViewModelLogin.getUserList {
+                                    mainViewModelLogin.userListResponse.forEach {
 
-                                            if (it.user.equals(textUser) && it.password.equals(textPassword)) {
-                                                correctUser.value = true
-                                                if (it.newUser) {
-                                                    onValueChangeNewPassword(true)
-                                                    selectedUser = it
-                                                } else {
-                                                    if (it.rol.equals("Administrador"))
-                                                        showAlertDialog.value = true
-                                                    else
-                                                        navController.navigate(Destinations.AccessToTables.route)
-                                                }
+                                        if (it.user.equals(textUser) && it.password.equals(
+                                                textPassword
+                                            )
+                                        ) {
+                                            correctUser.value = true
+                                            if (it.newUser) {
+                                                onValueChangeNewPassword(true)
+                                                selectedUser = it
+                                            } else {
+                                                if (it.rol.equals("Administrador"))
+                                                    showAlertDialog.value = true
+                                                else
+                                                    navController.navigate(Destinations.AccessToTables.route)
                                             }
                                         }
-                                        if (!correctUser.value) Toast.makeText(context, "El usuario o la contraseña son incorrectos",Toast.LENGTH_SHORT).show()
                                     }
+                                    if (!correctUser.value) Toast
+                                        .makeText(
+                                            context,
+                                            "El usuario o la contraseña son incorrectos",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                        .show()
                                 }
                             }
-                            true
                         }
+                        true
+                    }
             ) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
@@ -292,11 +287,12 @@ private fun newPassword(
     val showAlertDialog = remember { mutableStateOf(false) }
     val value = remember { mutableStateOf("")}
     val focusRequester = remember { FocusRequester() }
-    val focusRequester2 = remember { FocusRequester() }
     val current = LocalContext.current
 
     var textPassword by rememberSaveable { mutableStateOf("") }
+    var textPassword2 by rememberSaveable { mutableStateOf("") }
     var passwordError = remember { mutableStateOf(false) }
+    var password2Error = remember { mutableStateOf(false) }
 
     Dialog(
         onDismissRequest = {
@@ -312,7 +308,7 @@ private fun newPassword(
                     .fillMaxHeight(0.8f),
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.Center
+
                 ) {
                     Text(
                         text = "Escribe tu nueva contraseña",
@@ -325,7 +321,7 @@ private fun newPassword(
                 }
 
                 Row(
-                    horizontalArrangement = Arrangement.Center,
+
                     modifier = Modifier.padding(bottom = 10.dp)
                 ) {
                     OutlinedTextField(
@@ -342,8 +338,8 @@ private fun newPassword(
                         trailingIcon = {
                             IconButton(onClick = { hidden = !hidden }) {
                                 val vector = painterResource(
-                                    if (hidden) R.drawable.ic_visibility
-                                    else R.drawable.ic_visibility_off
+                                    if (hidden) R.drawable.ic_visibility_off
+                                    else R.drawable.ic_visibility
                                 )
                                 val description = if (hidden) "Ocultar contraseña" else "Revelar contraseña"
                                 Icon(painter = vector, contentDescription = description)
@@ -357,24 +353,24 @@ private fun newPassword(
                     )
                 }
                 Row(
-                    horizontalArrangement = Arrangement.Center
+
                 ) {
                     OutlinedTextField(
-                        value = textPassword,
+                        value = textPassword2,
                         onValueChange = { it2 ->
-                            textPassword = it2
-                            passwordError.value = !mainViewModelLogin.isValidPassword(it2)
+                            textPassword2 = it2
+                            password2Error.value = !mainViewModelLogin.isValidPassword(it2)
                         },
                         placeholder = { Text(text = "Repetir contraseña") },
                         label = { Text(text = "Repetir Contraseña") },
-                        isError = passwordError.value,
+                        isError = password2Error.value,
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                         visualTransformation = if (hidden2) PasswordVisualTransformation() else VisualTransformation.None,
                         trailingIcon = {
                             IconButton(onClick = { hidden2 = !hidden2 }) {
                                 val vector = painterResource(
-                                    if (hidden2) R.drawable.ic_visibility
-                                    else R.drawable.ic_visibility_off
+                                    if (hidden2) R.drawable.ic_visibility_off
+                                    else R.drawable.ic_visibility
                                 )
                                 val description = if (hidden2) "Ocultar contraseña" else "Revelar contraseña"
                                 Icon(painter = vector, contentDescription = description)
@@ -384,10 +380,17 @@ private fun newPassword(
                         modifier = Modifier
                             .padding(start = 50.dp, end = 50.dp)
                             .fillMaxWidth()
-                            .focusRequester(focusRequester2)
+                            .focusRequester(focusRequester)
                     )
-                    val assistiveElementText = if (passwordError.value) "La contraseña no es válida" else  "*Obligatorio"
-                    val assistiveElementColor = if (passwordError.value) {
+
+
+
+                }
+                Row(
+
+                ){
+                    val assistiveElementText = if (password2Error.value || passwordError.value) "La contraseña no puede ser inferior a 8 caracteres ni contener caracteres especiales" else ""
+                    val assistiveElementColor = if (password2Error.value || passwordError.value) {
                         MaterialTheme.colors.error
                     } else {
                         MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
@@ -395,36 +398,46 @@ private fun newPassword(
                     Text(
                         text = assistiveElementText,
                         color = assistiveElementColor,
-                        style = MaterialTheme.typography.overline,
-                        modifier = Modifier.padding(start = 10.dp, end = 20.dp)
+                        style = MaterialTheme.typography.caption,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 10.dp)
                     )
                 }
                 Row(
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(30.dp)
                 ) {
 
                     Button(
                         onClick = {
-                            val updateUser = Users(
-                                _id = user._id,
-                                user = user.user,
-                                name = user.name,
-                                dni = user.dni,
-                                email = user.email,
-                                fnac = user.fnac,
-                                newUser = false, //true: se volvería a repetir
-                                password = value.value,
-                                phoneNumber = user.phoneNumber,
-                                rol = user.rol,
-                                surname = user.surname,
-                                address = user.address
-                            )
+                            if (textPassword == textPassword2 && mainViewModelLogin.isValidPassword(textPassword)){
+                                val updateUser = Users(
+                                    _id = user._id,
+                                    user = user.user,
+                                    name = user.name,
+                                    dni = user.dni,
+                                    email = user.email,
+                                    fnac = user.fnac,
+                                    newUser = false, //true: se volvería a repetir
+                                    password = textPassword,
+                                    phoneNumber = user.phoneNumber,
+                                    rol = user.rol,
+                                    surname = user.surname,
+                                    address = user.address
+                                )
 
-                            mainViewModelLogin.editUser(user = updateUser) {
-                                mainViewModelLogin.getUserList{}
-                                Toast.makeText(current,"La contraseña ha sido modificada",Toast.LENGTH_SHORT).show()
+                                mainViewModelLogin.editUser(user = updateUser) {
+                                    mainViewModelLogin.getUserList{}
+                                    Toast.makeText(current,"La contraseña ha sido modificada",Toast.LENGTH_SHORT).show()
+                                }
+                                onValueChangeNewPassword(false)
+
+                            }else{
+
+                                Toast.makeText(current,"Revisa las validaciones y que las contraseñas sean iguales",Toast.LENGTH_SHORT).show()
                             }
-                            onValueChangeNewPassword(false)
 
 
                         },

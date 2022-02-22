@@ -61,6 +61,7 @@ fun MainEditTable(
     //Esto se eliminará por una consulta a la BD
     var selectedTable : Mesas = Mesas(_id,"Table${_id}",2,"libre",3)
 
+
     mainViewModelTable.mesasListResponse.forEach{
         if (it._id.equals(_id)) selectedTable = it
     }
@@ -68,15 +69,15 @@ fun MainEditTable(
     //Textos
     var (textZone, onValueChangeZone) = rememberSaveable{ mutableStateOf(selectedTable.zone) }
     var (textState, onValueChangeState) = rememberSaveable{ mutableStateOf(selectedTable.state)}
-    var listOfTextState = rememberSaveable{ mutableListOf("Libre","Ocupada") }
+
 
     var (textNºChairs, onValueChangeNºChairs) = rememberSaveable{ mutableStateOf(selectedTable.numChair.toString()) }
     var (numChairsError,numChairsErrorChange) = remember { mutableStateOf(false) }
-    val numChairsOfNumberError: String = "Debe ser un número entero"
+    val numChairsOfNumberError: String = "Debe ser un número entero igual o mayor que 0"
 
     var (textNumber, onValueChangeNumber) = rememberSaveable{ mutableStateOf(selectedTable.number.toString()) }
     var (numberError,numberErrorChange) = remember { mutableStateOf(false) }
-    val nameOfNumberError: String = "Debe ser un número entero"
+    val nameOfNumberError: String = "Debe ser un número entero igual o mayor que 0"
 
     if (showToast.value) {
         Toast.makeText(LocalContext.current,textOfToast.value, Toast.LENGTH_SHORT).show()
@@ -142,8 +143,12 @@ fun MainEditTable(
                             )
                         }
                         item {
+                            var tableZone = selectedTable.zone.toString()
                             var allNamesOfZone:MutableList<String> = mutableListOf()
-                            mainViewModelTable.zonesListResponse.forEach { allNamesOfZone.add(it.name) }
+                            allNamesOfZone.add(tableZone)
+                            mainViewModelTable.zonesListResponse.forEach {
+                                if (tableZone != it.name) allNamesOfZone.add(it.name)
+                            }
                             onValueChangeZone(
                                 selectedDropDownMenu(
                                     text = "Zona",
@@ -166,10 +171,26 @@ fun MainEditTable(
                             )
                         }
                         item{
+                            var tableStatus = selectedTable.state.toString()
+                            var allStates:MutableList<String> = mutableListOf()
+                            if (tableStatus == "Libre"){
+                                allStates.add(tableStatus)
+                                allStates.add("Ocupada")
+                                allStates.add("Reservada")
+                            }else if (tableStatus == "Ocupada"){
+                                allStates.add(tableStatus)
+                                allStates.add("Libre")
+                                allStates.add("Reservada")
+                            }else{
+                                allStates.add(tableStatus)
+                                allStates.add("Libre")
+                                allStates.add("Ocupada")
+                            }
+
                             onValueChangeState(
                                 selectedDropDownMenu(
                                     text = "Estado",
-                                    suggestions = listOfTextState
+                                    suggestions = allStates
                                 )
                             )
                             Spacer(modifier = Modifier.padding(10.dp))

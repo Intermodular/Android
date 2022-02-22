@@ -38,6 +38,7 @@ fun MainNewProduct(
     //Textos
     var allTypes = mainViewModelProductos.typeListResponse
     var allTypesNames: MutableList<String> = mutableListOf()
+    allTypesNames.add("Ninguno")
     allTypes.forEach{allTypesNames.add(it.name)}
 
 

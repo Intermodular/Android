@@ -44,16 +44,16 @@ fun MainNewTable(
     //Textos
     var (textZone, onValueChangeZone) = rememberSaveable{ mutableStateOf("") }
     var (textState, onValueChangeState) = rememberSaveable{ mutableStateOf("")}
-    var listOfTextState = rememberSaveable{ mutableListOf("Libre","Ocupada") }
+    var listOfTextState = rememberSaveable{ mutableListOf("Libre","Ocupada","Reservada") }
 
 
     var (textNºChairs, onValueChangeNºChairs) = rememberSaveable{ mutableStateOf("0") }
     var (numChairsError,numChairsErrorChange) = remember { mutableStateOf(false) }
-    val numChairsOfNumberError: String = "Debe ser un número entero"
+    val numChairsOfNumberError: String = "Debe ser un número entero igual o mayor que 0"
 
     var (textNumber, onValueChangeNumber) = rememberSaveable{ mutableStateOf("") }
     var (numberError,numberErrorChange) = remember { mutableStateOf(false) }
-    val nameOfNumberError: String = "Debe ser un número entero"
+    val nameOfNumberError: String = "Debe ser un número entero igual o mayor que 0"
 
     Scaffold(
         scaffoldState = scaffoldState,

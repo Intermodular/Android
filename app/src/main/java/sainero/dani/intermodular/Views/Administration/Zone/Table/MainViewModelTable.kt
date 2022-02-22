@@ -129,11 +129,10 @@ class MainViewModelTable: ViewModel() {
     //Validaciones
     fun isInteger(text: String): Boolean {
         try {
-            text.toInt()
+            return text.toInt() >= 0
         } catch (e: NumberFormatException) {
             return false
         }
-        return true
     }
 
     fun checkAllValidations(

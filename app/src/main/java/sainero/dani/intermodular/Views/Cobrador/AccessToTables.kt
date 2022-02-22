@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sainero.dani.intermodular.DataClass.*
@@ -453,6 +454,7 @@ private fun printTable(
     Card(
         Modifier
             .pointerInput(Unit) {
+
                 detectTapGestures(
                     onLongPress = { Offset ->
                         onValueChangeSelectedTable(table)
@@ -627,7 +629,7 @@ fun MySnackHost(
                                 var editMesa = Mesas(
                                     _id = selectedTable._id,
                                     zone = selectedTable.zone,
-                                    state = if(selectedTable.state.equals("Ocupada")) "Libre" else "Ocupada",
+                                    state = "Ocupada",
                                     numChair = selectedTable.numChair,
                                     number = selectedTable.number
                                 )
@@ -636,6 +638,7 @@ fun MySnackHost(
                                 navController.navigate(Destinations.AccessToTables.route) {
                                     popUpTo(Destinations.Login.route)
                                 }
+
                             }
                         ) {
                             Text(text = snackbarData.actionLabel.toString())

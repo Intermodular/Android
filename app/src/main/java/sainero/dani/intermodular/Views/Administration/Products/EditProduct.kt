@@ -57,10 +57,18 @@ fun MainEditProduct(
 
 
 
-
+    var productType = selectedProduct.type
     var allTypes = mainViewModelProductos.typeListResponse
     var allTypesNames: MutableList<String> = mutableListOf()
-    allTypes.forEach{allTypesNames.add(it.name)}
+    if (productType == "Ninguno"){
+        allTypesNames.add(productType)
+    }else{
+        allTypesNames.add(productType)
+        allTypesNames.add("Ninguno")
+    }
+    allTypes.forEach{
+        if (productType != it.name) allTypesNames.add(it.name)
+    }
 
     //Textos
     var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf(selectedProduct.name) }
