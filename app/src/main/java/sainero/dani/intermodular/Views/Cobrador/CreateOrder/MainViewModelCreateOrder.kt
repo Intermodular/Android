@@ -10,6 +10,8 @@ import sainero.dani.intermodular.Api.ApiServiceTable
 import sainero.dani.intermodular.Api.ApiServiceTickets
 import sainero.dani.intermodular.DataClass.*
 import java.lang.NumberFormatException
+import java.util.regex.Pattern
+import kotlin.math.roundToLong
 
 class MainViewModelCreateOrder : ViewModel() {
 
@@ -230,6 +232,8 @@ class MainViewModelCreateOrder : ViewModel() {
         }
         return true
     }
+    fun isValidCostOfProduct(text: String) = Pattern.compile("^[0-9.]{0,20}$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+
 
     //Funciones de ayuda
     fun calculateLinePrice(
@@ -245,9 +249,17 @@ class MainViewModelCreateOrder : ViewModel() {
 
     fun calculateTotalPrice():Float {
         var totalPrice = 0f
-        lineasPedidos.forEach{totalPrice += it.costeLinea}
+        lineasPedidos.forEach{ totalPrice += it.costeLinea }
         return totalPrice
     }
 }
 
+    fun calculateTotalGiveBack(userMoney: Float): Float {
+        var totalGiveBack = userMoney - calculateTotalPrice()
+
+        if (totalGiveBack > 0)
+            return "%.2f".format(totalGiveBack).toFloat()
+        else
+            return 0f
+    }
 
