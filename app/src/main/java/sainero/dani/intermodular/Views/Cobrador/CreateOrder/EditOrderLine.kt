@@ -221,7 +221,7 @@ fun MainEditOrderLine(
                                          modifier = Modifier
                                              .fillMaxWidth()
                                              .height(100.dp)
-                                             .padding(PaddingValues(start = 20.dp, end = 20.dp)),
+                                             .padding(PaddingValues(start = 20.dp, end = 20.dp, bottom = 15.dp)),
                                     )
                                 }
                             }
@@ -291,7 +291,7 @@ fun MainEditOrderLine(
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(end = 40.dp, start = 40.dp, bottom = 30.dp),
+                                    .padding(end = 40.dp, start = 40.dp, bottom = 30.dp, top = 10.dp),
 
                                 ) {
                                 Row(
