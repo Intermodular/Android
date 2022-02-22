@@ -150,28 +150,6 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                         )
                     }
 
-                    Box (Modifier.wrapContentSize()){
-                        IconButton(onClick = {
-                            expanded.value = true
-                            result.value = "More icon clicked"
-                        }) {
-                            Icon(
-                                Icons.Filled.MoreVert,
-                                contentDescription = "More icon",
-                                tint = Color.White
-                            )
-                        }
-
-                        DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    expanded.value = false
-                                }) {
-                                Text(text = "")
-                            }
-                        }
-                    }
-
                 },
                 navigationIcon = {
                     IconButton(
@@ -195,7 +173,7 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                 modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxHeight(0.9f),
+                    modifier = Modifier.fillMaxHeight(0.88f),
                     content = {
                         item {
                             Spacer(modifier = Modifier.padding(10.dp))
@@ -232,18 +210,18 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                     }
                 )
 
-                Spacer(modifier = Modifier.padding(10.dp))
+                Spacer(modifier = Modifier.padding(20.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 15.dp, end = 10.dp)
+                        .padding(end = 10.dp)
                 ) {
                     Button(
                         onClick = {
-                            textName = ""
-                            textImg = ""
+                            onValueChangeName(selectedType.name)
+                            onValueChangeImg(selectedType.img)
                             textCompatibleExtras = arrayListOf()
 
                         },

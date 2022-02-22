@@ -318,11 +318,11 @@ fun MainEditProduct(
                         ) {
                             Button(
                                 onClick = {
-                                    textName = ""
+                                    onValueChangeName(selectedProduct.name)
+                                    onValueChangeImg(selectedProduct.img)
+                                    onValueChangeCost(selectedProduct.price.toString())
+                                    onValueChangeStock(selectedProduct.stock.toString())
                                     textType.value = selectedProduct.type
-                                    textCost = ""
-                                    textImg = ""
-                                    textStock = ""
                                 },
                                 contentPadding = PaddingValues(
                                     start = 10.dp,

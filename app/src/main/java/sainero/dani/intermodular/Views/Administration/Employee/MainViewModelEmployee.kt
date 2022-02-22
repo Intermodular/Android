@@ -108,7 +108,7 @@ class MainViewModelEmployee: ViewModel() {
     fun isValidName(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
     fun isValidSurname(text: String) = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE).matcher(text).find()
     fun isValidPhoneNumber(text: String) = Pattern.compile("^(([+][0-9]{2}?)?[0-9]{9})?$", Pattern.CASE_INSENSITIVE).matcher(text).find()
-    fun isValidDateOfBirth(text: String) = Pattern.compile("^([0-9]{1,2}[-/][0-9]{1,2}[-/][0-9]{1,4})?\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+    fun isValidDateOfBirth(text: String) = Pattern.compile("^(([0]?[1-9]|[1|2][0-9]|[3][0|1])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2}))?\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
     fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
     fun isValidEmail(text: String) = Pattern.compile("^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
 

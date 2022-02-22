@@ -62,7 +62,8 @@ fun LoginMain(
     var textPassword by rememberSaveable { mutableStateOf("") }
 
     //Utils
-    val color = remember { mutableStateOf(Color.White) }
+    var color = remember { mutableStateOf(Color.White) }
+    var colorback = remember { mutableStateOf(Color.Black) }
     var hidden by remember { mutableStateOf(true) }
     val showAlertDialog = remember { mutableStateOf(false) }
     val (showNewPassword,onValueChangeNewPassword) = remember { mutableStateOf(false) }
@@ -201,14 +202,16 @@ fun LoginMain(
                 shape = RoundedCornerShape(20),
                 border = BorderStroke(3.dp, Color.LightGray),
                 modifier = Modifier
-                    .fillMaxWidth(0.17f)
-                    .fillMaxHeight(0.58f).pointerInteropFilter {
+                    .width(70.dp)
+                    .height(70.dp)
+                    .pointerInteropFilter {
                         when (it.action) {
                             MotionEvent.ACTION_DOWN -> {
-                                color.value = Color(0xFFdd4a4a) }
-
+                                color.value = Color(0xFF003A3D)
+                                colorback.value = Color.White }
                             MotionEvent.ACTION_UP-> {
                                 color.value = Color.White
+                                colorback.value = Color.Black
                                 correctUser.value = false
                                     mainViewModelLogin.getUserList{
                                         mainViewModelLogin.userListResponse.forEach{
@@ -225,7 +228,6 @@ fun LoginMain(
                                                         navController.navigate(Destinations.AccessToTables.route)
                                                 }
                                             }
-
                                         }
                                         if (!correctUser.value) Toast.makeText(context, "El usuario o la contraseña son incorrectos",Toast.LENGTH_SHORT).show()
                                     }
@@ -240,7 +242,7 @@ fun LoginMain(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "Iniciar sesión",
                     modifier = Modifier.size(100.dp),
-                    tint = Color.Black
+                    tint = colorback.value
                 )
             }
         }
@@ -413,10 +415,6 @@ private fun newPassword(
 
 
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color.Blue
-                        ),
                         contentPadding = PaddingValues(
                             start = 20.dp,
                             top = 12.dp,

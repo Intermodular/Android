@@ -111,7 +111,7 @@ fun MainEditEmployee(
         ) {
             if (it) {
                 mainViewModelEmployee.deleteUser(id = _id)
-                Toast.makeText(context,"El usuario se ha eliminado correctamente",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,"El empleado se ha eliminado correctamente",Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
             }
         }

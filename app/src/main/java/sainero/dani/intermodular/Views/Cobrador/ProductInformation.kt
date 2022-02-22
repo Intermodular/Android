@@ -63,85 +63,69 @@ fun MainProductInformation(
              )
          },
         content = {
-            Column(
+            LazyColumn(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                Spacer(modifier = Modifier.padding(5.dp))
-                Box(
-                    modifier = Modifier.height(200.dp)
-                ) {
-                    Image(
-                        painter =  rememberImagePainter(
-                            data =  if (!product.img.equals("")) "${product.img}" else "https://www.chollosocial.com/media/data/2019/11/678gf34.png",
-                            builder = {
-                                //transformations(CircleCropTransformation())
+                item {
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Box(
+                        modifier = Modifier.height(200.dp)
+                    ) {
+                        Image(
+                            painter =  rememberImagePainter(
+                                data =  if (!product.img.equals("")) "${product.img}" else "https://www.chollosocial.com/media/data/2019/11/678gf34.png",
+                                builder = {
+                                    //transformations(CircleCropTransformation())
 
-                            }
-                        ),
-                        contentDescription ="Imágen del producto",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Fit
-                    )
+                                }
+                            ),
+                            contentDescription ="Imágen del producto",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier.height(50.dp)
+                    ) {
+                        Text(
+                            text = product.name,
+                            fontSize = 30.sp,
+                            modifier = Modifier.fillMaxSize(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier.height(50.dp)
+                    ) {
+                        Text(
+                            text = "Precio: ${product.price}€",
+                            fontSize = 20.sp,
+                            modifier = Modifier.fillMaxSize(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier.height(50.dp)
+                    ) {
+                        Text(
+                            text = "Stock: ${product.stock}",
+                            fontSize = 20.sp,
+                            modifier = Modifier.fillMaxSize(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
-
-                Box(
-                    modifier = Modifier.height(50.dp)
-                ) {
+                item {
                     Text(
-                        text = product.name,
-                        fontSize = 30.sp,
-                        modifier = Modifier.fillMaxSize(),
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-                Box(
-                    modifier = Modifier.height(50.dp)
-                ) {
-                    Text(
-                        text = "Precio: ${product.price}€",
+                        text = "Ingredientes:",
                         fontSize = 20.sp,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
                 }
-
-                Box(
-                    modifier = Modifier.height(50.dp)
-                ) {
-                    Text(
-                        text = "Stock: ${product.stock}",
-                        fontSize = 20.sp,
-                        modifier = Modifier.fillMaxSize(),
-                        textAlign = TextAlign.Center
-                    )
-                }
-                createIngredientes(product = product)
-                createEspecifications(product = product)
-
-
-
-
-            }
-        }
-    )
-}
-
-@Composable
-private fun createIngredientes(product: Productos) {
-    Column(
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(
-            text = "Ingredientes:",
-            fontSize = 20.sp,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
-        //Spacer(modifier = Modifier.padding(20.dp))
-        LazyColumn(
-            contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
-            content = {
                 product.ingredients.forEach {
                     item {
                         Text(
@@ -152,27 +136,15 @@ private fun createIngredientes(product: Productos) {
                         )
                     }
                 }
-            }
-        )
-    }
-}
-
-@Composable
-private fun createEspecifications(product: Productos) {
-    Column(
-        verticalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier.padding(20.dp)
-    ) {
-        Text(
-            text = "Especificaciones:",
-            fontSize = 20.sp,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
-
-        LazyColumn(
-            contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
-            content = {
+                item {
+                    Spacer(modifier = Modifier.padding(20.dp))
+                    Text(
+                        text = "Especificaciones:",
+                        fontSize = 20.sp,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
                 product.especifications.forEach {
                     item {
                         Text(
@@ -183,9 +155,12 @@ private fun createEspecifications(product: Productos) {
                         )
                     }
                 }
+                item { 
+                    Spacer(modifier = Modifier.padding(20.dp))
+                }
             }
-        )
-    }
+        }
+    )
 }
 
 @Preview(showBackground = true)

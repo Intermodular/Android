@@ -8,7 +8,6 @@ import kotlinx.coroutines.launch
 import sainero.dani.intermodular.Api.ApiServiceOrder
 import sainero.dani.intermodular.Api.ApiServiceTable
 import sainero.dani.intermodular.Api.ApiServiceTickets
-import sainero.dani.intermodular.Api.ApiServiceZone
 import sainero.dani.intermodular.DataClass.*
 import java.lang.NumberFormatException
 
@@ -249,7 +248,6 @@ class MainViewModelCreateOrder : ViewModel() {
         lineasPedidos.forEach{totalPrice += it.costeLinea}
         return totalPrice
     }
-
-
-
 }
+
+

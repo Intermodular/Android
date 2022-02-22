@@ -1,16 +1,12 @@
 package sainero.dani.intermodular.Views.Administration.Zone.Table
 
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,12 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import sainero.dani.intermodular.DataClass.Mesas
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
-import sainero.dani.intermodular.ViewModels.ViewModelMesas
-import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.ViewsItems.confirmAlertDialog
 import sainero.dani.intermodular.ViewsItems.createRowListWithErrorMesaje
 import sainero.dani.intermodular.ViewsItems.selectedDropDownMenu
-import java.lang.NumberFormatException
 
 @Composable
 fun MainEditTable(
@@ -225,7 +218,7 @@ fun MainEditTable(
                                 )
                                 mainViewModelTable.editMesa(updateTable)
                                 showToast.value = true
-                                textOfToast.value = "El producto se ha actualizado correctamente"
+                                textOfToast.value = "La mesa se ha actualizado correctamente"
                             } else {
                                 showToast.value = true
                                 textOfToast.value = "Debes de rellenar todos los campos correctamente"

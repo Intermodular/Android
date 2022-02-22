@@ -130,7 +130,7 @@ fun MainProductNewType(
             ) {
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxHeight(0.9f),
+                        .fillMaxHeight(0.88f),
                     content = {
                         item {
                             Spacer(modifier = Modifier.padding(10.dp))
