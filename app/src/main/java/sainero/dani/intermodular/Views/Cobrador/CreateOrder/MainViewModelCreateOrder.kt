@@ -5,7 +5,11 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import retrofit2.Response
+import retrofit2.http.GET
+import retrofit2.http.Path
 import sainero.dani.intermodular.Api.ApiServiceOrder
+import sainero.dani.intermodular.Api.ApiServiceReservations
 import sainero.dani.intermodular.Api.ApiServiceTable
 import sainero.dani.intermodular.Api.ApiServiceTickets
 import sainero.dani.intermodular.DataClass.*
@@ -37,6 +41,27 @@ class MainViewModelCreateOrder : ViewModel() {
         }
     }
 
+
+
+    var reservationListResponse: List<Reservation> by mutableStateOf(listOf())
+    fun getReservationList(anyo: Int,mes: Int,dia: Int, hora: Int, minuto: Int) {
+        viewModelScope.launch {
+            val apiService = ApiServiceReservations.getInstance()
+            try {
+                val result = apiService.getReservationsUseMinute(anyo,mes,dia,hora,minuto)
+                if (result.isSuccessful) {
+                    reservationListResponse = result.body()!!
+                }
+                else {
+                    Log.d("Error to get table","Error to get table")
+                }
+
+            } catch (e: Exception) {
+                errorMessage = e.message.toString()
+            }
+        }
+
+    }
     var mesasListResponse: List <Mesas> by mutableStateOf ( listOf ())
     fun getMesaList(onValueFinish: () -> Unit) {
         viewModelScope.launch {
@@ -74,6 +99,7 @@ class MainViewModelCreateOrder : ViewModel() {
             }
         }
     }
+
     fun getOrderByTableWithDelay(id: Int, onValueFinish: (Boolean) -> Unit) {
         viewModelScope.launch {
             val apiService = ApiServiceOrder.getInstance()

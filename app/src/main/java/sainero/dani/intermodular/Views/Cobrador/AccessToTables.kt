@@ -323,7 +323,11 @@ private fun selectedDropDownMenu(
     return selectedText
 }
 
-private fun checkState(state: String): Color {
+private fun checkState(
+    state: String,
+    reservation: Reservation
+): Color {
+    if (!reservation._id.equals(0)) return Color.Yellow
     when(state){
         "Libre" -> return Color(0xFF2EEE5D)
         "Ocupada" -> return Color(0xFFEE2E31)
@@ -411,23 +415,39 @@ private fun createTables(
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val tableOptions = remember { mutableStateOf(false) }
+    val reservation = remember { mutableStateOf(false) }
 
     LazyVerticalGrid(
         cells = GridCells.Adaptive(120.dp),
         contentPadding = PaddingValues(start = 30.dp, end = 30.dp, bottom = 30.dp, top = 20.dp)
     ) {
         for (i in allFilterTables) {
+
             item {
                 printTable(
                     mainViewModelCreateOrder = mainViewModelCreateOrder,
                     onValueChangeDisableAlert = onValueChangeDisableAlert,
                     onValueChangeSelectedTable = onValueChangeSelectedTable,
                     table = i,
-                    scaffoldState = scaffoldState
+                    scaffoldState = scaffoldState,
+                    reservation = isReserver(table = i, mainViewModelCreateOrder = mainViewModelCreateOrder)
+
                 )
             }
         }
     }
+}
+
+private fun isReserver(
+    table: Mesas,
+    mainViewModelCreateOrder: MainViewModelCreateOrder
+): Reservation{
+    mainViewModelCreateOrder.reservationListResponse.forEach {
+        if(it.idTable.equals(table._id)) {
+            return it
+        }
+    }
+    return Reservation(0,"",0,0,0,0,0,0,0,0,)
 }
 
 @Composable
@@ -436,7 +456,8 @@ private fun printTable(
     onValueChangeDisableAlert:  (Boolean) -> Unit,
     onValueChangeSelectedTable: (Mesas) -> Unit,
     table: Mesas,
-    scaffoldState: ScaffoldState
+    scaffoldState: ScaffoldState,
+    reservation: Reservation
 ) {
     val current = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -481,7 +502,7 @@ private fun printTable(
                 )
             }
             .padding(PaddingValues(10.dp)),
-            backgroundColor = checkState(table.state),
+            backgroundColor = checkState(table.state, reservation),
             elevation = 6.dp,
             shape = RoundedCornerShape(8.dp),
         ) {
@@ -504,7 +525,20 @@ private fun printTable(
                 modifier = Modifier.fillMaxSize(),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.padding(8.dp))
+            if (!reservation._id.equals(0)) {
+                Spacer(modifier = Modifier.padding(2.dp))
+                Text(
+                    text = reservation.name,
+                    fontSize = 10.sp,
+                    modifier = Modifier.fillMaxSize(),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.padding(2.dp))
+
+            }
+            else{
+                Spacer(modifier = Modifier.padding(11.dp))
+            }
         }
     }
 }

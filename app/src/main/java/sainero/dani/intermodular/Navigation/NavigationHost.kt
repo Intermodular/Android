@@ -49,6 +49,7 @@ import sainero.dani.intermodular.Views.Cobrador.CreateOrder.*
 import sainero.dani.intermodular.Views.Cobrador.MainProductInformation
 import sainero.dani.intermodular.Views.Login.MainViewModelLogin
 import sainero.dani.intermodular.Views.SplashScreen.SplashScreenMain
+import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalComposeUiApi
@@ -300,6 +301,15 @@ fun NavigationHost(
         composable(route = Destinations.AccessToTables.route) {
             mainViewModelCreateOrder.getMesaList{}
             viewModelZonas.getZoneList()
+            var actualDate = LocalDateTime.now()
+            mainViewModelCreateOrder.getReservationList(
+                anyo = actualDate.year, //
+                dia = actualDate.dayOfMonth,//
+                hora = actualDate.hour,
+                mes = actualDate.monthValue, //
+                minuto = actualDate.minute //
+            )
+
             MainAccessToTables(
                 viewModelZonas = viewModelZonas,
                 mainViewModelCreateOrder = mainViewModelCreateOrder

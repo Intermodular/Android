@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Intermodular</string>
+    <string name="app_name">Eros</string>
     <string name="title_activity_main_administration">MainAdministrationActivity</string>
     <string name="title_activity_test">Test</string>
     <string name="title_activity_login">Login</string>
