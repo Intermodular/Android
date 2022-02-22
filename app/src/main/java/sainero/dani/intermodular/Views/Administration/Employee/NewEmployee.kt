@@ -100,7 +100,7 @@ fun MainNewEmployee(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            GlobalVariables.navController.popBackStack()
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -253,6 +253,7 @@ fun MainNewEmployee(
                                         onValueChangeUserUser("")
                                         onValueChangeEmailUser("")
                                         onValueChangeAddress("")
+                                        textRolUser.value = "Empleado"
                                     },
                                     contentPadding = PaddingValues(
                                         start = 10.dp,

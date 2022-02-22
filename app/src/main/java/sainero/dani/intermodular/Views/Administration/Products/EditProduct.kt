@@ -56,27 +56,22 @@ fun MainEditProduct(
     }
 
 
-
-
     var allTypes = mainViewModelProductos.typeListResponse
     var allTypesNames: MutableList<String> = mutableListOf()
     allTypes.forEach{allTypesNames.add(it.name)}
+
 
     //Textos
     var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf(selectedProduct.name) }
     var (nameError,nameErrorChange) = remember { mutableStateOf(false) }
     val nameOfNameError: String = "El nombre no puede contener caracteres especiales ni ser mayor de 20"
 
-
     var textType = rememberSaveable{mutableStateOf(selectedProduct.type)}
     ingredientes = selectedProduct.ingredients
-
 
     var (textCost, onValueChangeCost) = rememberSaveable{mutableStateOf(selectedProduct.price.toString())}
     var (costError,costErrorChange) = remember { mutableStateOf(false) }
     val costOfNameError: String = "El número debe de estar sin ','"
-
-
 
     var (textImg, onValueChangeImg) = rememberSaveable{mutableStateOf(selectedProduct.img)}
 
@@ -323,6 +318,9 @@ fun MainEditProduct(
                                     onValueChangeCost(selectedProduct.price.toString())
                                     onValueChangeStock(selectedProduct.stock.toString())
                                     textType.value = selectedProduct.type
+                                    mainViewModelEspecifications._especifications.clear()
+                                    mainViewModelIngredients._ingredients.clear()
+
                                 },
                                 contentPadding = PaddingValues(
                                     start = 10.dp,
@@ -349,7 +347,7 @@ fun MainEditProduct(
                                             _id = id,
                                             name = textName,
                                             type =  textType.value,
-                                            ingredients = ingredientes,
+                                            ingredients = mainViewModelIngredients._ingredients,
                                             price =  textCost.toFloat(),
                                             especifications = mainViewModelEspecifications._especifications,
                                             img = textImg,
@@ -358,6 +356,7 @@ fun MainEditProduct(
                                         mainViewModelProductos.editProduct(product = updateProduct)
                                         showToast.value = true
                                         textOfToast.value = "El producto se ha actualizado correctamente"
+                                        navController.popBackStack()
                                     } else {
                                         showToast.value = true
                                         textOfToast.value = "Debes de rellenar todos los campos correctamente"
@@ -392,113 +391,6 @@ private fun onClickEspecifications(id: Int) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview11() {
-       // MainEditProduct("")
+    //MainEditProduct("")
 }
 
-
-///////////////////
-
-/*
-private fun getDirectory(): File {
-    val mediaDir = externalMediaDirs.firstOrNull()?.let {
-        File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
-    }
-    return if (mediaDir != null && mediaDir.exists())
-        mediaDir else filesDir
-}*/
-
-
-
-
-/*@Composable
-fun CamerOpen(directory: File) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    SimpleCameraPreview(
-        modifier = Modifier.fillMaxSize(),
-        context = context,
-        lifecycleOwner = lifecycleOwner,
-        outputDirectory = directory,
-        onMediaCaptured = { url -> }
-    )
-}
-
-*/
-
-
-/*fun SimpleCameraPreview(
-    modifier: Modifier = Modifier,
-    context: Context,
-    lifecycleOwner: LifecycleOwner,
-    outputDirectory: File,
-    onMediaCaptured: (Uri?) -> Unit
-) {
-    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
-    var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
-    var preview by remember { mutableStateOf<Preview?>(null) }
-    val camera: Camera? = null
-    var lensFacing by remember { mutableStateOf(CameraSelector.LENS_FACING_BACK) }
-    var flashEnabled by remember { mutableStateOf(false) }
-    var flashRes by remember { mutableStateOf(R.drawable.administrador) }
-    val executor = ContextCompat.getMainExecutor(context)
-    var cameraSelector: CameraSelector?
-    val cameraProvider = cameraProviderFuture.get()
-/*
-
- */
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { ctx ->
-            val previewView = PreviewView(ctx)
-            cameraProviderFuture.addListener({
-                val imageAnalysis = ImageAnalysis.Builder()
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build()
-                    .apply {
-                      //  setAnalyzer(executor, FaceAnalyzer())
-                    }
-                imageCapture = ImageCapture.Builder()
-                    .setTargetRotation(previewView.display.rotation)
-                    .build()
-
-                val cameraSelector = CameraSelector.Builder()
-                    .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                    .build()
-
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    lifecycleOwner,
-                    cameraSelector,
-                    imageCapture,
-                    preview
-                )
-            }, executor)
-            preview = Preview.Builder().build().also {
-                it.setSurfaceProvider(previewView.surfaceProvider)
-            }
-            previewView
-        }
-    )
-
-    IconButton(
-        onClick = {
-            camera?.let {
-                if (it.cameraInfo.hasFlashUnit()) {
-                    flashEnabled = !flashEnabled
-                    flashRes = if (flashEnabled) R.drawable.administrador else
-                        R.drawable.empleado
-                    it.cameraControl.enableTorch(flashEnabled)
-                }
-            }
-        }
-    ) {
-        Icon(
-            painter = painterResource(id = flashRes),
-            contentDescription = "",
-            modifier = Modifier.size(35.dp),
-            tint = MaterialTheme.colors.surface
-        )
-    }
-}
-*/

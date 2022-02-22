@@ -237,29 +237,6 @@ fun DefaultAppBar(onSearchClicked: () -> Unit) {
                     tint = Color.White
                 )
             }
-            Box (Modifier.wrapContentSize()){
-                IconButton(onClick = {
-                    expanded.value = true
-
-                }) {
-                    Icon(
-                        Icons.Filled.MoreVert,
-                        contentDescription = "Localized description",
-                        tint = Color.White
-                    )
-                }
-
-                DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
-                    DropdownMenuItem(
-                        onClick = {
-                            expanded.value = false
-
-                        }) {
-                        Text(text = "Gestionar todas las nóminas")
-                    }
-                }
-            }
-
         },
         navigationIcon = {
             IconButton(
@@ -350,9 +327,10 @@ fun SearchAppBar(
                 }
             ),
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
+                backgroundColor = MaterialTheme.colors.primary,
                 cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
             ))
+
     }
 }
 

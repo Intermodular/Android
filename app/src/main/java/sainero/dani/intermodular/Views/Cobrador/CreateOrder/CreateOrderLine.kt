@@ -86,7 +86,7 @@ fun MainCreateOrderLine(
         topBar = {
              TopAppBar(
                  title = {
-                     Text(text = "Editar producto",color = Color.White)
+                     Text(text = "Crear linea de pedido",color = Color.White)
                  },
                  navigationIcon = {
                      IconButton(

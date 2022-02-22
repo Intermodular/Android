@@ -244,6 +244,7 @@ private fun editType(id: Int, mainViewModelTypes: MainViewModelTypes, onChangeEd
                                 mainViewModelTypes.editType(tipo = updateType)
                                 showToast.value = true
                                 textOfToast.value = "El tipo se ha actualizado correctamente"
+                                navController.popBackStack()
                             } else {
                                 showToast.value = true
                                 textOfToast.value = "Debes de rellenar todos los campos correctamente"

@@ -157,11 +157,11 @@ class MainViewModelCreateOrder : ViewModel() {
             val apiService = ApiServiceTable.getInstance()
 
             try {
+                onValueFinish()
                 val result = apiService.editTable(mesa = mesa)
-
                 if (result.isSuccessful) {
                     editMesa.add(result.body()!!)
-                    onValueFinish()
+
                 }
                 else
                     Log.d("Error: edit table","Error: edit table")
@@ -252,7 +252,6 @@ class MainViewModelCreateOrder : ViewModel() {
         lineasPedidos.forEach{ totalPrice += it.costeLinea }
         return totalPrice
     }
-}
 
     fun calculateTotalGiveBack(userMoney: Float): Float {
         var totalGiveBack = userMoney - calculateTotalPrice()
@@ -262,4 +261,8 @@ class MainViewModelCreateOrder : ViewModel() {
         else
             return 0f
     }
+
+}
+
+
 

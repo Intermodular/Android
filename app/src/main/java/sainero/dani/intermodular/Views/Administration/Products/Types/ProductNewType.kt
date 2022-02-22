@@ -176,8 +176,8 @@ fun MainProductNewType(
                 ) {
                     Button(
                         onClick = {
-                            textName = ""
-                            textImg = ""
+                            onValueChangeName("")
+                            onValueChangeImg("")
                             allNamesOfExtras.clear()
                         },
                         contentPadding = PaddingValues(

@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -36,23 +37,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sainero.dani.intermodular.DataClass.*
 import sainero.dani.intermodular.Navigation.Destinations
+import sainero.dani.intermodular.Utils.GlobalVariables
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.currentValidateUser
 import sainero.dani.intermodular.Utils.GlobalVariables.Companion.navController
 import sainero.dani.intermodular.ViewModels.ViewModelMesas
 import sainero.dani.intermodular.ViewModels.ViewModelZonas
 import sainero.dani.intermodular.Views.Cobrador.CreateOrder.MainViewModelCreateOrder
+import sainero.dani.intermodular.Views.SplashScreen.Splash
 
-@ExperimentalFoundationApi
-
-class AccessToTables : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-        }
-    }
-}
 
 @ExperimentalFoundationApi
 @Composable
@@ -75,7 +67,7 @@ fun MainAccessToTables(
         )
     }
     val (refreshTables, onValueChangeRefreshTables) = remember { mutableStateOf(true) }
-
+    reloadTables(mainViewModelCreateOrder = mainViewModelCreateOrder)
     val expanded = remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
@@ -242,8 +234,6 @@ fun MainAccessToTables(
                                         .padding(start = 10.dp, end = 20.dp)
                                 )
                             }
-
-
                         }
                     }
                 )
@@ -632,9 +622,12 @@ fun MySnackHost(
                                     number = selectedTable.number
                                 )
 
-                                mainViewModelCreateOrder.editMesa(editMesa){}
-                                navController.navigate(Destinations.AccessToTables.route) {
-                                    popUpTo(Destinations.Login.route)
+                                mainViewModelCreateOrder.editMesa(editMesa){
+                                    mainViewModelCreateOrder.getMesaList {
+                                        onValueChangeRefreshTables(false)
+                                        onValueChangeRefreshTables(true)
+                                    }
+
                                 }
                             }
                         ) {
@@ -647,7 +640,15 @@ fun MySnackHost(
     )
 }
 
-
+@Composable
+fun reloadTables(
+    mainViewModelCreateOrder: MainViewModelCreateOrder
+) {
+    LaunchedEffect(key1 = true) {
+        delay(4000)
+       mainViewModelCreateOrder.getMesaList {  }
+    }
+}
 
 
 

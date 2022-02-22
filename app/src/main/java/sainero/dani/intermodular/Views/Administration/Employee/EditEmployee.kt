@@ -92,7 +92,7 @@ fun MainEditEmployee(
     val nameOfUserError: String = "El usuario no puede estar vacio ni contener caracteres especiales"
 
     var (textPasswordUser, onValueChangePasswordUser) = rememberSaveable { mutableStateOf(selectedUser.password) }
-    var (textAddress, onValueChangeAddress) = rememberSaveable { mutableStateOf(selectedUser.password) }
+    var (textAddress, onValueChangeAddress) = rememberSaveable { mutableStateOf(selectedUser.address) }
 
     var textRolUser = rememberSaveable { mutableStateOf("") }
     var textListRolUser = rememberSaveable { mutableListOf(selectedUser.rol,"")}
@@ -138,28 +138,6 @@ fun MainEditEmployee(
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
                     }
-
-                    Box (Modifier.wrapContentSize()){
-                        IconButton(onClick = {
-                            expanded.value = true
-                            result.value = "More icon clicked"
-                        }) {
-                            Icon(
-                                Icons.Filled.MoreVert,
-                                contentDescription = "More icon"
-                            )
-                        }
-
-                        DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    expanded.value = false
-                                }) {
-                                Text(text = "Gestionar nominas")
-                            }
-                        }
-                    }
-
                 },
                 navigationIcon = {
                     IconButton(
@@ -314,6 +292,7 @@ fun MainEditEmployee(
                                         phoneNumber = selectedUser.phoneNumber,
                                         address = textAddress
                                     )
+                                    Toast.makeText(context,"La contraseña ha sido modificada",Toast.LENGTH_SHORT).show()
                                     mainViewModelEmployee.editUser(selectedUser)
                                 },
                                 contentPadding = PaddingValues(
@@ -345,6 +324,7 @@ fun MainEditEmployee(
                                         onValueChangeFnacUser(selectedUser.fnac)
                                         onValueChangeUserUser(selectedUser.user)
                                         onValueChangeEmailUser(selectedUser.email)
+                                        onValueChangeAddress(selectedUser.address)
                                         textRolUser.value = selectedUser.rol
                                     },
                                     contentPadding = PaddingValues(
@@ -359,7 +339,8 @@ fun MainEditEmployee(
 
                                 Button(
                                     onClick = {
-                                        if (mainViewModelEmployee.checkAllValidations(
+                                        if (
+                                            mainViewModelEmployee.checkAllValidations(
                                                 textDni = textDniUser,
                                                 textName = textNameUser,
                                                 textSurname = textSurnameUser,
@@ -367,7 +348,7 @@ fun MainEditEmployee(
                                                 textDateOfBirth = textFnacUser,
                                                 textEmail = textEmailUser,
                                                 textUser = textUserUser
-                                                )
+                                            )
                                         ) {
                                             selectedUser = Users(
                                                 _id = _id,
@@ -382,11 +363,13 @@ fun MainEditEmployee(
                                                 newUser = false,
                                                 phoneNumber = textPhoneNumberUser,
                                                 address = textAddress
-
                                             )
+                                            Toast.makeText(context,"El empleado ha sido editado correctamente",Toast.LENGTH_SHORT).show()
                                             mainViewModelEmployee.editUser(selectedUser)
+                                            navController.popBackStack()
                                         }
                                         else {
+                                            Toast.makeText(context,"Debes rellenar todos los campos correctamente",Toast.LENGTH_SHORT).show()
                                             showToast.value = true
                                         }
                                     },

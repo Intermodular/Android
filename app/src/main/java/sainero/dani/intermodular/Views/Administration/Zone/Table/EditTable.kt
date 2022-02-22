@@ -219,6 +219,7 @@ fun MainEditTable(
                                 mainViewModelTable.editMesa(updateTable)
                                 showToast.value = true
                                 textOfToast.value = "La mesa se ha actualizado correctamente"
+                                navController.popBackStack()
                             } else {
                                 showToast.value = true
                                 textOfToast.value = "Debes de rellenar todos los campos correctamente"

@@ -94,7 +94,7 @@ fun LoginMain(
                 //Tests
                 .clickable {
                     //navController.navigate("${Destinations.CreateOrder.route}/${0}")
-                    navController.navigate("${Destinations.AccessToTables.route}")
+                    navController.navigate("${Destinations.MainAdministrationActivity.route}")
                     //navController.navigate("${Destinations.MainAdministrationActivity.route}")
                 }
         )
@@ -188,7 +188,7 @@ fun LoginMain(
                         false
                     }
             )
-            val assistiveElementText2 = if (passwordError.value) "La contraseña debe ser alfanumérica y de 8 caracteres mínimo" else ""
+            val assistiveElementText2 = if (passwordError.value) "La contraseña debe ser alfanumérica y de 4 caracteres mínimo" else ""
             val assistiveElementColor2 = if (passwordError.value) {
                 MaterialTheme.colors.error
             } else {

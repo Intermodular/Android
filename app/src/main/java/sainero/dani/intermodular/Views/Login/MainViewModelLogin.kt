@@ -57,7 +57,6 @@ class MainViewModelLogin: ViewModel() {
             }
         }
     }
-//Contraseña 8 caracteres y solo caracteres alfanumeriscos y "_"
 
     //Validaciones
     fun isValidUser(text: String) = Pattern.compile("^[a-zA-Z0-9]+\$", Pattern.CASE_INSENSITIVE).matcher(text).find()

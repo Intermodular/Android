@@ -267,9 +267,7 @@ private fun createProducts(
                     Button(
                         onClick = {
                             //Producto seleccionado
-
                             navController.navigate("${Destinations.CreateOrderLine.route}/${i._id}/${selectedType._id}/${tableId}")
-
                         },
                         modifier = Modifier.pointerInput(Unit){
                             detectTapGestures (
@@ -373,11 +371,6 @@ private fun LabelledCheckbox(
         )
         Spacer(modifier = Modifier.padding(25.dp))
     }
-}
-
-fun onBackPressed() {
-
-    onBackPressed()
 }
 
 
