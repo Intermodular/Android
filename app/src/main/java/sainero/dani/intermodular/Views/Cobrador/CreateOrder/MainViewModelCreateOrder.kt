@@ -252,6 +252,7 @@ class MainViewModelCreateOrder : ViewModel() {
         lineasPedidos.forEach{ totalPrice += it.costeLinea }
         return totalPrice
     }
+
     fun calculateTotalGiveBack(userMoney: Float): Float {
         var totalGiveBack = userMoney - calculateTotalPrice()
 
@@ -260,6 +261,7 @@ class MainViewModelCreateOrder : ViewModel() {
         else
             return 0f
     }
+
 }
 
 

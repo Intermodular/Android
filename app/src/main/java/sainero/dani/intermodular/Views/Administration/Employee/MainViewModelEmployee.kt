@@ -23,8 +23,13 @@ class MainViewModelEmployee: ViewModel() {
             val apiService = ApiServiceUser.getInstance()
 
             try {
-                val usersList = apiService.getUsers()
-                userListResponse = usersList.body()!!
+                val result = apiService.getUsers()
+                if(result.isSuccessful) {
+                    userListResponse = result.body()!!
+                }
+                else {
+                    Log.d("Error","Error")
+                }
 
             } catch (e: Exception) {
                 errorMessage = e.message.toString()

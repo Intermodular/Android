@@ -176,7 +176,8 @@ fun MainEditZone(
 
                         Button(
                             onClick = {
-                                textName = ""
+                                onValueChangeName(selectedZone.name)
+                                onValueChangeNºmesas(selectedZone.nºTables.toString())
                             },
                             contentPadding = PaddingValues(
                                 start = 10.dp,
@@ -198,6 +199,7 @@ fun MainEditZone(
                                     mainViewModelZone.editZone(zone = editZone)
                                     showToast.value = true
                                     textOfToast.value = "La zona se ha modificado correctamente"
+                                    navController.popBackStack()
 
                                 } else {
                                     showToast.value = true

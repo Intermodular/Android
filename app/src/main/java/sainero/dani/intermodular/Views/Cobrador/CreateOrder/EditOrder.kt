@@ -218,7 +218,6 @@ private fun CreateContent(
                               }
                           }
                       }
-
                   },
               )
          },
@@ -257,10 +256,7 @@ private fun CreateContent(
                              }
                          }
                          itemsIndexed(mainViewModelCreateOrder.lineasPedidos) { index, it ->
-                             Column(
-                                 //verticalArrangement = Arrangement.SpaceAround,
-                                 //horizontalAlignment = Alignment.CenterHorizontally
-                             ) {
+                             Column{
                                  Row (
                                      horizontalArrangement = Arrangement.Start,
                                      modifier = Modifier
@@ -306,13 +302,12 @@ private fun CreateContent(
                                              modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
                                          )
                                      }
-                                     //Spacer(modifier = Modifier.padding(start = 50.dp, bottom = 20.dp))
                                      Column(
                                          horizontalAlignment = Alignment.End
                                      ) {
 
                                          Text(
-                                             text = it.costeLinea.roundToLong().toString(),
+                                             text =  "${"%.2f".format(it.costeLinea).toFloat().toString()}",
                                              textAlign = TextAlign.Center,
                                              modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 3)
                                          )

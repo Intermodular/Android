@@ -321,7 +321,7 @@ private fun SearchAppBar(
                 }
             ),
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
+                backgroundColor = MaterialTheme.colors.primary,
                 cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
             ))
     }

@@ -97,7 +97,7 @@ fun MainEditOrderLine(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Editar producto",color = Color.White)
+                    Text(text = "Editar linea de pedido",color = Color.White)
                 },
                 navigationIcon = {
                     IconButton(

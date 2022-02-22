@@ -70,21 +70,18 @@ fun MainEditProduct(
         if (productType != it.name) allTypesNames.add(it.name)
     }
 
+
     //Textos
     var (textName, onValueChangeName) = rememberSaveable{ mutableStateOf(selectedProduct.name) }
     var (nameError,nameErrorChange) = remember { mutableStateOf(false) }
     val nameOfNameError: String = "El nombre no puede contener caracteres especiales ni ser mayor de 20"
 
-
     var textType = rememberSaveable{mutableStateOf(selectedProduct.type)}
     ingredientes = selectedProduct.ingredients
-
 
     var (textCost, onValueChangeCost) = rememberSaveable{mutableStateOf(selectedProduct.price.toString())}
     var (costError,costErrorChange) = remember { mutableStateOf(false) }
     val costOfNameError: String = "El número debe de estar sin ','"
-
-
 
     var (textImg, onValueChangeImg) = rememberSaveable{mutableStateOf(selectedProduct.img)}
 
@@ -331,6 +328,9 @@ fun MainEditProduct(
                                     onValueChangeCost(selectedProduct.price.toString())
                                     onValueChangeStock(selectedProduct.stock.toString())
                                     textType.value = selectedProduct.type
+                                    mainViewModelEspecifications._especifications.clear()
+                                    mainViewModelIngredients._ingredients.clear()
+
                                 },
                                 contentPadding = PaddingValues(
                                     start = 10.dp,
@@ -357,7 +357,7 @@ fun MainEditProduct(
                                             _id = id,
                                             name = textName,
                                             type =  textType.value,
-                                            ingredients = ingredientes,
+                                            ingredients = mainViewModelIngredients._ingredients,
                                             price =  textCost.toFloat(),
                                             especifications = mainViewModelEspecifications._especifications,
                                             img = textImg,
@@ -366,6 +366,7 @@ fun MainEditProduct(
                                         mainViewModelProductos.editProduct(product = updateProduct)
                                         showToast.value = true
                                         textOfToast.value = "El producto se ha actualizado correctamente"
+                                        navController.popBackStack()
                                     } else {
                                         showToast.value = true
                                         textOfToast.value = "Debes de rellenar todos los campos correctamente"
@@ -400,7 +401,7 @@ private fun onClickEspecifications(id: Int) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview11() {
-       // MainEditProduct("")
+    //MainEditProduct("")
 }
 
 

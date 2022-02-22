@@ -126,7 +126,8 @@ fun MainNewZone(
                     Spacer(modifier = Modifier.padding(start = 10.dp))
                     Button(
                         onClick = {
-                            textName = ""
+                            onValueChangeName("")
+                            onValueChangeNºmesas("")
                         },
                         contentPadding = PaddingValues(
                             start = 10.dp,

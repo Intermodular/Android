@@ -232,11 +232,13 @@ fun MainNewProduct(
                 ) {
                     Button(
                         onClick = {
-                            textName = ""
                             textType.value = ""
-                            textCost = ""
-                            textImg = ""
-                            textStock = ""
+                            onValueChangeName("")
+                            onValueChangeImg("")
+                            onValueChangeCost("")
+                            onValueChangeStock("")
+                            mainViewModelEspecifications._especifications.clear()
+                            mainViewModelIngredients._ingredients.clear()
                         },
                         contentPadding = PaddingValues(
                             start = 10.dp,
@@ -263,7 +265,7 @@ fun MainNewProduct(
                                     _id = 0,
                                     name = textName,
                                     type = textType.value,
-                                    ingredients = ingredientes,
+                                    ingredients = mainViewModelIngredients._ingredients,
                                     price = textCost.toFloat(),
                                     especifications = mainViewModelEspecifications._especifications,
                                     img = textImg,
